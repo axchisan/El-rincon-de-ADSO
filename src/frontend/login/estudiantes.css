@@ -1,0 +1,142 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Carrusel como fondo */
+  .carrusel-fondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
+  
+  .slides {
+    display: flex;
+    width: 300%;
+    height: 100%;
+    animation: slide 12s infinite;
+  }
+  
+  .slides img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+  }
+  
+  /* Animación del carrusel */
+  @keyframes slide {
+    0%   { transform: translateX(0%); }
+    33%  { transform: translateX(-100%); }
+    66%  { transform: translateX(-200%); }
+    100% { transform: translateX(0%); }
+  }
+  
+  /* Cuadro de login */
+  .login-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    max-width: 350px;
+    margin: auto;
+    margin-top: 10%;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 2;
+  }
+  
+  input[type="text"],
+  input[type="password"] {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  input[type="submit"],
+  button {
+    background-color: #654321;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  input[type="submit"]:hover,
+  button:hover {
+    background-color: #166534;
+  }
+  .carrusel-fondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .slides {
+    display: flex;
+    width: calc(6 * 100%); /* 6 imágenes */
+    animation: scroll 3s linear infinite; /* duración lenta y en bucle */
+  }
+  
+  .slides img {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  
+  /* Animación que mueve las imágenes hacia la izquierda */
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  /* Carrusel como fondo */
+#carouselFondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* detrás del contenido */
+  overflow: hidden;
+}
+
+#carouselFondo .carousel-inner img {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+}
+
+/* Contenedor centrado */
+.login-container {
+  position: relative;
+  z-index: 2;
+  width: 350px;
+  margin: 100px auto;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+  
