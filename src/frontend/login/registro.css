@@ -1,0 +1,53 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: linear-gradient(to bottom, white, #d6c0a4); /* Desvanecido suave */
+    font-family: Arial, sans-serif;
+  }
+  
+  .register-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    max-width: 400px;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  }
+  
+  /* Inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  /* Botón */
+  input[type="submit"] {
+    background-color: #8b5e3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #654321;
+  }
+  
+  /* Logo */
+  .logo-login {
+    width: 100px;
+    margin-bottom: 15px;
+  }
+  

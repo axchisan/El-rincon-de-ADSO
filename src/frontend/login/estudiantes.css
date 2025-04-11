@@ -22,7 +22,7 @@ body, html {
     display: flex;
     width: 300%;
     height: 100%;
-    animation: slide 12s infinite;
+    animation: slide 3s infinite;
   }
   
   .slides img {
@@ -40,6 +40,7 @@ body, html {
   }
   
   /* Cuadro de login */
+
   .login-container {
     background-color: rgba(255, 255, 255, 0.9);
     max-width: 350px;
@@ -53,6 +54,7 @@ body, html {
     z-index: 2;
   }
   
+
   input[type="text"],
   input[type="password"] {
     width: 90%;
@@ -62,6 +64,7 @@ body, html {
     border-radius: 6px;
   }
   
+
   input[type="submit"],
   button {
     background-color: #654321;
@@ -71,12 +74,12 @@ body, html {
     margin-top: 10px;
     border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 3s;
   }
   
   input[type="submit"]:hover,
   button:hover {
-    background-color: #166534;
+    background-color: #FFFFFF;
   }
   .carrusel-fondo {
     position: fixed;
@@ -91,7 +94,7 @@ body, html {
   .slides {
     display: flex;
     width: calc(6 * 100%); /* 6 imágenes */
-    animation: scroll 3s linear infinite; /* duración lenta y en bucle */
+    animation: scroll 2s linear infinite; /* duración lenta y en bucle */
   }
   
   .slides img {
@@ -139,4 +142,50 @@ body, html {
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
-  
+/* Botón de enviar (Iniciar sesión) */
+/* Botón de enviar (Iniciar sesión) */
+input[type="submit"] {
+  background-color: #86592d; /* color claro ahora permanente */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+  width: 100%;
+}
+
+/* Botón de volver */
+button {
+  background-color: #86592d; /* color claro ahora permanente */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 0px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+  width: 100%;
+}
+
+/* Hover (color intermedio/base) */
+input[type="submit"]:hover,
+button:hover {
+  background-color: #654321;
+}
+
+/* Active (clic) - más oscuro */
+input[type="submit"]:active,
+button:active {
+  background-color: #3d260f;
+  transform: scale(0.97);
+}
+
+.logo-login {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+

@@ -6,6 +6,8 @@
     <title>Repositorio de Libros</title>
     <link rel="stylesheet" href="../inicio/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+
 </head>
 <body>
     <!-- Navegación -->
@@ -43,7 +45,7 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Sección de Inicio -->
     <section class="hero">
         <div class="container hero__container">
             <div class="hero__content">
@@ -60,6 +62,83 @@
         </div>
     </section>
 
+      <!-- Nueva Sección de Búsqueda -->
+  <section class="section section--search">
+      <div class="container">
+          <div class="search">
+              <div class="search__header">
+                  <h2 class="search__title">Encuentra tu próxima lectura</h2>
+                  <p class="search__description">Explora nuestra extensa colección de libros, artículos y documentos académicos.</p>
+              </div>
+              
+              <div class="search__container">
+                  <form class="search__form">
+                      <div class="search__main">
+                          <div class="search__input-wrapper">
+                              <i class="fas fa-search search__icon"></i>
+                              <input type="text" class="search__input" placeholder="Buscar por título, autor o palabra clave...">
+                          </div>
+                          <button type="submit" class="search__button btn btn--primary">
+                              Buscar
+                          </button>
+                      </div>
+                      
+                      <div class="search__filters">
+                          <div class="search__filter">
+                              <select class="search__select">
+                                  <option value="">Todas las categorías</option>
+                                  <option value="arte">Arte</option>
+                                  <option value="ciencia">Ciencia</option>
+                                  <option value="economia">Economía</option>
+                                  <option value="historia">Historia</option>
+                                  <option value="literatura">Literatura</option>
+                                  <option value="tecnologia">Tecnología</option>
+                              </select>
+                          </div>
+                          
+                          <div class="search__filter">
+                              <select class="search__select">
+                                  <option value="">Todos los formatos</option>
+                                  <option value="pdf">PDF</option>
+                                  <option value="doc">DOC</option>
+                              </select>
+                          </div>
+                          
+                          <div class="search__filter">
+                              <select class="search__select">
+                                  <option value="">Ordenar por</option>
+                                  <option value="relevancia">Relevancia</option>
+                                  <option value="reciente">Más reciente</option>
+                                  <option value="antiguo">Más antiguo</option>
+                                  <option value="az">A-Z</option>
+                                  <option value="za">Z-A</option>
+                              </select>
+                          </div>
+                          
+                          <div class="search__advanced">
+                              <a href="#" class="search__advanced-link">
+                                  <i class="fas fa-sliders-h"></i> Búsqueda avanzada
+                              </a>
+                          </div>
+                      </div>
+                  </form>
+                  
+                  <div class="search__tags">
+                      <span class="search__tag-label">Búsquedas populares:</span>
+                      <div class="search__tag-container">
+                          <a href="#" class="search__tag">Lenguaje de Consulta Estructurado HTML </a>
+                          <a href="#" class="search__tag">Python</a>
+                          <a href="#" class="search__tag">CSS</a>
+                          <a href="#" class="search__tag">Inteligencia artificial</a>
+                          <a href="#" class="search__tag">Java</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+
     <!-- Presentación de la plataforma -->
     <section class="section section--white">
         <div class="container">
@@ -70,24 +149,24 @@
             
             <div class="features__grid">
                 <div class="feature-card">
-                <div class="feature-card__icon"> 
-                        <i class="fas fa-book"></i>
-                    </>
+                    <div class="feature-card__icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
                     <h3 class="feature-card__title">Amplia Colección</h3>
                     <p class="feature-card__description">Accede a más de 50,000 libros, artículos y documentos académicos en diversos formatos.</p>
                 </div>
                 
                 <div class="feature-card">
-                <div class="feature-card__icon"> 
-                        <i class="fas fa-users"></i>
-                    </>
+                    <div class="feature-card__icon">
+                        <i class="fas fa-code"></i>
+                    </div>
                     <h3 class="feature-card__title">Comunidad Activa</h3>
                     <p class="feature-card__description">Forma parte de una comunidad de lectores, investigadores y académicos que comparten conocimiento.</p>
                 </div>
                 
                 <div class="feature-card">
-                <div class="feature-card__icon"> 
-                        <i class="fas fa-laptop"></i>
+                    <div class="feature-card__icon">
+                        <i class="fas fa-robot"></i>
                     </div>
                     <h3 class="feature-card__title">Acceso Universal</h3>
                     <p class="feature-card__description">Consulta el repositorio desde cualquier dispositivo, en cualquier momento y lugar.</p>
@@ -176,15 +255,6 @@
                     <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
                 </div>
                 <div>
-                    <h4 class="footer__heading">Enlaces</h4>
-                    <ul class="footer__links">
-                        <li><a href="#" class="footer__link">Inicio</a></li>
-                        <li><a href="#" class="footer__link">Repositorio</a></li>
-                        <li><a href="#" class="footer__link">Comunidad</a></li>
-                        <li><a href="#" class="footer__link">Sobre nosotros</a></li>
-                    </ul>
-                </div>
-                <div>
                     <h4 class="footer__heading">Suscríbete</h4>
                     <p class="footer__description">Recibe actualizaciones sobre nuevos libros y recursos.</p>
                     <form class="footer__form">
@@ -197,13 +267,7 @@
             </div>
             <div class="footer__bottom">
                 <div class="footer__copyright">
-                    &copy; <?php echo date('Y'); ?> BiblioTech. Todos los derechos reservados.
-                </div>
-                <div class="footer__social">
-                    <a href="#" class="footer__social-link"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="footer__social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="footer__social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="footer__social-link"><i class="fab fa-linkedin"></i></a>
+                    &copy; <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
                 </div>
             </div>
         </div>
