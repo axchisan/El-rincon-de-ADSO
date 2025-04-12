@@ -1,37 +1,25 @@
-
-
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<link rel="stylesheet" href="../estudiantes.css">
-
-    <meta charset="UTF-8">
-    <title>Registro de Aprendices</title>
+  <title>Registro</title>
+  <link rel="icon" href="./img/logo.png" type="image/png">
+  <link rel="stylesheet" href="registro.css">
 </head>
 <body>
-    <h2>Registro de Aprendiz</h2>
-    <?php if (!empty($mensaje)) echo "<p>$mensaje</p>"; ?>
 
-    <form method="POST" action="">
-        <label>Nombre completo:</label><br>
-        <input type="text" name="nombre" required><br><br>
+<div class="register-container">
+  <img src="./img/logo.png" alt="Logo institucional" class="logo-login">
+  <h2>Registro de Usuario</h2>
+  <form action="guardar_registro.php" method="POST">
+    <input type="text" name="Nombre" placeholder="Nombre" required><br>
+    <input type="text" name="Apellido" placeholder="Apellido" required><br>
+    <input type="text" name="identificación" placeholder="Identificación" required><br>
+    <input type="email" name="correo" placeholder="Correo electrónico" required><br>
+    <input type="text" name="Numero de ficha" placeholder="Número de ficha" required><br>
+    <input type="password" name="contraseña" placeholder="Contraseña" required><br>
+    <input type="submit" value="Registrarse">
+  </form>
+</div>
 
-        <label>Identificación:</label><br>
-        <input type="text" name="identificacion" required><br><br>
-
-        <label>Edad:</label><br>
-        <input type="number" name="edad" min="1" required><br><br>
-
-        <label>Correo electrónico:</label><br>
-        <input type="email" name="correo" required><br><br>
-
-        <label>Número de ficha:</label><br>
-        <input type="text" name="ficha" required><br><br>
-
-        <label>Contraseña:</label><br>
-        <input type="password" name="clave" required><br><br>
-
-        <button type="submit">Registrarse</button>
-    </form>
 </body>
 </html>

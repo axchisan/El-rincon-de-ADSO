@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Login</title>
+  <link rel="icon" href="./img/logo.png" type="image/png">
   <link rel="stylesheet" href="../login/estudiantes.css">
   <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -27,7 +28,11 @@
   
 
   <div class="login-container">
-    <h2>Iniciar Sesión</h2>
+  <img src="img/logo.png" alt="Logo institucional" class="logo-login">
+
+
+  <h2>El Rincón de ADSO</h2>  
+  <h4>Iniciar Sesión</h4>
     <form action="validar_login.php" method="POST">
       <label>Usuario:</label>
       <input type="text" name="usuario" required><br><br>
