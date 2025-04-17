@@ -187,5 +187,11 @@ button:active {
   width: 120px;
   margin-bottom: 20px;
 }
+body {
+  overflow-y: auto; /* activa el scroll vertical si se necesita */
+  height: 100vh;
+  margin: 0;
+}
+
 
 
