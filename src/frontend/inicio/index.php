@@ -23,8 +23,11 @@
           <!-- Navegación para escritorio -->
           <ul class="navbar__menu">
               <li class="navbar__menu-item navbar__menu-item--active"><a href="#">Inicio</a></li>
-              <li class="navbar__menu-item"><a href="#">Repositorio</a></li>
+              <li class="navbar__menu-item"><a href="#buscar">Búsquedas</a></li>
+              <li class="navbar__menu-item"><a href="#nosotros">Nosotros</a></li>
+              <li class="navbar__menu-item"><a href="#recientes">Recientes</a></li>
               <li class="navbar__menu-item"><a href="#comunidad">Comunidad</a></li>
+              <li class="navbar__menu-item"><a href="../login/registro.php">Registro</a></li>
               <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/home.php">Iniciar sesión</a></li>
           </ul>
           
@@ -37,11 +40,13 @@
       <!-- Menú móvil desplegable -->
       <div id="mobile-menu" class="navbar__mobile container hidden">
           <ul>
-              <li class="navbar__mobile-item navbar__mobile-item--active"><a href="#">Inicio</a></li>
-              <li class="navbar__mobile-item"><a href="#">Repositorio</a></li>
-              <li class="navbar__mobile-item"><a href="#comunidad">Comunidad</a></li>
+          <li class="navbar__menu-item navbar__menu-item--active"><a href="#">Inicio</a></li>
+              <li class="navbar__menu-item"><a href="#buscar">Búsquedas</a></li>
+              <li class="navbar__menu-item"><a href="#nosotros">Nosotros</a></li>
+              <li class="navbar__menu-item"><a href="#recientes">Recientes</a></li>
+              <li class="navbar__menu-item"><a href="#comunidad">Comunidad</a></li>
               <li class="navbar__mobile-item"><a href="../login/registro.php">Registro</a></li>
-              <li class="navbar__mobile-item"><a href="../login/home.php">Iniciar sesión</a></li>
+              <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/home.php">Iniciar sesión</a></li>
           </ul>
       </div>
   </nav>
@@ -64,7 +69,7 @@
   </section>
   
   <!-- Nueva Sección de Búsqueda -->
-  <section class="section section--search">
+  <section id="buscar" class="section section--search">
       <div class="container">
           <div class="search">
               <div class="search__header">
@@ -140,6 +145,7 @@
   </section>
 
   <!-- Presentación de la plataforma -->
+  <section id="nosotros" class="section section--white">
   <section class="section section--white">
       <div class="container">
           <div class="features__header">
@@ -176,7 +182,7 @@
   </section>
 
   <!-- Libros Recientes -->
-  <section class="section section--gray">
+  <section id="recientes" class="section section--gray">
       <div class="container">
           <div class="books__header">
               <h2 class="books__title">Libros Recientes</h2>
@@ -235,7 +241,7 @@
               <a href="#" class="books__link">Ver todos <i class="fas fa-arrow-right"></i></a>
           </div>
       </div>
-  </section>
+  </s>
 
   <!-- Nueva Sección de Comunidad -->
   <section id="comunidad" class="section section--community">
