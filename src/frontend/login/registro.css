@@ -1,4 +1,4 @@
-/* registro.css */
+/* src/frontend/login/registro.css */
 * {
   margin: 0;
   padding: 0;
@@ -47,7 +47,8 @@ body {
 
 .registro-form form input[type="text"],
 .registro-form form input[type="email"],
-.registro-form form input[type="password"] {
+.registro-form form input[type="password"],
+.registro-form form input[type="number"] {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
@@ -110,10 +111,12 @@ body {
 .btn-inicio:hover {
   background-color: #654321;
 }
+
 /* Solo aplica estilo a los inputs del formulario */
 form input[type="text"],
 form input[type="email"],
-form input[type="password"] {
+form input[type="password"],
+form input[type="number"] {
   background-color: white !important;
   color: #333 !important;
   font-weight: bold;
