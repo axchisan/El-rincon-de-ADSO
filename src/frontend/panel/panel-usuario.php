@@ -21,9 +21,9 @@
       
       <!-- Navegación para escritorio -->
       <ul class="navbar__menu">
-        <li class="navbar__menu-item"><a href="index.php">Inicio</a></li>
-        <li class="navbar__menu-item"><a href="repositorio.php">Repositorio</a></li>
-        <li class="navbar__menu-item"><a href="panel-usuario.php">Panel</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
+        <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
+        <li class="navbar__menu-item"><a href="../panel/panel-usuario.php">Panel</a></li>
         <li class="navbar__menu-item navbar__menu-item--button"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
       
@@ -36,9 +36,9 @@
     <!-- Menú móvil desplegable -->
     <div id="mobile-menu" class="navbar__mobile container hidden">
       <ul>
-        <li class="navbar__mobile-item"><a href="index.php">Inicio</a></li>
-        <li class="navbar__mobile-item"><a href="repositorio.php">Repositorio</a></li>
-        <li class="navbar__mobile-item navbar__mobile-item--active"><a href="panel-usuario.php">Panel</a></li>
+        <li class="navbar__mobile-item"><a href="../inicio/index.php">Inicio</a></li>
+        <li class="navbar__mobile-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
+        <li class="navbar__mobile-item navbar__mobile-item--active"><a href="../panel/panel-usuario.php">Panel</a></li>
         <li class="navbar__mobile-item"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
     </div>
@@ -802,4 +802,3 @@
   </script>
 </body>
 </html>
-

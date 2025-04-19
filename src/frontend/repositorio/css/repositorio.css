@@ -906,3 +906,52 @@ ol {
   }
 }
 }
+/* Estilos para el contenedor del perfil */
+.navbar__profile {
+  position: relative;
+}
+
+/* Estilos para el icono de perfil */
+.navbar__profile-icon {
+  font-size: 2rem;
+  cursor: pointer;
+  color: #333; /* Ajusta el color según tu diseño */
+}
+
+/* Estilos para el menú desplegable */
+.navbar__profile-menu {
+  display: none; /* Oculto por defecto */
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 1000;
+}
+
+/* Estilos cuando el menú está activo (visible) */
+.navbar__profile-menu.active {
+  display: block; /* Mostrar cuando tiene la clase 'active' */
+}
+
+/* Estilos para los elementos dentro del menú */
+.navbar__profile-menu a,
+.navbar__profile-menu button {
+  display: block;
+  padding: 8px 15px;
+  color: #333;
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.navbar__profile-menu a:hover,
+.navbar__profile-menu button:hover {
+  background-color: #f0f0f0;
+  color: #007bff; /* Ajusta el color según tu diseño */
+}
