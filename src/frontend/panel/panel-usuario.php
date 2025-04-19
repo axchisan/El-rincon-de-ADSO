@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Usuario - El Rincón de ADSO</title>
-  <link rel="stylesheet" href="styles-panel.css">
+  <link rel="icon" type="image/png" href="../inicio/img/icono.png">
+  <link rel="stylesheet" href="..//panel/styles-panel.css">
   <!-- Cargar Font Awesome de manera optimizada -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -735,33 +736,6 @@
       </section>
     </div>
   </main>
-
-  <!-- Pie de Página -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer__grid">
-        <div>
-          <h3 class="footer__logo">El Rincón de ADSO</h3>
-          <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
-        </div>
-        <div>
-          <h4 class="footer__heading">Enlaces rápidos</h4>
-          <ul class="footer__links">
-            <li><a href="index.php">Inicio</a></li>
-            <li><a href="repositorio.php">Repositorio</a></li>
-            <li><a href="panel-usuario.php">Mi Panel</a></li>
-            <li><a href="#">Ayuda</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer__bottom">
-        <div class="footer__copyright">
-          &copy; <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
-        </div>
-      </div>
-    </div>
-  </footer>
-
   <!-- Scripts -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
