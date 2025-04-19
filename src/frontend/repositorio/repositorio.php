@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../inicio/img/icono.png">
   <title>Repositorio - El Rincón de ADSO</title>
   <link rel="stylesheet" href="../repositorio/repositorio.css">
 
@@ -35,11 +36,10 @@
       <!-- Menú móvil desplegable -->
       <div id="mobile-menu" class="navbar__mobile container hidden">
           <ul>
-              <li class="navbar__mobile-item"><a href="index.php">Inicio</a></li>
-              <li class="navbar__mobile-item navbar__mobile-item--active"><a href="repositorio.php">Repositorio</a></li>
-              <li class="navbar__mobile-item"><a href="index.php#comunidad">Comunidad</a></li>
+          <li class="navbar__mobile-item"><a href="../inicio/index.php">Inicio</a></li>
+              <li class="navbar__mobile-item navbar__menu-item--active"><a href="..7repositorio/repositorio.php">Repositorio</a></li>
               <li class="navbar__mobile-item"><a href="../login/registro.php">Registro</a></li>
-              <li class="navbar__mobile-item"><a href="../login/home.php">Iniciar sesión</a></li>
+              <li class="navbar__mobile-item navbar__menu-item--button"><a href="../login/home.php">Iniciar sesión</a></li>
           </ul>
       </div>
   </nav>
@@ -117,26 +117,6 @@
             <i class="fas fa-sliders-h"></i> Filtros avanzados
           </button>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pestañas de navegación -->
-  <section class="tabs-section">
-    <div class="container">
-      <div class="tabs">
-        <button class="tab-button active" data-tab="all">
-          <i class="fas fa-th"></i> Todos
-        </button>
-        <button class="tab-button" data-tab="books">
-          <i class="fas fa-book"></i> Libros
-        </button>
-        <button class="tab-button" data-tab="videos">
-          <i class="fas fa-video"></i> Videos
-        </button>
-        <button class="tab-button" data-tab="documents">
-          <i class="fas fa-file-alt"></i> Documentos
-        </button>
       </div>
     </div>
   </section>
@@ -474,37 +454,6 @@
       </div>
     </div>
   </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-      <div class="container">
-          <div class="footer__grid">
-              <div>
-                  <h3 class="footer__logo">El Rincón de ADSO</h3>
-                  <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
-              </div>
-              <div>
-                  <h4 class="footer__heading">Suscríbete</h4>
-                  <p class="footer__description">Recibe actualizaciones sobre nuevos libros y recursos.</p>
-                  
-                  <!-- Formulario actualizado con manejo de respuesta -->
-                  <form id="subscriptionForm" class="footer__form" method="post" action="procesar-suscripcion.php">
-                      <input type="email" name="email" placeholder="Tu email" class="footer__input" required>
-                      <button type="submit" class="footer__button" id="subscribeBtn">
-                          <i class="fas fa-paper-plane"></i>
-                      </button>
-                  </form>
-                  <div id="subscriptionMessage" class="footer__message"></div>
-              </div>
-          </div>
-          <div class="footer__bottom">
-              <div class="footer__copyright">
-                  &copy; <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
-              </div>
-          </div>
-      </div>
-  </footer>
-
   <!-- Scripts -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
