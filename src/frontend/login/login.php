@@ -38,7 +38,7 @@
       <input type="password" name="clave" required><br><br>
       <input type="submit" value="Entrar">
     </form>
-    <button onclick="window.location.href='/El-rincon-de-ADSO/src/frontend/inicio/index.php'">
+    <button onclick="window.location.href='../inicio/index.php'">
       Volver a la página principal
     </button>
   </div>

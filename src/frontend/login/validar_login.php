@@ -1,29 +1,39 @@
-<?php // aca esta la logica de validacion del login
+<?php
 session_start();
-require 'db.php';
+//Conexion a la base de datos
+require_once "../database/conexionDB.php";
 
-$usuario = $_POST['usuario'];
-$clave = $_POST['clave'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nombre_usuario = $_POST['nombre_usuario'];
+    $contrasena = $_POST['contrasena'];
 
-// Buscar el usuario en la base de datos
-$sql = "SELECT * FROM usuarios WHERE usuario = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $usuario);
-$stmt->execute();
-$resultado = $stmt->get_result();
+    // Consulta para verificar las credenciales y obtener el rol
+    $sql = "SELECT nombre_usuario, rol FROM usuarios WHERE nombre_usuario = ? AND contrasena = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $nombre_usuario, $contrasena);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if ($resultado->num_rows === 1) {
-    $fila = $resultado->fetch_assoc();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $rol = $row['rol'];
 
-    if (password_verify($clave, $fila['clave'])) {
-        // Login exitoso
-        $_SESSION['usuario'] = $fila['usuario'];
-        header("Location: home.php");
-        exit();
+        // Verificar si el rol es "user"
+        if ($rol === "user") {
+            // Credenciales correctas y rol es "user", iniciar sesión y redirigir
+            $_SESSION['nombre_usuario'] = $nombre_usuario;
+            $_SESSION['rol'] = $rol;
+            header("Location: ../panel/panel-usuario.php");
+            exit();
+        } else {
+            $error = "Acceso denegado: No tienes el rol de usuario.";
+        }
     } else {
-        echo "Contraseña incorrecta.";
+        $error = "Usuario o contraseña incorrectos.";
     }
-} else {
-    echo "Usuario no encontrado.";
+
+    $stmt->close();
 }
+
+$conn->close();
 ?>
