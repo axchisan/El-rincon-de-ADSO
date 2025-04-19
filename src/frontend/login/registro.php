@@ -17,6 +17,7 @@ require_once "../../database/configuracion.php";
             <img src="./img/logo.png" alt="Logo institucional" class="logo-login">
             <form action="../../backend/register.php" method="POST" id="registro-form">
                 <input type="text" name="nombre" placeholder="Nombre completo" required>
+                <input type="text" name="nombre_usuario" placeholder="Nombre de usuario" required>
                 <input type="text" name="documento" placeholder="Número de documento" required>
                 <input type="number" name="edad" placeholder="Edad" min="0" required>
                 <input type="email" name="correo" placeholder="Correo electrónico" required>
@@ -46,7 +47,7 @@ require_once "../../database/configuracion.php";
 
                 if (result.success) {
                     alert(result.message);
-                    window.location.href = '../inicio/index.php'; 
+                    window.location.href = '../inicio/index.php';
                 } else {
                     alert(result.message);
                 }

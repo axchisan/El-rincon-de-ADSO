@@ -6,4 +6,4 @@ define("DB_USER", "avnadmin");
 define("DB_PASSWORD", "AVNS_r_18XjSVC5WBHQWmhxF");
 define("DB_SSLMODE", "require");
 define("DB_SSLROOTCERT", __DIR__ . "/cert/ca.pem"); 
-?>
+?> 
