@@ -3,17 +3,62 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="../inicio/img/icono.png">
+    <link rel="icon" type="image/png" href="./img/icono.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repositorio de Libros</title>
-    <link rel="stylesheet" href="../inicio/styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
     <!-- Cargar Font Awesome de manera optimizada -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <!-- Carga diferida de AOS -->
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" media="print" onload="this.media='all'">
+    <style>
+        /* Estilos para el menú de perfil */
+        .navbar__profile {
+            position: relative;
+            display: inline-block;
+        }
+
+        .navbar__profile-icon {
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .navbar__profile-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .navbar__profile-menu.active {
+            display: block;
+        }
+
+        .navbar__profile-menu a,
+        .navbar__profile-menu form button {
+            display: block;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .navbar__profile-menu a:hover,
+        .navbar__profile-menu form button:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 </head>
 
 <body>
+    <?php session_start(); ?>
     <!-- Navegación -->
     <nav class="navbar">
         <div class="container navbar__container">
@@ -25,12 +70,28 @@
             <!-- Navegación para escritorio -->
             <ul class="navbar__menu">
                 <li class="navbar__menu-item navbar__menu-item--active"><a href="#">Inicio</a></li>
+                <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
                 <li class="navbar__menu-item"><a href="#buscar">Búsquedas</a></li>
                 <li class="navbar__menu-item"><a href="#nosotros">Nosotros</a></li>
                 <li class="navbar__menu-item"><a href="#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="#comunidad">Comunidad</a></li>
-                <li class="navbar__menu-item"><a href="../login/registro.php">Registro</a></li>
-                <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/home.php">Iniciar sesión</a></li>
+                <?php if (!isset($_SESSION['nombre_usuario'])): ?>
+                    <li class="navbar__menu-item"><a href="../register/registro.php">Registro</a></li>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['nombre_usuario'])): ?>
+                    <!-- Si hay sesión activa, mostrar el icono de perfil -->
+                    <li class="navbar__profile">
+                        <i class="fas fa-user-circle navbar__profile-icon"></i>
+                        <div class="navbar__profile-menu">
+                            <a href="../panel/panel-usuario.php">Ver Perfil</a>
+                            <form action="../../backend/logout.php" method="POST">
+                                <button type="submit">Cerrar Sesión</button>
+                            </form>
+                        </div>
+                    </li>
+                <?php else: ?>
+                    <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
+                <?php endif; ?>
             </ul>
 
             <!-- Botón menú móvil -->
@@ -43,17 +104,29 @@
         <div id="mobile-menu" class="navbar__mobile container hidden">
             <ul>
                 <li class="navbar__menu-item navbar__menu-item--active"><a href="#">Inicio</a></li>
+                <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
                 <li class="navbar__menu-item"><a href="#buscar">Búsquedas</a></li>
                 <li class="navbar__menu-item"><a href="#nosotros">Nosotros</a></li>
                 <li class="navbar__menu-item"><a href="#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="#comunidad">Comunidad</a></li>
-                <li class="navbar__mobile-item"><a href="../login/registro.php">Registro</a></li>
-                <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/home.php">Iniciar sesión</a></li>
+                <?php if (!isset($_SESSION['nombre_usuario'])): ?>
+                    <li class="navbar__mobile-item"><a href="../register/registro.php">Registro</a></li>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['nombre_usuario'])): ?>
+                    <li class="navbar__mobile-item"><a href="../perfil/perfil.php">Ver Perfil</a></li>
+                    <li class="navbar__mobile-item">
+                        <form action="../backend/logout.php" method="POST">
+                            <button type="submit" class="navbar__menu-item--button">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                <?php else: ?>
+                    <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </nav>
 
-    <!-- Sección de Inicio -->
+    <!-- Resto del contenido -->
     <section class="hero">
         <div class="container hero__container">
             <div class="hero__content">
@@ -78,7 +151,6 @@
                     <h2 class="search__title">Encuentra tu próxima lectura</h2>
                     <p class="search__description">Explora nuestra extensa colección de libros, artículos y documentos académicos.</p>
                 </div>
-
                 <div class="search__container">
                     <form class="search__form">
                         <div class="search__main">
@@ -90,7 +162,6 @@
                                 Buscar
                             </button>
                         </div>
-
                         <div class="search__filters">
                             <div class="search__filter">
                                 <select class="search__select">
@@ -103,7 +174,6 @@
                                     <option value="tecnologia">Tecnología</option>
                                 </select>
                             </div>
-
                             <div class="search__filter">
                                 <select class="search__select">
                                     <option value="">Todos los formatos</option>
@@ -111,7 +181,6 @@
                                     <option value="doc">DOC</option>
                                 </select>
                             </div>
-
                             <div class="search__filter">
                                 <select class="search__select">
                                     <option value="">Ordenar por</option>
@@ -122,7 +191,6 @@
                                     <option value="za">Z-A</option>
                                 </select>
                             </div>
-
                             <div class="search__advanced">
                                 <a href="#" class="search__advanced-link">
                                     <i class="fas fa-sliders-h"></i> Búsqueda avanzada
@@ -130,7 +198,6 @@
                             </div>
                         </div>
                     </form>
-
                     <div class="search__tags">
                         <span class="search__tag-label">Búsquedas populares:</span>
                         <div class="search__tag-container">
@@ -154,7 +221,6 @@
                     <h2 class="features__title">Nuestra Plataforma</h2>
                     <p class="features__description">El Rincón de ADSO es un repositorio digital abierto diseñado para democratizar el acceso al conocimiento y fomentar la colaboración académica.</p>
                 </div>
-
                 <div class="features__grid">
                     <div class="feature-card">
                         <div class="feature-card__icon">
@@ -163,7 +229,6 @@
                         <h3 class="feature-card__title">Amplia Colección</h3>
                         <p class="feature-card__description">Accede a más de 50,000 libros, artículos y documentos académicos en diversos formatos.</p>
                     </div>
-
                     <div class="feature-card">
                         <div class="feature-card__icon">
                             <i class="fas fa-code"></i>
@@ -171,7 +236,6 @@
                         <h3 class="feature-card__title">Comunidad Activa</h3>
                         <p class="feature-card__description">Forma parte de una comunidad de lectores, investigadores y académicos que comparten conocimiento.</p>
                     </div>
-
                     <div class="feature-card">
                         <div class="feature-card__icon">
                             <i class="fas fa-robot"></i>
@@ -189,10 +253,8 @@
                 <div class="books__header">
                     <h2 class="books__title">Libros Recientes</h2>
                 </div>
-
                 <div class="books__grid">
                     <?php
-                    // Array de libros recientes (simulado)
                     $libros_recientes = [
                         [
                             'titulo' => 'Inteligencia Artificial: Un Enfoque Moderno',
@@ -219,8 +281,6 @@
                             'imagen' => 'https://m.media-amazon.com/images/I/61zcsGsOhvL._AC_UF1000,1000_QL80_.jpg'
                         ]
                     ];
-
-                    // Mostrar cada libro con animación
                     foreach ($libros_recientes as $libro) {
                         echo '<div class="book-card">';
                         echo '<div class="book-card__image-container">';
@@ -243,176 +303,175 @@
                     <a href="#" class="books__link">Ver todos <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
-            </s>
+        </section>
 
-            <!-- Nueva Sección de Comunidad -->
-            <section id="comunidad" class="section section--community">
-                <div class="container">
-                    <div class="community__header">
-                        <h2 class="community__title">Comunidad</h2>
-                        <p class="community__description">Descubre lo que nuestra comunidad está comentando sobre sus lecturas favoritas</p>
-                    </div>
-
-                    <div class="community__grid">
-                        <?php
-                        // Array de comentarios recientes (simulado)
-                        $comentarios_recientes = [
-                            [
-                                'usuario' => 'María García',
-                                'avatar' => 'https://randomuser.me/api/portraits/women/12.jpg',
-                                'fecha' => '2 días atrás',
-                                'libro' => 'Python para Principiantes',
-                                'comentario' => 'Este libro me ha ayudado muchísimo a entender los conceptos básicos de Python. Lo recomiendo para todos los que están comenzando en la programación.',
-                                'valoracion' => 5
-                            ],
-                            [
-                                'usuario' => 'Carlos Rodríguez',
-                                'avatar' => 'https://randomuser.me/api/portraits/men/32.jpg',
-                                'fecha' => '1 semana atrás',
-                                'libro' => 'Código Limpio',
-                                'comentario' => 'Una lectura obligada para cualquier desarrollador. Ha cambiado completamente mi forma de escribir código y de pensar en la arquitectura de software.',
-                                'valoracion' => 5
-                            ],
-                            [
-                                'usuario' => 'Laura Martínez',
-                                'avatar' => 'https://randomuser.me/api/portraits/women/22.jpg',
-                                'fecha' => '3 días atrás',
-                                'libro' => 'Inteligencia Artificial: Un Enfoque Moderno',
-                                'comentario' => 'Aunque es un libro bastante técnico, explica los conceptos de manera clara. Me ha servido mucho para mi proyecto final de carrera.',
-                                'valoracion' => 4
-                            ],
-                            [
-                                'usuario' => 'Javier López',
-                                'avatar' => 'https://randomuser.me/api/portraits/men/45.jpg',
-                                'fecha' => '5 días atrás',
-                                'libro' => 'Inteligencia artificial: 101 cosas',
-                                'comentario' => 'Un libro muy accesible para entender el impacto de la IA en nuestro futuro. Lo recomendaría a cualquiera interesado en el tema, incluso sin conocimientos técnicos.',
-                                'valoracion' => 4
-                            ]
-                        ];
-
-                        // Mostrar cada comentario
-                        foreach ($comentarios_recientes as $comentario) {
-                            echo '<div class="comment-card">';
-                            echo '<div class="comment-card__header">';
-                            echo '<div class="comment-card__user">';
-                            echo '<img src="' . $comentario['avatar'] . '" alt="' . $comentario['usuario'] . '" class="comment-card__avatar" loading="lazy">';
-                            echo '<div class="comment-card__user-info">';
-                            echo '<h4 class="comment-card__username">' . $comentario['usuario'] . '</h4>';
-                            echo '<span class="comment-card__date">' . $comentario['fecha'] . '</span>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '<div class="comment-card__rating">';
-
-                            // Mostrar estrellas según valoración
-                            for ($i = 1; $i <= 5; $i++) {
-                                if ($i <= $comentario['valoracion']) {
-                                    echo '<i class="fas fa-star"></i>';
-                                } else {
-                                    echo '<i class="far fa-star"></i>';
-                                }
+        <!-- Nueva Sección de Comunidad -->
+        <section id="comunidad" class="section section--community">
+            <div class="container">
+                <div class="community__header">
+                    <h2 class="community__title">Comunidad</h2>
+                    <p class="community__description">Descubre lo que nuestra comunidad está comentando sobre sus lecturas favoritas</p>
+                </div>
+                <div class="community__grid">
+                    <?php
+                    $comentarios_recientes = [
+                        [
+                            'usuario' => 'María García',
+                            'avatar' => 'https://randomuser.me/api/portraits/women/12.jpg',
+                            'fecha' => '2 días atrás',
+                            'libro' => 'Python para Principiantes',
+                            'comentario' => 'Este libro me ha ayudado muchísimo a entender los conceptos básicos de Python. Lo recomiendo para todos los que están comenzando en la programación.',
+                            'valoracion' => 5
+                        ],
+                        [
+                            'usuario' => 'Carlos Rodríguez',
+                            'avatar' => 'https://randomuser.me/api/portraits/men/32.jpg',
+                            'fecha' => '1 semana atrás',
+                            'libro' => 'Código Limpio',
+                            'comentario' => 'Una lectura obligada para cualquier desarrollador. Ha cambiado completamente mi forma de escribir código y de pensar en la arquitectura de software.',
+                            'valoracion' => 5
+                        ],
+                        [
+                            'usuario' => 'Laura Martínez',
+                            'avatar' => 'https://randomuser.me/api/portraits/women/22.jpg',
+                            'fecha' => '3 días atrás',
+                            'libro' => 'Inteligencia Artificial: Un Enfoque Moderno',
+                            'comentario' => 'Aunque es un libro bastante técnico, explica los conceptos de manera clara. Me ha servido mucho para mi proyecto final de carrera.',
+                            'valoracion' => 4
+                        ],
+                        [
+                            'usuario' => 'Javier López',
+                            'avatar' => 'https://randomuser.me/api/portraits/men/45.jpg',
+                            'fecha' => '5 días atrás',
+                            'libro' => 'Inteligencia artificial: 101 cosas',
+                            'comentario' => 'Un libro muy accesible para entender el impacto de la IA en nuestro futuro. Lo recomendaría a cualquiera interesado en el tema, incluso sin conocimientos técnicos.',
+                            'valoracion' => 4
+                        ]
+                    ];
+                    foreach ($comentarios_recientes as $comentario) {
+                        echo '<div class="comment-card">';
+                        echo '<div class="comment-card__header">';
+                        echo '<div class="comment-card__user">';
+                        echo '<img src="' . $comentario['avatar'] . '" alt="' . $comentario['usuario'] . '" class="comment-card__avatar" loading="lazy">';
+                        echo '<div class="comment-card__user-info">';
+                        echo '<h4 class="comment-card__username">' . $comentario['usuario'] . '</h4>';
+                        echo '<span class="comment-card__date">' . $comentario['fecha'] . '</span>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '<div class="comment-card__rating">';
+                        for ($i = 1; $i <= 5; $i++) {
+                            if ($i <= $comentario['valoracion']) {
+                                echo '<i class="fas fa-star"></i>';
+                            } else {
+                                echo '<i class="far fa-star"></i>';
                             }
-
-                            echo '</div>';
-                            echo '</div>';
-                            echo '<div class="comment-card__content">';
-                            echo '<h5 class="comment-card__book">Sobre: ' . $comentario['libro'] . '</h5>';
-                            echo '<p class="comment-card__text">"' . $comentario['comentario'] . '"</p>';
-                            echo '</div>';
-                            echo '<div class="comment-card__footer">';
-                            echo '<button class="comment-card__like"><i class="far fa-heart"></i> Me gusta</button>';
-                            echo '<button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>';
-                            echo '</div>';
-                            echo '</div>';
                         }
-                        ?>
-                    </div>
+                        echo '</div>';
+                        echo '</div>';
+                        echo '<div class="comment-card__content">';
+                        echo '<h5 class="comment-card__book">Sobre: ' . $comentario['libro'] . '</h5>';
+                        echo '<p class="comment-card__text">"' . $comentario['comentario'] . '"</p>';
+                        echo '</div>';
+                        echo '<div class="comment-card__footer">';
+                        echo '<button class="comment-card__like"><i class="far fa-heart"></i> Me gusta</button>';
+                        echo '<button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    ?>
+                </div>
+                <div class="community__cta">
+                    <h3 class="community__cta-title">¿Quieres compartir tu opinión?</h3>
+                    <p class="community__cta-text">Únete a nuestra comunidad y comparte tus pensamientos sobre tus lecturas favoritas</p>
+                    <a href="../login/registro.php" class="btn btn--primary community__cta-button">Crear una cuenta</a>
+                </div>
+            </div>
+        </section>
 
-                    <div class="community__cta">
-                        <h3 class="community__cta-title">¿Quieres compartir tu opinión?</h3>
-                        <p class="community__cta-text">Únete a nuestra comunidad y comparte tus pensamientos sobre tus lecturas favoritas</p>
-                        <a href="../login/registro.php" class="btn btn--primary community__cta-button">Crear una cuenta</a>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer__grid">
+                    <div>
+                        <h3 class="footer__logo">El Rincón de ADSO</h3>
+                        <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
+                    </div>
+                    <div>
+                        <h4 class="footer__heading">Suscríbete</h4>
+                        <p class="footer__description">Recibe actualizaciones sobre nuevos libros y recursos.</p>
+                        <form class="footer__form">
+                            <input type="email" placeholder="Tu email" class="footer__input" required>
+                            <button type="submit" class="footer__button">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
-            </section>
-
-            <!-- Footer -->
-            <footer class="footer">
-                <div class="container">
-                    <div class="footer__grid">
-                        <div>
-                            <h3 class="footer__logo">El Rincón de ADSO</h3>
-                            <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
-                        </div>
-                        <div>
-                            <h4 class="footer__heading">Suscríbete</h4>
-                            <p class="footer__description">Recibe actualizaciones sobre nuevos libros y recursos.</p>
-                            <form class="footer__form">
-                                <input type="email" placeholder="Tu email" class="footer__input" required>
-                                <button type="submit" class="footer__button">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="footer__bottom">
-                        <div class="footer__copyright">
-                            &copy; <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
-                        </div>
+                <div class="footer__bottom">
+                    <div class="footer__copyright">
+                        © <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
                     </div>
                 </div>
-            </footer>
+            </div>
+        </footer>
 
-            <!-- Scripts -->
-            <script>
-                // Cargar AOS de manera diferida
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Cargar AOS solo cuando sea necesario
-                    const script = document.createElement('script');
-                    script.src = 'https://unpkg.com/aos@next/dist/aos.js';
-                    script.onload = function() {
-                        AOS.init({
-                            once: true,
-                            disable: window.innerWidth < 768 // Desactivar en móviles
-                        });
-                    };
-                    document.body.appendChild(script);
-                });
-
-                // Toggle mobile menu
-                document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    mobileMenu.classList.toggle('hidden');
-                });
-
-                // Interactividad para los botones de me gusta
-                document.querySelectorAll('.comment-card__like').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const icon = this.querySelector('i');
-                        if (icon.classList.contains('far')) {
-                            icon.classList.remove('far');
-                            icon.classList.add('fas');
-                            icon.classList.add('liked');
-                            this.classList.add('comment-card__like--active');
-                        } else {
-                            icon.classList.remove('fas');
-                            icon.classList.remove('liked');
-                            icon.classList.add('far');
-                            this.classList.remove('comment-card__like--active');
-                        }
+        <!-- Scripts -->
+        <script>
+            // Cargar AOS de manera diferida
+            document.addEventListener('DOMContentLoaded', function() {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/aos@next/dist/aos.js';
+                script.onload = function() {
+                    AOS.init({
+                        once: true,
+                        disable: window.innerWidth < 768
                     });
-                });
+                };
+                document.body.appendChild(script);
+            });
 
-                // Animación para las tarjetas de libros al hacer hover
-                document.querySelectorAll('.book-card').forEach(card => {
-                    card.addEventListener('mouseenter', function() {
-                        this.classList.add('book-card--hover');
-                    });
-                    card.addEventListener('mouseleave', function() {
-                        this.classList.remove('book-card--hover');
-                    });
+            // Toggle mobile menu
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Mostrar/ocultar menú de perfil
+            document.querySelectorAll('.navbar__profile-icon').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const menu = this.nextElementSibling;
+                    menu.classList.toggle('active');
                 });
-            </script>
+            });
+
+            // Interactividad para los botones de me gusta
+            document.querySelectorAll('.comment-card__like').forEach(button => {
+                button.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        icon.classList.add('liked');
+                        this.classList.add('comment-card__like--active');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.remove('liked');
+                        icon.classList.add('far');
+                        this.classList.remove('comment-card__like--active');
+                    }
+                });
+            });
+
+            // Animación para las tarjetas de libros al hacer hover
+            document.querySelectorAll('.book-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.classList.add('book-card--hover');
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.classList.remove('book-card--hover');
+                });
+            });
+        </script>
 </body>
 
 </html>

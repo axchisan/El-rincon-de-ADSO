@@ -1,70 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../inicio/img/icono.png">
   <title>Repositorio - El Rincón de ADSO</title>
-  <link rel="stylesheet" href="../repositorio/repositorio.css">
+  <link rel="stylesheet" href="./css/repositorio.css">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
+  <?php session_start(); ?>
   <!-- Navegación -->
   <nav class="navbar">
-      <div class="container navbar__container">
-          <a href="index.php" class="navbar__logo">
-              <i class="fas fa-book-open"></i>
-              El Rincón de ADSO
-          </a>
-          
-          <!-- Navegación para escritorio -->
-          <ul class="navbar__menu">
-              <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
-              <li class="navbar__menu-item navbar__menu-item--active"><a href="..7repositorio/repositorio.php">Repositorio</a></li>
-              <li class="navbar__menu-item"><a href="../login/registro.php">Registro</a></li>
-              <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/home.php">Iniciar sesión</a></li>
-          </ul>
-          
-          <!-- Botón menú móvil -->
-          <button id="mobile-menu-button" class="navbar__toggle">
-              <i class="fas fa-bars"></i>
-          </button>
-      </div>
-      
-      <!-- Menú móvil desplegable -->
-      <div id="mobile-menu" class="navbar__mobile container hidden">
-          <ul>
-          <li class="navbar__mobile-item"><a href="../inicio/index.php">Inicio</a></li>
-              <li class="navbar__mobile-item navbar__menu-item--active"><a href="..7repositorio/repositorio.php">Repositorio</a></li>
-              <li class="navbar__mobile-item"><a href="../login/registro.php">Registro</a></li>
-              <li class="navbar__mobile-item navbar__menu-item--button"><a href="../login/home.php">Iniciar sesión</a></li>
-          </ul>
-      </div>
+    <div class="container navbar__container">
+      <a href="../inicio/index.php" class="navbar__logo">
+        <i class="fas fa-book-open"></i>
+        El Rincón de ADSO
+      </a>
+      <!-- Navegación para escritorio -->
+      <ul class="navbar__menu">
+        <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
+        <li class="navbar__menu-item navbar__menu-item--active"><a href="../repositorio/repositorio.php">Repositorio</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#buscar">Búsquedas</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#nosotros">Nosotros</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
+        <?php if (!isset($_SESSION['nombre_usuario'])): ?>
+          <li class="navbar__menu-item"><a href="../register/registro.php">Registro</a></li>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['nombre_usuario'])): ?>
+          <!-- Si hay sesión activa, mostrar el icono de perfil -->
+          <li class="navbar__profile">
+            <i class="fas fa-user-circle navbar__profile-icon"></i>
+            <div class="navbar__profile-menu">
+              <a href="../panel/panel-usuario.php">Ver Perfil</a>
+              <form action="../backend/logout.php" method="POST">
+                <button type="submit">Cerrar Sesión</button>
+              </form>
+            </div>
+          </li>
+        <?php else: ?>
+          <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
+        <?php endif; ?>
+      </ul>
+      <!-- Botón menú móvil -->
+      <button id="mobile-menu-button" class="navbar__toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <!-- Menú móvil desplegable -->
+    <div id="mobile-menu" class="navbar__mobile container hidden">
+      <ul>
+        <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
+        <li class="navbar__menu-item navbar__menu-item--active"><a href="../repositorio/repositorio.php">Repositorio</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#buscar">Búsquedas</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#nosotros">Nosotros</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
+        <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
+        <?php if (!isset($_SESSION['nombre_usuario'])): ?>
+          <li class="navbar__mobile-item"><a href="../register/registro.php">Registro</a></li>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['nombre_usuario'])): ?>
+          <li class="navbar__mobile-item"><a href="../perfil/perfil.php">Ver Perfil</a></li>
+          <li class="navbar__mobile-item">
+            <form action="../backend/logout.php" method="POST">
+              <button type="submit" class="navbar__menu-item--button">Cerrar Sesión</button>
+            </form>
+          </li>
+        <?php else: ?>
+          <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
+        <?php endif; ?>
+      </ul>
+    </div>
   </nav>
 
   <!-- Cabecera del Repositorio -->
   <section class="hero">
-  <div class="hero__container">
-    <div class="hero__image">
-      <img src="../inicio/img/repositorio.jpg" alt="Laptop con libros">
+    <div class="hero__container">
+      <div class="hero__image">
+        <img src="../inicio/img/repositorio.jpg" alt="Laptop con libros">
+      </div>
+      <div class="hero__content">
+        <h1 class="hero__title">Repositorio Digital</h1>
+        <p class="hero__description">
+          Explora nuestra colección de recursos educativos orientados a <strong>desarrollo web</strong>,
+          <strong>programación</strong>, <strong>bases de datos</strong> y más.
+        </p>
+        <p class="hero__description">
+          Aprende sobre <code>HTML</code>, <code>JavaScript</code>, <code>PHP</code> y crea tu futuro digital.
+        </p>
+      </div>
     </div>
-    <div class="hero__content">
-      <h1 class="hero__title">Repositorio Digital</h1>
-      <p class="hero__description">
-        Explora nuestra colección de recursos educativos orientados a <strong>desarrollo web</strong>,
-        <strong>programación</strong>, <strong>bases de datos</strong> y más.
-      </p>
-      <p class="hero__description">
-        Aprende sobre <code>HTML</code>, <code>JavaScript</code>, <code>PHP</code> y crea tu futuro digital.
-      </p>
+    <div class="hero__boton-volver">
+      <button class="btn-volver" onclick="history.back()">← Volver</button>
     </div>
-  </div>
-  <div class="hero__boton-volver">
-  <button class="btn-volver" onclick="history.back()">← Volver</button>
-</div>
-</section>
+  </section>
 
 
 
@@ -78,7 +112,7 @@
             <i class="fas fa-search"></i>
           </button>
         </div>
-        
+
         <div class="filter-container">
           <div class="filter-group">
             <label for="resourceType">Tipo de recurso</label>
@@ -89,7 +123,7 @@
               <option value="documents">Documentos</option>
             </select>
           </div>
-          
+
           <div class="filter-group">
             <label for="category">Categoría</label>
             <select id="category">
@@ -101,7 +135,7 @@
               <option value="ai">Inteligencia Artificial</option>
             </select>
           </div>
-          
+
           <div class="filter-group">
             <label for="sortBy">Ordenar por</label>
             <select id="sortBy">
@@ -112,7 +146,7 @@
               <option value="za">Z-A</option>
             </select>
           </div>
-          
+
           <button class="filter-button">
             <i class="fas fa-sliders-h"></i> Filtros avanzados
           </button>
@@ -128,7 +162,7 @@
         <h2 class="section-title">Libros Disponibles</h2>
         <p class="section-description">Explora nuestra colección de libros digitales</p>
       </div>
-      
+
       <div class="resources-grid">
         <?php
         // Array de libros (simulado)
@@ -204,7 +238,7 @@
         }
         ?>
       </div>
-      
+
       <div class="pagination">
         <a href="#" class="pagination__link pagination__link--active">1</a>
         <a href="#" class="pagination__link">2</a>
@@ -225,7 +259,7 @@
         <h2 class="section-title">Videos Educativos</h2>
         <p class="section-description">Tutoriales y cursos en formato video</p>
       </div>
-      
+
       <div class="resources-grid">
         <?php
         // Array de videos (simulado)
@@ -297,7 +331,7 @@
         }
         ?>
       </div>
-      
+
       <div class="pagination">
         <a href="#" class="pagination__link pagination__link--active">1</a>
         <a href="#" class="pagination__link">2</a>
@@ -318,7 +352,7 @@
         <h2 class="section-title">Documentos y Artículos</h2>
         <p class="section-description">Guías, tutoriales y artículos técnicos</p>
       </div>
-      
+
       <div class="resources-grid resources-grid--documents">
         <?php
         // Array de documentos (simulado)
@@ -422,7 +456,7 @@
         }
         ?>
       </div>
-      
+
       <div class="pagination">
         <a href="#" class="pagination__link pagination__link--active">1</a>
         <a href="#" class="pagination__link">2</a>
@@ -457,186 +491,187 @@
   <!-- Scripts -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Toggle mobile menu
-      const mobileMenuButton = document.getElementById('mobile-menu-button');
-      const mobileMenu = document.getElementById('mobile-menu');
-      
-      if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', function() {
-          mobileMenu.classList.toggle('hidden');
-        });
-      }
-      
-      // Tabs functionality
-      const tabButtons = document.querySelectorAll('.tab-button');
-      const resourceSections = document.querySelectorAll('.resources-section');
-      
-      tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          // Remove active class from all buttons
-          tabButtons.forEach(btn => btn.classList.remove('active'));
-          
-          // Add active class to clicked button
-          this.classList.add('active');
-          
-          // Get the tab to show
-          const tabToShow = this.getAttribute('data-tab');
-          
-          if (tabToShow === 'all') {
-            // Show all sections
-            resourceSections.forEach(section => {
-              section.style.display = 'block';
+          // Toggle mobile menu
+          const mobileMenuButton = document.getElementById('mobile-menu-button');
+          const mobileMenu = document.getElementById('mobile-menu');
+
+          if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+              mobileMenu.classList.toggle('hidden');
             });
-          } else {
-            // Hide all sections first
-            resourceSections.forEach(section => {
-              section.style.display = 'none';
-            });
-            
-            // Show only the selected section
-            const sectionToShow = document.getElementById(tabToShow + 'Section');
-            if (sectionToShow) {
-              sectionToShow.style.display = 'block';
-            }
           }
-        });
-      });
-      
-      // Search functionality
-      const searchInput = document.getElementById('searchInput');
-      const resourceCards = document.querySelectorAll('.resource-card');
-      
-      if (searchInput) {
-        searchInput.addEventListener('input', function() {
-          const searchTerm = this.value.toLowerCase();
-          
-          resourceCards.forEach(card => {
-            const title = card.querySelector('.resource-card__title').textContent.toLowerCase();
-            const author = card.querySelector('.resource-card__author').textContent.toLowerCase();
-            const description = card.querySelector('.resource-card__description').textContent.toLowerCase();
-            const category = card.querySelector('.resource-card__category').textContent.toLowerCase();
-            
-            if (title.includes(searchTerm) || 
-                author.includes(searchTerm) || 
-                description.includes(searchTerm) || 
-                category.includes(searchTerm)) {
-              card.style.display = 'block';
-            } else {
-              card.style.display = 'none';
-            }
-          });
-        });
-      }
-      
-      // Filter functionality
-      const resourceTypeSelect = document.getElementById('resourceType');
-      const categorySelect = document.getElementById('category');
-      
-      function applyFilters() {
-        const resourceType = resourceTypeSelect.value;
-        const category = categorySelect.value;
-        
-        resourceCards.forEach(card => {
-          let showByType = true;
-          let showByCategory = true;
-          
-          // Filter by resource type
-          if (resourceType !== 'all') {
-            if (resourceType === 'books' && !card.classList.contains('book-card')) {
-              showByType = false;
-            } else if (resourceType === 'videos' && !card.classList.contains('video-card')) {
-              showByType = false;
-            } else if (resourceType === 'documents' && !card.classList.contains('document-card')) {
-              showByType = false;
-            }
-          }
-          
-          // Filter by category
-          if (category !== 'all') {
-            const cardCategory = card.querySelector('.resource-card__category').textContent.toLowerCase();
-            if (!cardCategory.includes(category.toLowerCase())) {
-              showByCategory = false;
-            }
-          }
-          
-          // Show or hide card based on filters
-          if (showByType && showByCategory) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      }
-      
-      if (resourceTypeSelect && categorySelect) {
-        resourceTypeSelect.addEventListener('change', applyFilters);
-        categorySelect.addEventListener('change', applyFilters);
-      }
-      
-      // Subscription form handling
-      const subscriptionForm = document.getElementById('subscriptionForm');
-      const subscriptionMessage = document.getElementById('subscriptionMessage');
-      const subscribeBtn = document.getElementById('subscribeBtn');
-      
-      if (subscriptionForm) {
-        subscriptionForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-            {
-        subscriptionForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          // Cambiar el botón a estado de carga
-          const originalBtnContent = subscribeBtn.innerHTML;
-          subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-          subscribeBtn.disabled = true;
-          
-          // Obtener el email
-          const emailInput = this.querySelector('input[name="email"]');
-          const email = emailInput.value;
-          
-          // Crear objeto FormData
-          const formData = new FormData();
-          formData.append('email', email);
-          
-          // Enviar solicitud AJAX
-          fetch('procesar-suscripcion.php', {
-              method: 'POST',
-              body: formData
-          })
-          .then(response => response.json())
-          .then(data => {
-              // Mostrar mensaje
-              subscriptionMessage.textContent = data.message;
-              subscriptionMessage.className = 'footer__message footer__message--' + data.status;
-              
-              // Si fue exitoso, limpiar el campo
-              if (data.status === 'success') {
-                  emailInput.value = '';
+
+          // Tabs functionality
+          const tabButtons = document.querySelectorAll('.tab-button');
+          const resourceSections = document.querySelectorAll('.resources-section');
+
+          tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              // Remove active class from all buttons
+              tabButtons.forEach(btn => btn.classList.remove('active'));
+
+              // Add active class to clicked button
+              this.classList.add('active');
+
+              // Get the tab to show
+              const tabToShow = this.getAttribute('data-tab');
+
+              if (tabToShow === 'all') {
+                // Show all sections
+                resourceSections.forEach(section => {
+                  section.style.display = 'block';
+                });
+              } else {
+                // Hide all sections first
+                resourceSections.forEach(section => {
+                  section.style.display = 'none';
+                });
+
+                // Show only the selected section
+                const sectionToShow = document.getElementById(tabToShow + 'Section');
+                if (sectionToShow) {
+                  sectionToShow.style.display = 'block';
+                }
               }
-              
-              // Restaurar el botón
-              subscribeBtn.innerHTML = originalBtnContent;
-              subscribeBtn.disabled = false;
-              
-              // Ocultar el mensaje después de 5 segundos
-              setTimeout(() => {
-                  subscriptionMessage.textContent = '';
-                  subscriptionMessage.className = 'footer__message';
-              }, 5000);
-          })
-          .catch(error => {
-              console.error('Error:', error);
-              subscriptionMessage.textContent = 'Ha ocurrido un error. Por favor, inténtalo de nuevo.';
-              subscriptionMessage.className = 'footer__message footer__message--error';
-              
-              // Restaurar el botón
-              subscribeBtn.innerHTML = originalBtnContent;
-              subscribeBtn.disabled = false;
+            });
           });
-        });
-      }
-    });
+
+          // Search functionality
+          const searchInput = document.getElementById('searchInput');
+          const resourceCards = document.querySelectorAll('.resource-card');
+
+          if (searchInput) {
+            searchInput.addEventListener('input', function() {
+              const searchTerm = this.value.toLowerCase();
+
+              resourceCards.forEach(card => {
+                const title = card.querySelector('.resource-card__title').textContent.toLowerCase();
+                const author = card.querySelector('.resource-card__author').textContent.toLowerCase();
+                const description = card.querySelector('.resource-card__description').textContent.toLowerCase();
+                const category = card.querySelector('.resource-card__category').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) ||
+                  author.includes(searchTerm) ||
+                  description.includes(searchTerm) ||
+                  category.includes(searchTerm)) {
+                  card.style.display = 'block';
+                } else {
+                  card.style.display = 'none';
+                }
+              });
+            });
+          }
+
+          // Filter functionality
+          const resourceTypeSelect = document.getElementById('resourceType');
+          const categorySelect = document.getElementById('category');
+
+          function applyFilters() {
+            const resourceType = resourceTypeSelect.value;
+            const category = categorySelect.value;
+
+            resourceCards.forEach(card => {
+              let showByType = true;
+              let showByCategory = true;
+
+              // Filter by resource type
+              if (resourceType !== 'all') {
+                if (resourceType === 'books' && !card.classList.contains('book-card')) {
+                  showByType = false;
+                } else if (resourceType === 'videos' && !card.classList.contains('video-card')) {
+                  showByType = false;
+                } else if (resourceType === 'documents' && !card.classList.contains('document-card')) {
+                  showByType = false;
+                }
+              }
+
+              // Filter by category
+              if (category !== 'all') {
+                const cardCategory = card.querySelector('.resource-card__category').textContent.toLowerCase();
+                if (!cardCategory.includes(category.toLowerCase())) {
+                  showByCategory = false;
+                }
+              }
+
+              // Show or hide card based on filters
+              if (showByType && showByCategory) {
+                card.style.display = 'block';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+          }
+
+          if (resourceTypeSelect && categorySelect) {
+            resourceTypeSelect.addEventListener('change', applyFilters);
+            categorySelect.addEventListener('change', applyFilters);
+          }
+
+          // Subscription form handling
+          const subscriptionForm = document.getElementById('subscriptionForm');
+          const subscriptionMessage = document.getElementById('subscriptionMessage');
+          const subscribeBtn = document.getElementById('subscribeBtn');
+
+          if (subscriptionForm) {
+            subscriptionForm.addEventListener('submit', function(e) {
+              e.preventDefault();
+              {
+                subscriptionForm.addEventListener('submit', function(e) {
+                  e.preventDefault();
+
+                  // Cambiar el botón a estado de carga
+                  const originalBtnContent = subscribeBtn.innerHTML;
+                  subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                  subscribeBtn.disabled = true;
+
+                  // Obtener el email
+                  const emailInput = this.querySelector('input[name="email"]');
+                  const email = emailInput.value;
+
+                  // Crear objeto FormData
+                  const formData = new FormData();
+                  formData.append('email', email);
+
+                  // Enviar solicitud AJAX
+                  fetch('procesar-suscripcion.php', {
+                      method: 'POST',
+                      body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                      // Mostrar mensaje
+                      subscriptionMessage.textContent = data.message;
+                      subscriptionMessage.className = 'footer__message footer__message--' + data.status;
+
+                      // Si fue exitoso, limpiar el campo
+                      if (data.status === 'success') {
+                        emailInput.value = '';
+                      }
+
+                      // Restaurar el botón
+                      subscribeBtn.innerHTML = originalBtnContent;
+                      subscribeBtn.disabled = false;
+
+                      // Ocultar el mensaje después de 5 segundos
+                      setTimeout(() => {
+                        subscriptionMessage.textContent = '';
+                        subscriptionMessage.className = 'footer__message';
+                      }, 5000);
+                    })
+                    .catch(error => {
+                      console.error('Error:', error);
+                      subscriptionMessage.textContent = 'Ha ocurrido un error. Por favor, inténtalo de nuevo.';
+                      subscriptionMessage.className = 'footer__message footer__message--error';
+
+                      // Restaurar el botón
+                      subscribeBtn.innerHTML = originalBtnContent;
+                      subscribeBtn.disabled = false;
+                    });
+                });
+              }
+            });
   </script>
 </body>
+
 </html>
 <?
