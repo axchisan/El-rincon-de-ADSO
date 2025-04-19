@@ -8,14 +8,15 @@ require_once "../../database/configuracion.php";
     <meta charset="UTF-8">
     <title>Registro | El Rincón ADSO</title>
     <link rel="icon" href="./img/icono.png" type="image/png">
-    <link rel="stylesheet" href="registro.css">
+    <link rel="stylesheet" href="./css/registro.css">
+    
 </head>
 <body>
     <a href="../inicio/index.php" class="btn-inicio" title="Volver al inicio">🏠</a>
     <div class="contenedor-registro">
         <div class="registro-form">
-            <img src="./img/logo.png" alt="Logo institucional" class="logo-login">
-            <form action="../../backend/register.php" method="POST" id="registro-form">
+            <img src="../login/img/logo.png" alt="Logo institucional" class="logo-login">
+            <form action="../../backend/register/register.php" method="POST" id="registro-form">
                 <input type="text" name="nombre" placeholder="Nombre completo" required>
                 <input type="text" name="nombre_usuario" placeholder="Nombre de usuario" required>
                 <input type="text" name="documento" placeholder="Número de documento" required>
@@ -39,7 +40,7 @@ require_once "../../database/configuracion.php";
 
             const formData = new FormData(this);
             try {
-                const response = await fetch('../../backend/register.php', {
+                const response = await fetch('../../backend/register/register.php', {
                     method: 'POST',
                     body: formData
                 });

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Usuario - El Rincón de ADSO</title>
   <link rel="icon" type="image/png" href="../inicio/img/icono.png">
-  <link rel="stylesheet" href="..//panel/styles-panel.css">
+  <link rel="stylesheet" href="./css/styles-panel.css">
   <!-- Cargar Font Awesome de manera optimizada -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
         <li class="navbar__menu-item"><a href="index.php">Inicio</a></li>
         <li class="navbar__menu-item"><a href="repositorio.php">Repositorio</a></li>
         <li class="navbar__menu-item"><a href="panel-usuario.php">Panel</a></li>
-        <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/logout.php">Cerrar sesión</a></li>
+        <li class="navbar__menu-item navbar__menu-item--button"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
       
       <!-- Botón menú móvil -->
@@ -39,7 +39,7 @@
         <li class="navbar__mobile-item"><a href="index.php">Inicio</a></li>
         <li class="navbar__mobile-item"><a href="repositorio.php">Repositorio</a></li>
         <li class="navbar__mobile-item navbar__mobile-item--active"><a href="panel-usuario.php">Panel</a></li>
-        <li class="navbar__mobile-item"><a href="../login/logout.php">Cerrar sesión</a></li>
+        <li class="navbar__mobile-item"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
     </div>
   </nav>

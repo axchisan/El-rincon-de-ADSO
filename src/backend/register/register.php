@@ -1,14 +1,17 @@
 <?php
-require_once "../database/conexionDB.php";
+require_once "../../database/conexionDB.php";
 
-class Registro {
+class Registro
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = conexionDB::getConexion();
     }
 
-    public function registrarUsuario($nombre, $nombre_usuario, $documento, $edad, $correo, $ficha, $contrasena) {
+    public function registrarUsuario($nombre, $nombre_usuario, $documento, $edad, $correo, $ficha, $contrasena)
+    {
 
         if (empty($nombre) || empty($nombre_usuario) || empty($documento) || empty($edad) || empty($correo) || empty($ficha) || empty($contrasena)) {
             return ["success" => false, "message" => "Todos los campos son obligatorios"];
@@ -77,4 +80,3 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     echo json_encode($resultado);
     exit;
 }
-?>
