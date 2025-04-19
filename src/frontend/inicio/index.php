@@ -58,7 +58,7 @@
               <h1 class="hero__title">Tu biblioteca digital al alcance de todos</h1>
               <p class="hero__description">Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrarás todo lo necesario para fortalecer tus habilidades, expandir tus conocimientos y avanzar con confianza en tu camino como programador. Todo, reunido en un solo lugar.</p>
               <div class="hero__buttons">
-                  <a href="#" class="btn btn--secondary">Explorar Repositorio</a>
+                  <a href="../repositorio/repositorio.php"class="btn btn--secondary">Explorar Repositorio</a>
               </div>
           </div>
           <div class="hero__image">

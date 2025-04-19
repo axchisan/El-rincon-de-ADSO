@@ -421,6 +421,21 @@ p {
     display: none !important;
   }
 }
+.btn-volver {
+  background-color: #5e3c0d;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-volver:hover {
+  background-color: #7a4e12;
+}
 
 /* Hero con fondo de café claro */
 .hero {
