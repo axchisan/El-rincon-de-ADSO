@@ -14,7 +14,6 @@ try {
     $usuario_id = $_SESSION['usuario_id'];
     $documento_id = $_POST['documento_id'];
 
-    // Verificar si el recurso ya está en favoritos
     $query = "SELECT COUNT(*) FROM favoritos WHERE usuario_id = :usuario_id AND documento_id = :documento_id";
     $stmt = $db->prepare($query);
     $stmt->execute([':usuario_id' => $usuario_id, ':documento_id' => $documento_id]);
@@ -23,7 +22,7 @@ try {
         exit;
     }
 
-    // Añadir a favoritos
+   
     $query = "INSERT INTO favoritos (usuario_id, documento_id, fecha_agregado) VALUES (:usuario_id, :documento_id, NOW())";
     $stmt = $db->prepare($query);
     $stmt->execute([':usuario_id' => $usuario_id, ':documento_id' => $documento_id]);

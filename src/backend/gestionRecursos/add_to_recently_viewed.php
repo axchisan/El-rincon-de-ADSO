@@ -25,19 +25,17 @@ try {
     $db = conexionDB::getConexion();
     $usuario_id = $_SESSION['usuario_id'];
 
-    // Verificar si el recurso ya está en vistos recientemente
     $query = "SELECT COUNT(*) FROM recientemente_vistos WHERE usuario_id = :usuario_id AND documento_id = :documento_id";
     $stmt = $db->prepare($query);
     $stmt->execute([':usuario_id' => $usuario_id, ':documento_id' => $documento_id]);
     $exists = $stmt->fetchColumn();
 
     if ($exists) {
-        // Actualizar la fecha de visualización
+      
         $query = "UPDATE recientemente_vistos 
                   SET fecha_vista = CURRENT_TIMESTAMP 
                   WHERE usuario_id = :usuario_id AND documento_id = :documento_id";
     } else {
-        // Insertar nueva entrada
         $query = "INSERT INTO recientemente_vistos (usuario_id, documento_id, fecha_vista) 
                   VALUES (:usuario_id, :documento_id, CURRENT_TIMESTAMP)";
     }

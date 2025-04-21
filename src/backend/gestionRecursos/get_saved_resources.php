@@ -12,8 +12,6 @@ if (!isset($_SESSION['usuario_id'])) {
 try {
     $db = conexionDB::getConexion();
     $usuario_id = $_SESSION['usuario_id'];
-
-    // Consulta para obtener los recursos guardados
     $query = "SELECT d.id, d.titulo, d.descripcion, d.autor, d.tipo, d.url_archivo, d.portada, 
                      d.fecha_publicacion, d.relevancia, d.visibilidad, d.idioma, d.licencia, d.estado,
                      s.fecha_guardado

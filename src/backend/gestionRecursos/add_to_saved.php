@@ -24,8 +24,6 @@ if (empty($documento_id)) {
 try {
     $db = conexionDB::getConexion();
     $usuario_id = $_SESSION['usuario_id'];
-
-    // Verificar si el recurso ya está guardado
     $query = "SELECT COUNT(*) FROM guardados WHERE usuario_id = :usuario_id AND documento_id = :documento_id";
     $stmt = $db->prepare($query);
     $stmt->execute([':usuario_id' => $usuario_id, ':documento_id' => $documento_id]);
@@ -36,7 +34,6 @@ try {
         exit;
     }
 
-    // Guardar el recurso
     $query = "INSERT INTO guardados (usuario_id, documento_id, fecha_guardado) 
               VALUES (:usuario_id, :documento_id, CURRENT_TIMESTAMP)";
     $stmt = $db->prepare($query);

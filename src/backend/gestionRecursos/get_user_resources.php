@@ -12,8 +12,6 @@ if (!isset($_SESSION['usuario_id'])) {
 try {
     $db = conexionDB::getConexion();
     $usuario_id = $_SESSION['usuario_id'];
-
-    // Consulta para obtener los documentos del usuario
     $query = "SELECT d.id, d.titulo, d.descripcion, d.autor, d.tipo, d.url_archivo, d.portada, 
                      d.fecha_publicacion, d.relevancia, d.visibilidad, d.idioma, d.licencia, d.estado
               FROM documentos d
@@ -23,11 +21,9 @@ try {
     $stmt->execute([':autor_id' => $usuario_id]);
     $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Para cada documento, obtener sus categorías
     foreach ($resources as &$resource) {
         $documento_id = $resource['id'];
         
-        // Obtener categorías
         $query = "SELECT c.nombre 
                   FROM documento_categorias dc
                   JOIN categorias c ON dc.categoria_id = c.id
