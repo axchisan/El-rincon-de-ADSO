@@ -7,54 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repositorio de Libros</title>
     <link rel="stylesheet" href="./css/styles.css">
-    <!-- Cargar Font Awesome de manera optimizada -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <!-- Carga diferida de AOS -->
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" media="print" onload="this.media='all'">
-    <style>
-        /* Estilos para el menú de perfil */
-        .navbar__profile {
-            position: relative;
-            display: inline-block;
-        }
-
-        .navbar__profile-icon {
-            font-size: 1.5rem;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .navbar__profile-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            z-index: 1000;
-        }
-
-        .navbar__profile-menu.active {
-            display: block;
-        }
-
-        .navbar__profile-menu a,
-        .navbar__profile-menu form button {
-            display: block;
-            padding: 10px 20px;
-            color: #333;
-            text-decoration: none;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-
-        .navbar__profile-menu a:hover,
-        .navbar__profile-menu form button:hover {
-            background-color: #f0f0f0;
-        }
-    </style>
 </head>
 
 <body>
@@ -143,7 +97,7 @@
         <div class="hero__wave"></div>
     </section>
 
-    <!-- Nueva Sección de Búsqueda -->
+    <!-- Sección de Búsqueda -->
     <section id="buscar" class="section section--search">
         <div class="container">
             <div class="search">
@@ -305,7 +259,7 @@
             </div>
         </section>
 
-        <!-- Nueva Sección de Comunidad -->
+        <!-- Sección de Comunidad -->
         <section id="comunidad" class="section section--community">
             <div class="container">
                 <div class="community__header">

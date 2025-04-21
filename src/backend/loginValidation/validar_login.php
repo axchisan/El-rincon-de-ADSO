@@ -2,19 +2,19 @@
 session_start();
 require_once "../../database/conexionDB.php";
 
+
+session_regenerate_id(true);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $input_usuario = trim($_POST['usuario'] ?? ''); // Puede ser correo o nombre de usuario
     $contrasena = trim($_POST['clave'] ?? '');
 
-    
     if (empty($input_usuario) || empty($contrasena)) {
         $error = "Por favor, completa todos los campos.";
     } else {
         try {
-            
             $db = conexionDB::getConexion();
 
-            
             $sql = "SELECT id, nombre_usuario, correo, contrasena, rol FROM usuarios WHERE nombre_usuario = :input OR correo = :input";
             $stmt = $db->prepare($sql);
             $stmt->execute([':input' => $input_usuario]);
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($usuario['rol'] === "user") {
                     header("Location: ../../frontend/inicio/index.php");
                 } else if ($usuario['rol'] === "admin") {
-                    header("Location: ../../frontend/inicio/panel-admin.php"); // en caso de admin
+                    header("Location: ../../frontend/inicio/panel-admin.php"); //por si implementamos admins
                 }
                 exit();
             } else {
@@ -41,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    
     $_SESSION['error'] = $error;
     header("Location: ../../frontend/login/login.php");
     exit();
