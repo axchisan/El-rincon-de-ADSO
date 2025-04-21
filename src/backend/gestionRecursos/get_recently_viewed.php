@@ -13,21 +13,22 @@ try {
     $db = conexionDB::getConexion();
     $usuario_id = $_SESSION['usuario_id'];
 
-    // Consulta para obtener los documentos del usuario
+    // Consulta para obtener los recursos vistos recientemente
     $query = "SELECT d.id, d.titulo, d.descripcion, d.autor, d.tipo, d.url_archivo, d.portada, 
-                     d.fecha_publicacion, d.relevancia, d.visibilidad, d.idioma, d.licencia, d.estado
+                     d.fecha_publicacion, d.relevancia, d.visibilidad, d.idioma, d.licencia, d.estado,
+                     rv.fecha_vista
               FROM documentos d
-              WHERE d.autor_id = :autor_id
-              ORDER BY d.fecha_publicacion DESC";
+              JOIN recientemente_vistos rv ON d.id = rv.documento_id
+              WHERE rv.usuario_id = :usuario_id
+              ORDER BY rv.fecha_vista DESC
+              LIMIT 10";
     $stmt = $db->prepare($query);
-    $stmt->execute([':autor_id' => $usuario_id]);
+    $stmt->execute([':usuario_id' => $usuario_id]);
     $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Para cada documento, obtener sus categorías
+    // Obtener categorías para cada documento
     foreach ($resources as &$resource) {
         $documento_id = $resource['id'];
-        
-        // Obtener categorías
         $query = "SELECT c.nombre 
                   FROM documento_categorias dc
                   JOIN categorias c ON dc.categoria_id = c.id
@@ -37,7 +38,6 @@ try {
         $categorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
         $resource['categorias'] = $categorias ?: [];
 
-        // Si el recurso es un video, incluir la duración
         if ($resource['tipo'] === 'video') {
             $query = "SELECT duracion FROM documentos WHERE id = :documento_id";
             $stmt = $db->prepare($query);
