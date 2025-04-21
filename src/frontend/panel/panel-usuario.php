@@ -290,6 +290,7 @@ try {
                   <div class="form-group">
                     <label for="resource-status">Estado *</label>
                     <select id="resource-status" name="status" required>
+                      <option value="Publicado">Publicado</option>
                       <option value="Draft">Borrador</option>
                       <option value="Pending Review">Enviar para Revisión</option>
                     </select>
@@ -809,7 +810,7 @@ try {
         });
       });
 
-      // Cargar inicialmente los favoritos al abrir la página
+      
       loadUserFavorites();
 
       const modal = document.getElementById('upload-modal');
@@ -1163,7 +1164,7 @@ try {
                       .then(data => {
                         if (data.success) {
                           alert(data.message);
-                          loadUserFavorites(); // Recargar la lista de favoritos
+                          loadUserFavorites(); 
                         } else {
                           alert(data.message);
                         }
@@ -1229,7 +1230,7 @@ try {
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                       },
-                      body: `documento_id=${documentoId}` // Corrección: Formato correcto de la cadena
+                      body: `documento_id=${documentoId}` 
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -1254,13 +1255,13 @@ try {
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                       },
-                      body: `documento_id=${documentoId}` // Corrección: Formato correcto de la cadena
+                      body: `documento_id=${documentoId}` 
                     })
                     .then(response => response.json())
                     .then(data => {
                       if (data.success) {
                         alert(data.message);
-                        loadRecentlyViewed(); // Recargar la lista
+                        loadRecentlyViewed();
                       } else {
                         alert(data.message);
                       }
@@ -1325,13 +1326,13 @@ try {
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                       },
-                      body: `documento_id=${documentoId}` // Corrección: Formato correcto de la cadena
+                      body: `documento_id=${documentoId}` 
                     })
                     .then(response => response.json())
                     .then(data => {
                       if (data.success) {
                         console.log(data.message);
-                        alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
+                        alert('Vista registrada. Aquí iríca la lógica para ver el recurso.');
                       } else {
                         alert(data.message);
                       }
@@ -1351,13 +1352,13 @@ try {
                         headers: {
                           'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `documento_id=${documentoId}` // Corrección: Formato correcto de la cadena
+                        body: `documento_id=${documentoId}` 
                       })
                       .then(response => response.json())
                       .then(data => {
                         if (data.success) {
                           alert(data.message);
-                          loadSavedResources(); // Recargar la lista de guardados
+                          loadSavedResources();
                         } else {
                           alert(data.message);
                         }
@@ -1424,7 +1425,7 @@ try {
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                       },
-                      body: `documento_id=${documentoId}` // Corrección: Formato correcto de la cadena
+                      body: `documento_id=${documentoId}` 
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -1459,7 +1460,7 @@ try {
                         headers: {
                           'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `documento_id=${documentoId}` // Corrección: Formato correcto de la cadena
+                        body: `documento_id=${documentoId}` 
                       })
                       .then(response => response.json())
                       .then(data => {
