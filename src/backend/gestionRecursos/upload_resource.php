@@ -76,7 +76,7 @@ if (!move_uploaded_file($image['tmp_name'], $image_path)) {
     exit;
 }
 
-$image_url = '/uploads/' . $image_name;
+$image_url = '../../uploads/' . $image_name;
 
 
 $file_url = null;
