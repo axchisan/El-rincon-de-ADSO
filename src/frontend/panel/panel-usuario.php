@@ -290,6 +290,7 @@ try {
                   <div class="form-group">
                     <label for="resource-status">Estado *</label>
                     <select id="resource-status" name="status" required>
+                      <option value="Publicado">Publicado</option>
                       <option value="Draft">Borrador</option>
                       <option value="Pending Review">Enviar para Revisión</option>
                     </select>
