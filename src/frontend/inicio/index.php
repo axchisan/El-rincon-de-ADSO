@@ -7,9 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repositorio de Libros</title>
     <link rel="stylesheet" href="./css/styles.css">
-    <!-- Cargar Font Awesome de manera optimizada -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <!-- Carga diferida de AOS -->
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" media="print" onload="this.media='all'">
 </head>
 
@@ -99,7 +97,7 @@
         <div class="hero__wave"></div>
     </section>
 
-    <!-- Nueva Sección de Búsqueda -->
+    <!-- Sección de Búsqueda -->
     <section id="buscar" class="section section--search">
         <div class="container">
             <div class="search">
@@ -261,7 +259,7 @@
             </div>
         </section>
 
-        <!-- Nueva Sección de Comunidad -->
+        <!-- Sección de Comunidad -->
         <section id="comunidad" class="section section--community">
             <div class="container">
                 <div class="community__header">

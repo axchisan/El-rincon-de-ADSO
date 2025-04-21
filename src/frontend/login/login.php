@@ -4,10 +4,7 @@
   <title>Inicio de sesión</title>
   <link rel="icon" href="./img/icono.png" type="image/png">
   <link rel="stylesheet" href="./css/estudiantes.css">
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap JS (para que el carrusel funcione) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+  <link href="../lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
   <div id="carouselFondo" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
@@ -45,5 +42,6 @@
       Volver a la página principal
     </button>
   </div>
+  <script src="../lib/Bootstrap/js/bootstrap.bundle.min.js" defer></script>
 </body>
 </html>
