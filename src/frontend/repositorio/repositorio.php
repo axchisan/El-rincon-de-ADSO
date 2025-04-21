@@ -5,25 +5,28 @@ require_once "../../database/conexionDB.php";
 // Verificar si el usuario está logueado
 $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 $nombre_usuario = '';
-if ($usuario_id) {
-    try {
-        $db = conexionDB::getConexion();
-        $query = "SELECT nombre_usuario FROM usuarios WHERE id = :id";
-        $stmt = $db->prepare($query);
-        $stmt->execute([':id' => $usuario_id]);
-        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($usuario) {
-            $nombre_usuario = htmlspecialchars($usuario['nombre_usuario']);
-        } else {
-            session_destroy();
-            header("Location: ../inicio/index.php");
-            exit();
-        }
-    } catch (PDOException $e) {
+if (!$usuario_id) {
+    header("Location: ../login/login.php");
+    exit();
+}
+
+try {
+    $db = conexionDB::getConexion();
+    $query = "SELECT nombre_usuario FROM usuarios WHERE id = :id";
+    $stmt = $db->prepare($query);
+    $stmt->execute([':id' => $usuario_id]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($usuario) {
+        $nombre_usuario = htmlspecialchars($usuario['nombre_usuario']);
+    } else {
         session_destroy();
         header("Location: ../inicio/index.php");
         exit();
     }
+} catch (PDOException $e) {
+    session_destroy();
+    header("Location: ../inicio/index.php");
+    exit();
 }
 ?>
 
@@ -56,23 +59,15 @@ if ($usuario_id) {
                 <li class="navbar__menu-item"><a href="../inicio/index.php#nosotros">Nosotros</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
-                <?php if (!$usuario_id): ?>
-                    <li class="navbar__menu-item"><a href="../register/registro.php">Registro</a></li>
-                <?php endif; ?>
-                <?php if ($usuario_id): ?>
-                    <!-- Si hay sesión activa, mostrar el icono de perfil -->
-                    <li class="navbar__profile">
-                        <i class="fas fa-user-circle navbar__profile-icon"></i>
-                        <div class="navbar__profile-menu">
-                            <a href="../panel/panel-usuario.php">Ver Perfil</a>
-                            <form action="../../backend/logout.php" method="POST">
-                                <button type="submit">Cerrar Sesión</button>
-                            </form>
-                        </div>
-                    </li>
-                <?php else: ?>
-                    <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
-                <?php endif; ?>
+                <li class="navbar__profile">
+                    <i class="fas fa-user-circle navbar__profile-icon"></i>
+                    <div class="navbar__profile-menu">
+                        <a href="../panel/panel-usuario.php">Ver Perfil</a>
+                        <form action="../../backend/logout.php" method="POST">
+                            <button type="submit">Cerrar Sesión</button>
+                        </form>
+                    </div>
+                </li>
             </ul>
             <!-- Botón menú móvil -->
             <button id="mobile-menu-button" class="navbar__toggle">
@@ -88,19 +83,12 @@ if ($usuario_id) {
                 <li class="navbar__menu-item"><a href="../inicio/index.php#nosotros">Nosotros</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
-                <?php if (!$usuario_id): ?>
-                    <li class="navbar__mobile-item"><a href="../register/registro.php">Registro</a></li>
-                <?php endif; ?>
-                <?php if ($usuario_id): ?>
-                    <li class="navbar__mobile-item"><a href="../panel/panel-usuario.php">Ver Perfil</a></li>
-                    <li class="navbar__mobile-item">
-                        <form action="../../backend/logout.php" method="POST">
-                            <button type="submit" class="navbar__menu-item--button">Cerrar Sesión</button>
-                        </form>
-                    </li>
-                <?php else: ?>
-                    <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
-                <?php endif; ?>
+                <li class="navbar__mobile-item"><a href="../panel/panel-usuario.php">Ver Perfil</a></li>
+                <li class="navbar__mobile-item">
+                    <form action="../../backend/logout.php" method="POST">
+                        <button type="submit" class="navbar__menu-item--button">Cerrar Sesión</button>
+                    </form>
+                </li>
             </ul>
         </div>
     </nav>
@@ -258,25 +246,6 @@ if ($usuario_id) {
         </div>
     </section>
 
-    <!-- Banner de registro -->
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-container">
-                <div class="cta-content">
-                    <h2 class="cta-title">¿Quieres acceder a todos los recursos?</h2>
-                    <p class="cta-description">Regístrate o inicia sesión para descargar libros, ver videos y acceder a todos los documentos de nuestro repositorio.</p>
-                    <div class="cta-buttons">
-                        <a href="../register/registro.php" class="btn btn--primary btn--lg">Crear cuenta</a>
-                        <a href="../login/login.php" class="btn btn--outline btn--lg">Iniciar sesión</a>
-                    </div>
-                </div>
-                <div class="cta-image">
-                    <img src="https://cdn-icons-png.flaticon.com/512/10616/10616326.png" alt="Acceso a recursos" loading="lazy">
-                </div>
-            </div>
-        </div>
-    </section>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -405,19 +374,13 @@ if ($usuario_id) {
                                             <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
                                                 <i class="fas fa-book-reader"></i> Leer ahora
                                             </a>
-                                            ${<?php echo json_encode($usuario_id); ?> ? `
-                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            ` : `
-                                                <a href="../inicio/index.php" class="btn btn--outline">
-                                                    <i class="fas fa-heart"></i> Inicia sesión para añadir a favoritos
-                                                </a>
-                                            `}
+                                            <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                                <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                                ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                            </a>
+                                            <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                                <i class="fas fa-bookmark"></i> Guardar para después
+                                            </a>
                                         </div>
                                     </div>
                                 `;
@@ -455,19 +418,13 @@ if ($usuario_id) {
                                             <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
                                                 <i class="fas fa-play-circle"></i> Ver video
                                             </a>
-                                            ${<?php echo json_encode($usuario_id); ?> ? `
-                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            ` : `
-                                                <a href="../inicio/index.php" class="btn btn--outline">
-                                                    <i class="fas fa-heart"></i> Inicia sesión para añadir a favoritos
-                                                </a>
-                                            `}
+                                            <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                                <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                                ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                            </a>
+                                            <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                                <i class="fas fa-bookmark"></i> Guardar para después
+                                            </a>
                                         </div>
                                     </div>
                                 `;
@@ -515,19 +472,13 @@ if ($usuario_id) {
                                             <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
                                                 <i class="fas fa-eye"></i> Ver documento
                                             </a>
-                                            ${<?php echo json_encode($usuario_id); ?> ? `
-                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            ` : `
-                                                <a href="../inicio/index.php" class="btn btn--outline">
-                                                    <i class="fas fa-heart"></i> Inicia sesión para añadir a favoritos
-                                                </a>
-                                            `}
+                                            <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                                <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                                ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                            </a>
+                                            <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                                <i class="fas fa-bookmark"></i> Guardar para después
+                                            </a>
                                         </div>
                                     </div>
                                 `;
@@ -541,27 +492,23 @@ if ($usuario_id) {
                                 button.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
-                                    <?php if ($usuario_id): ?>
-                                        fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/x-www-form-urlencoded'
-                                            },
-                                            body: `documento_id=${documentoId}`
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                console.log(data.message);
-                                                alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
-                                            } else {
-                                                alert(data.message);
-                                            }
-                                        })
-                                        .catch(error => console.error('Error al registrar vista:', error));
-                                    <?php else: ?>
-                                        alert('Inicia sesión para registrar tu actividad.');
-                                    <?php endif; ?>
+                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded'
+                                        },
+                                        body: `documento_id=${documentoId}`
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            console.log(data.message);
+                                            alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
+                                        } else {
+                                            alert(data.message);
+                                        }
+                                    })
+                                    .catch(error => console.error('Error al registrar vista:', error));
                                 });
                             });
 
