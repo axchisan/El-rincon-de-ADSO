@@ -44,7 +44,7 @@ try {
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
         if (!in_array($file_type, $allowed_types)) {
             $_SESSION['error_message'] = "Solo se permiten imágenes en formato JPEG, PNG o GIF.";
-            header("Location:../../frontend/panel/panel-usuario.php");
+            header("Location: ../../frontend/panel/panel-usuario.php");
             exit();
         }
 
@@ -70,14 +70,16 @@ try {
         // Mover el archivo al directorio uploads
         if (move_uploaded_file($file_tmp, $destination)) {
             $imagen_path = 'uploads/' . $new_file_name;
+            error_log("Imagen guardada en: " . $destination); // Depuración
         } else {
             $_SESSION['error_message'] = "Error al subir la imagen. Intenta de nuevo.";
+            error_log("Error al mover la imagen: " . $file_tmp . " a " . $destination); // Depuración
             header("Location: ../../frontend/panel/panel-usuario.php");
             exit();
         }
     }
 
-    // Preparar y ejecutar la consulta de actualización
+    // Preparar la consulta de actualización
     $query = "UPDATE usuarios SET nombre_usuario = :nombre, correo = :correo, telefono = :telefono, profesion = :profesion, bio = :bio";
     $params = [
         ':nombre' => $nombre,
@@ -97,12 +99,26 @@ try {
     $query .= " WHERE id = :id";
     $stmt = $db->prepare($query);
     $stmt->execute($params);
-
-    // Mensaje de éxito
-    $_SESSION['success_message'] = "Datos actualizados correctamente.";
-    header("Location: ../../frontend/panel/panel-usuario.php");
+    error_log("Consulta ejecutada. Imagen path: " . ($imagen_path ?? 'No se subió imagen')); // Depuración
+    
+    // Mostrar ventana emergente y redirigir
+    echo '<!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="refresh" content="0;url=../../frontend/panel/panel-usuario.php">
+        <title>Redirigiendo...</title>
+        <script>
+            alert("Datos guardados correctamente.");
+            window.location.href = "../../frontend/panel/panel-usuario.php";
+        </script>
+    </head>
+    <body>
+        <p>Redirigiendo...</p>
+    </body>
+    </html>';
     exit();
-
+    
 } catch (PDOException $e) {
     // Manejo de errores
     $_SESSION['error_message'] = "Error al actualizar los datos: " . $e->getMessage();

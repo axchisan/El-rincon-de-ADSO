@@ -1,5 +1,10 @@
 <?php
 session_start();
+// Evitar caché de la página
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 require_once "../../database/conexionDB.php";
 
 if (!isset($_SESSION['usuario_id'])) {
@@ -25,7 +30,7 @@ try {
     $ultima_conexion = $usuario['ultima_conexion']
         ? date('d \d\e F, Y', strtotime($usuario['ultima_conexion']))
         : 'Sin registro';
-    $imagen_perfil = $usuario['imagen'] ? $usuario['imagen'] : 'https://i.pravatar.cc/150?img=12';
+        $imagen_perfil = $usuario['imagen'] ? "../../backend/perfil/" . $usuario['imagen'] . "?v=" . time() : 'https://i.pravatar.cc/150?img=12';
 } catch (PDOException $e) {
     session_destroy();
     header("Location: ../inicio/index.php");
@@ -591,79 +596,77 @@ try {
                     <button class="sub-tab" data-subtab="notificaciones">Notificaciones</button>
                 </div>
                 <div class="sub-content">
-                    <div id="datos-personales" class="sub-panel active">
-                        <div class="panel-header-secondary">
-                            <h2>Datos Personales</h2>
-                            <p>Gestiona tu información personal</p>
-                        </div>
-                        <!-- Mostrar mensajes de éxito o error -->
-                        <?php if (isset($_SESSION['success_message'])): ?>
-                            <div class="success-message" style="display: block; margin-bottom: 20px; color: green;">
-                                <?php echo htmlspecialchars($_SESSION['success_message']); ?>
-                            </div>
-                            <?php unset($_SESSION['success_message']); ?>
-                        <?php endif; ?>
-                        <?php if (isset($_SESSION['error_message'])): ?>
-                            <div class="error-message" style="display: block; margin-bottom: 20px; color: red;">
-                                <?php echo htmlspecialchars($_SESSION['error_message']); ?>
-                            </div>
-                            <?php unset($_SESSION['error_message']); ?>
-                        <?php endif; ?>
-                        <div class="profile-container">
-                            <div class="profile-sidebar">
-                                <div class="profile-avatar">
-                                    <img id="profile-image-preview" src="<?php echo $imagen_perfil; ?>" alt="Tu avatar">
-                                    <button type="button" class="change-avatar-btn" onclick="document.getElementById('profile-image').click();"><i class="fas fa-camera"></i></button>
-                                </div>
-                                <div class="profile-badges">
-                                    <h4>Insignias</h4>
-                                    <div class="badges-container">
-                                        <div class="badge" title="Colaborador Activo">
-                                            <i class="fas fa-award"></i>
-                                        </div>
-                                        <div class="badge" title="Experto en Python">
-                                            <i class="fab fa-python"></i>
-                                        </div>
-                                        <div class="badge" title="Mentor">
-                                            <i class="fas fa-user-graduate"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="profile-main">
-                                <form class="profile-form" action="../backend/perfil/update.php" method="POST" enctype="multipart/form-data">
-                                    <div class="form-group">
-                                        <label for="profile-image">Imagen de Perfil</label>
-                                        <input type="file" id="profile-image" name="imagen" accept="image/*" style="display: none;" onchange="previewProfileImage(event)">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="nombre">Nombre</label>
-                                        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre_usuario']); ?>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Correo electrónico</label>
-                                        <input type="email" id="email" name="correo" value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="telefono">Teléfono</label>
-                                        <input type="tel" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? '+57 300 123 4567'); ?>">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="profesion">Profesión</label>
-                                        <input type="text" id="profesion" name="profesion" value="<?php echo htmlspecialchars($usuario['profesion'] ?? 'Desarrollador Web'); ?>">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="bio">Biografía</label>
-                                        <textarea id="bio" name="bio" rows="4"><?php echo htmlspecialchars($usuario['bio'] ?? 'Desarrollador web con experiencia en tecnologías frontend y backend. Apasionado por compartir conocimientos y aprender constantemente.'); ?></textarea>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn--primary">Guardar cambios</button>
-                                        <button type="reset" class="btn btn--outline">Cancelar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                <div id="datos-personales" class="sub-panel active">
+    <div class="panel-header-secondary">
+        <h2>Datos Personales</h2>
+        <p>Gestiona tu información personal</p>
+    </div>
+    <!-- Mostrar mensajes de éxito o error -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="success-message" style="display: block; margin-bottom: 20px; color: green;">
+            <?php echo htmlspecialchars($_SESSION['success_message']); ?>
+        </div>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="error-message" style="display: block; margin-bottom: 20px; color: red;">
+            <?php echo htmlspecialchars($_SESSION['error_message']); ?>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
+    <div class="profile-container">
+        <div class="profile-sidebar">
+            <div class="profile-avatar">
+                <img id="profile-image-preview" src="<?php echo $imagen_perfil; ?>" alt="Tu avatar">
+                <button type="button" class="change-avatar-btn" onclick="document.getElementById('profile-image').click();"><i class="fas fa-camera"></i></button>
+            </div>
+            <div class="profile-badges">
+                <h4>Insignias</h4>
+                <div class="badges-container">
+                    <div class="badge" title="Colaborador Activo">
+                        <i class="fas fa-award"></i>
                     </div>
+                    <div class="badge" title="Experto en Python">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <div class="badge" title="Mentor">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="profile-main">
+            <form class="profile-form" action="../../backend/perfil/update.php" method="POST" enctype="multipart/form-data">
+                <!-- Input oculto para la subida de la imagen -->
+                <input type="file" id="profile-image" name="imagen" accept="image/*" style="display: none;" onchange="previewProfileImage(event)">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre_usuario']); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="correo" value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? '+57 300 123 4567'); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="profesion">Profesión</label>
+                    <input type="text" id="profesion" name="profesion" value="<?php echo htmlspecialchars($usuario['profesion'] ?? 'Desarrollador Web'); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="bio">Biografía</label>
+                    <textarea id="bio" name="bio" rows="4"><?php echo htmlspecialchars($usuario['bio'] ?? 'Desarrollador web con experiencia en tecnologías frontend y backend. Apasionado por compartir conocimientos y aprender constantemente.'); ?></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn--primary">Guardar cambios</button>
+                    <button type="reset" class="btn btn--outline">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
                     <div id="seguridad" class="sub-panel">
                         <div class="panel-header-secondary">
                             <h2>Seguridad</h2>
