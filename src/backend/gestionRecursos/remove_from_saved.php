@@ -14,7 +14,7 @@ try {
     $usuario_id = $_SESSION['usuario_id'];
     $documento_id = $_POST['documento_id'];
 
-    // Eliminar de guardados
+    
     $query = "DELETE FROM guardados WHERE usuario_id = :usuario_id AND documento_id = :documento_id";
     $stmt = $db->prepare($query);
     $stmt->execute([':usuario_id' => $usuario_id, ':documento_id' => $documento_id]);

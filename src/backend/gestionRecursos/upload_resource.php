@@ -58,7 +58,7 @@ if ($visibility === 'Group' && empty($group_id)) {
     exit;
 }
 
-// Validar portada (obligatoria)
+
 if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
     echo json_encode(['success' => false, 'message' => 'Debes subir una imagen de portada.']);
     exit;
@@ -78,7 +78,7 @@ if ($image['size'] > $max_image_size) {
     exit;
 }
 
-$upload_dir = __DIR__ . '../../Uploads/';
+$upload_dir = __DIR__ . '/../../uploads/';
 if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0755, true);
 }
@@ -92,7 +92,7 @@ if (!move_uploaded_file($image['tmp_name'], $image_path)) {
     exit;
 }
 
-$image_url = '/Uploads/' . $image_name;
+$image_url = '../../uploads/' . $image_name;
 
 $file_url = null;
 if ($resource_type === 'video') {
@@ -157,7 +157,7 @@ try {
     $db = conexionDB::getConexion();
     $db->beginTransaction();
 
-    // Insertar el documento
+    
     $query = "INSERT INTO documentos (titulo, descripcion, autor, tipo, url_archivo, portada, fecha_publicacion, relevancia, visibilidad, grupo_id, idioma, licencia, estado, autor_id, duracion) 
               VALUES (:titulo, :descripcion, :autor, :tipo, :url_archivo, :portada, :fecha_publicacion, :relevancia, :visibilidad, :grupo_id, :idioma, :licencia, :estado, :autor_id, :duracion)";
     $stmt = $db->prepare($query);
@@ -181,14 +181,12 @@ try {
 
     $documento_id = $db->lastInsertId();
 
-    // Insertar categorías
     foreach ($categories as $categoria_id) {
         $query = "INSERT INTO documento_categorias (documento_id, categoria_id) VALUES (:documento_id, :categoria_id)";
         $stmt = $db->prepare($query);
         $stmt->execute([':documento_id' => $documento_id, ':categoria_id' => $categoria_id]);
     }
 
-    // Insertar etiquetas
     foreach ($tags as $tag_name) {
         $query = "SELECT id FROM etiquetas WHERE nombre = :nombre";
         $stmt = $db->prepare($query);

@@ -8,7 +8,6 @@ try {
     $db = conexionDB::getConexion();
     $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 
-    // Obtener los grupos del usuario (si está logueado)
     $user_groups = [];
     if ($usuario_id) {
         $query = "SELECT grupo_id FROM usuario_grupo WHERE usuario_id = :usuario_id";
@@ -17,7 +16,6 @@ try {
         $user_groups = $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    // Parámetros
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 3;
     $search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : null;
     $category = isset($_GET['category']) ? (int)$_GET['category'] : null;
@@ -25,13 +23,12 @@ try {
     $relevance = isset($_GET['relevance']) ? $_GET['relevance'] : null;
     $language = isset($_GET['language']) ? $_GET['language'] : null;
 
-    // Construir la consulta base
     $query = "
         SELECT d.id, d.titulo, d.descripcion, d.autor, d.portada, d.tipo, d.url_archivo, d.duracion,
                d.fecha_publicacion, d.relevancia, d.visibilidad, d.grupo_id, d.idioma, d.licencia, d.estado,
                d.autor_id, u.nombre_usuario AS autor_nombre,
-               COALESCE(ARRAY_AGG(c.nombre), '{}') AS categorias,
-               COALESCE(ARRAY_AGG(e.nombre), '{}') AS etiquetas
+               COALESCE(ARRAY_AGG(c.nombre) FILTER (WHERE c.nombre IS NOT NULL), '{}') AS categorias,
+               COALESCE(ARRAY_AGG(e.nombre) FILTER (WHERE e.nombre IS NOT NULL), '{}') AS etiquetas
         FROM documentos d
         JOIN usuarios u ON d.autor_id = u.id
         LEFT JOIN documento_categorias dc ON d.id = dc.documento_id
@@ -43,7 +40,7 @@ try {
 
     $params = [];
 
-    // Ajustar la condición de visibilidad dependiendo de si el usuario está logueado
+    // Ajuster de la condición de visibilidad
     if ($usuario_id) {
         $query .= " AND (
             d.visibilidad = 'Public'
@@ -90,8 +87,24 @@ try {
     }
     $stmt->execute();
     $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($resources as &$resource) {
+        $resource['categorias'] = $resource['categorias'] === '{}'
+            ? []
+            : array_map('trim', explode(',', trim($resource['categorias'], '{}')));
 
-    // Verificar si el recurso está en favoritos (si el usuario está logueado)
+        $resource['etiquetas'] = $resource['etiquetas'] === '{}'
+            ? []
+            : array_map('trim', explode(',', trim($resource['etiquetas'], '{}')));
+
+        if (empty($resource['categorias'])) {
+            $resource['categorias'] = [];
+        }
+        if (empty($resource['etiquetas'])) {
+            $resource['etiquetas'] = [];
+        }
+    }
+
+
     if ($usuario_id) {
         $query = "SELECT documento_id FROM favoritos WHERE usuario_id = :usuario_id";
         $stmt = $db->prepare($query);

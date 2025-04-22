@@ -8,7 +8,6 @@ try {
     $db = conexionDB::getConexion();
     $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 
-    // Obtener los grupos del usuario (si está logueado)
     $user_groups = [];
     if ($usuario_id) {
         $query = "SELECT grupo_id FROM usuario_grupo WHERE usuario_id = :usuario_id";
@@ -29,8 +28,8 @@ try {
         SELECT d.id, d.titulo, d.descripcion, d.autor, d.portada, d.tipo, d.url_archivo, d.duracion,
                d.fecha_publicacion, d.relevancia, d.visibilidad, d.grupo_id, d.idioma, d.licencia, d.estado,
                d.autor_id, u.nombre_usuario AS autor_nombre,
-               COALESCE(ARRAY_AGG(c.nombre), '{}') AS categorias,
-               COALESCE(ARRAY_AGG(e.nombre), '{}') AS etiquetas
+               COALESCE(ARRAY_AGG(c.nombre) FILTER (WHERE c.nombre IS NOT NULL), '{}') AS categorias,
+               COALESCE(ARRAY_AGG(e.nombre) FILTER (WHERE e.nombre IS NOT NULL), '{}') AS etiquetas
         FROM documentos d
         JOIN usuarios u ON d.autor_id = u.id
         LEFT JOIN documento_categorias dc ON d.id = dc.documento_id
@@ -55,13 +54,12 @@ try {
         $query .= " AND d.visibilidad = 'Public'";
     }
 
-    // Añadir condiciones de búsqueda
     if ($search) {
         $query .= " AND (d.titulo ILIKE :search OR d.autor ILIKE :search OR e.nombre ILIKE :search)";
         $params[':search'] = "%$search%";
     }
 
-    // Añadir filtros
+    
     if ($category) {
         $query .= " AND c.id = :category";
         $params[':category'] = $category;
@@ -85,7 +83,23 @@ try {
     $stmt->execute($params);
     $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Verificar si el recurso está en favoritos (si el usuario está logueado)
+    foreach ($resources as &$resource) {
+        $resource['categorias'] = $resource['categorias'] === '{}'
+            ? []
+            : array_map('trim', explode(',', trim($resource['categorias'], '{}')));
+
+        
+        $resource['etiquetas'] = $resource['etiquetas'] === '{}'
+            ? []
+            : array_map('trim', explode(',', trim($resource['etiquetas'], '{}')));
+        if (empty($resource['categorias'])) {
+            $resource['categorias'] = [];
+        }
+        if (empty($resource['etiquetas'])) {
+            $resource['etiquetas'] = [];
+        }
+    }
+
     if ($usuario_id) {
         $query = "SELECT documento_id FROM favoritos WHERE usuario_id = :usuario_id";
         $stmt = $db->prepare($query);
@@ -99,7 +113,5 @@ try {
 
     echo json_encode($resources);
 } catch (PDOException $e) {
-    // Agregar más detalles al mensaje de error para depuración
     echo json_encode(['error' => 'Error al buscar recursos: ' . $e->getMessage() . ' - Query: ' . $query]);
 }
-?>

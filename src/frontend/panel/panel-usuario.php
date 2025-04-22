@@ -1122,7 +1122,7 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video" (registrar vista)
+              // eventos para Leer ahora o Ver video
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1147,7 +1147,7 @@ try {
                 });
               });
 
-              // Agregar eventos para "Quitar favorito"
+              //  eventos para Quitar favorito
               resourcesGrid.querySelectorAll('.remove-favorite').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1220,7 +1220,7 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video"
+              // eventos para Leer ahora o Ver video
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1245,7 +1245,7 @@ try {
                 });
               });
 
-              // Agregar eventos para "Añadir a favoritos"
+              // eeventos para Añadir a favoritos
               resourcesGrid.querySelectorAll('.add-favorite').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1316,7 +1316,7 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video"
+              //eventos para Leer ahora o Ver video
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1341,7 +1341,7 @@ try {
                 });
               });
 
-              // Agregar eventos para "Quitar de guardados"
+              // eventos para Quitar de guardados
               resourcesGrid.querySelectorAll('.remove-saved').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1415,7 +1415,7 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video"
+              // eventos para Leer ahora o Ver video
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1440,16 +1440,16 @@ try {
                 });
               });
 
-              // Agregar eventos para "Editar"
+              // eventos Editar
               resourcesGrid.querySelectorAll('.edit-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
                   const documentoId = button.getAttribute('data-id');
-                  alert(`Funcionalidad de edición para el recurso ${documentoId} no implementada aún.`); // Corrección: Comillas en la plantilla literal
+                  alert(`Funcionalidad de edición para el recurso ${documentoId} no implementada aún.`);
                 });
               });
 
-              // Agregar eventos para "Eliminar"
+              // eventos  Eliminar
               resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1466,7 +1466,7 @@ try {
                       .then(data => {
                         if (data.success) {
                           alert(data.message);
-                          loadUserResources(); // Recargar la lista de aportes
+                          loadUserResources(); 
                         } else {
                           alert(data.message);
                         }
