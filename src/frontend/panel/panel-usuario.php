@@ -649,15 +649,15 @@ try {
                 </div>
                 <div class="form-group">
                     <label for="telefono">Teléfono</label>
-                    <input type="tel" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? '+57 300 123 4567'); ?>">
+                    <input type="tel" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>">
                 </div>
                 <div class="form-group">
                     <label for="profesion">Profesión</label>
-                    <input type="text" id="profesion" name="profesion" value="<?php echo htmlspecialchars($usuario['profesion'] ?? 'Desarrollador Web'); ?>">
+                    <input type="text" id="profesion" name="profesion" value="<?php echo htmlspecialchars($usuario['profesion'] ?? ''); ?>">
                 </div>
                 <div class="form-group">
                     <label for="bio">Biografía</label>
-                    <textarea id="bio" name="bio" rows="4"><?php echo htmlspecialchars($usuario['bio'] ?? 'Desarrollador web con experiencia en tecnologías frontend y backend. Apasionado por compartir conocimientos y aprender constantemente.'); ?></textarea>
+                    <textarea id="bio" name="bio" rows="4"><?php echo htmlspecialchars($usuario['bio'] ?? ''); ?></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn--primary">Guardar cambios</button>
