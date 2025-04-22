@@ -29,6 +29,12 @@ try {
   $nombre_usuario = htmlspecialchars($usuario['nombre_usuario']);
   $correo = htmlspecialchars($usuario['correo']);
 
+  // Contar notificaciones no leídas
+  $query = "SELECT COUNT(*) FROM notificaciones WHERE usuario_id = :user_id AND leida = FALSE";
+  $stmt = $db->prepare($query);
+  $stmt->execute([':user_id' => $user_id]);
+  $unread_count = $stmt->fetchColumn();
+
   // Buscar usuarios por nombre_usuario
   $search_results = [];
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_user'])) {
@@ -181,8 +187,8 @@ try {
   $stmt->execute([':user_id' => $user_id]);
   $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-  // Obtener lista de amigos
-  $query = "SELECT u.id, u.nombre_usuario, u.correo 
+  // Obtener lista de amigos con su última conexión
+  $query = "SELECT u.id, u.nombre_usuario, u.correo, u.ultima_conexion 
             FROM amistades a 
             JOIN usuarios u ON (u.id = a.usuario_id OR u.id = a.amigo_id) 
             WHERE ((a.usuario_id = :user_id AND u.id = a.amigo_id) OR (a.amigo_id = :user_id AND u.id = a.usuario_id)) 
@@ -190,6 +196,25 @@ try {
   $stmt = $db->prepare($query);
   $stmt->execute([':user_id' => $user_id]);
   $friends = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Función para determinar si un usuario está en línea y formatear la última conexión
+  function getOnlineStatus($lastConnection) {
+    if (is_null($lastConnection)) {
+      return ['is_online' => false, 'status_text' => 'Última conexión: Desconocida'];
+    }
+
+    $lastConnectionTime = new DateTime($lastConnection);
+    $currentTime = new DateTime();
+    $interval = $currentTime->diff($lastConnectionTime);
+    $minutes = $interval->days * 24 * 60 + $interval->h * 60 + $interval->i;
+
+    if ($minutes <= 5) {
+      return ['is_online' => true, 'status_text' => 'En línea'];
+    } else {
+      $formattedTime = $lastConnectionTime->format('d/m/Y H:i');
+      return ['is_online' => false, 'status_text' => "Última conexión: $formattedTime"];
+    }
+  }
 
 } catch (PDOException $e) {
   error_log("Error de base de datos: " . $e->getMessage());
@@ -221,6 +246,14 @@ try {
         <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
         <li class="navbar__menu-item"><a href="../panel/panel-usuario.php">Panel</a></li>
         <li class="navbar__menu-item navbar__menu-item--active"><a href="../friends/amigos.php">Amigos</a></li>
+        <li class="navbar__menu-item">
+          <a href="../notificaciones/notificaciones.php">
+            Notificaciones
+            <?php if ($unread_count > 0): ?>
+              <span class="notification-badge"><?php echo $unread_count; ?></span>
+            <?php endif; ?>
+          </a>
+        </li>
         <li class="navbar__menu-item navbar__menu-item--button"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
       <button id="mobile-menu-button" class="navbar__toggle">
@@ -232,7 +265,15 @@ try {
         <li class="navbar__mobile-item"><a href="../inicio/index.php">Inicio</a></li>
         <li class="navbar__mobile-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
         <li class="navbar__mobile-item"><a href="../panel/panel-usuario.php">Panel</a></li>
-        <li class="navbar__mobile-item navbar__mobile-item--active"><a href="../friends/amigos.php">Amigos</a></li>
+        <li class="navbar__mobile-item navbar__menu-item--active"><a href="../friends/amigos.php">Amigos</a></li>
+        <li class="navbar__mobile-item">
+          <a href="../notificaciones/notificaciones.php">
+            Notificaciones
+            <?php if ($unread_count > 0): ?>
+              <span class="notification-badge"><?php echo $unread_count; ?></span>
+            <?php endif; ?>
+          </a>
+        </li>
         <li class="navbar__mobile-item"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
     </div>
@@ -322,6 +363,7 @@ try {
           <p class="friends-list__empty">Aún no tienes amigos. ¡Busca usuarios y envía solicitudes!</p>
         <?php else: ?>
           <?php foreach ($friends as $friend): ?>
+            <?php $status = getOnlineStatus($friend['ultima_conexion']); ?>
             <div class="friend-card">
               <div class="friend-card__avatar">
                 <img src="https://i.pravatar.cc/150?img=<?php echo $friend['id']; ?>" alt="Avatar">
@@ -329,8 +371,17 @@ try {
               <div class="friend-card__info">
                 <h3 class="friend-card__name"><?php echo htmlspecialchars($friend['nombre_usuario']); ?></h3>
                 <p class="friend-card__email"><?php echo htmlspecialchars($friend['correo']); ?></p>
+                <p class="friend-card__status <?php echo $status['is_online'] ? 'friend-card__status--online' : 'friend-card__status--offline'; ?>">
+                  <?php echo $status['status_text']; ?>
+                </p>
               </div>
               <div class="friend-card__actions">
+                <a href="../mensajes/mensajes.php?friend_id=<?php echo $friend['id']; ?>" class="friend-card__action friend-card__action--chat">
+                  Chatear
+                </a>
+                <a href="../perfil/perfil.php?user_id=<?php echo $friend['id']; ?>" class="friend-card__action friend-card__action--profile">
+                  Ver perfil
+                </a>
                 <form method="POST">
                   <input type="hidden" name="friend_id" value="<?php echo $friend['id']; ?>">
                   <button type="submit" name="remove_friend" class="friend-card__action friend-card__action--remove">Eliminar Amigo</button>
