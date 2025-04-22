@@ -23,7 +23,6 @@ try {
     $stmt->execute([':usuario_id' => $usuario_id]);
     $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Obtener categorías para cada documento
     foreach ($resources as &$resource) {
         $documento_id = $resource['id'];
         $query = "SELECT c.nombre 

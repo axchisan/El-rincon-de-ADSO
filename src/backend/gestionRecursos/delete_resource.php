@@ -49,7 +49,6 @@ try {
         unlink(__DIR__ . '/../../' . $resource['url_archivo']);
     }
 
-    // Eliminar el recurso de la base de datos (las relaciones se eliminarán por ON DELETE CASCADE)
     $query = "DELETE FROM documentos WHERE id = :documento_id";
     $stmt = $db->prepare($query);
     $stmt->execute([':documento_id' => $documento_id]);
