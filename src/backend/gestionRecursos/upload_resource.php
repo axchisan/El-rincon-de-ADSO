@@ -31,6 +31,22 @@ $license = $_POST['license'] ?? 'CC BY-SA';
 $status = $_POST['status'] ?? 'Draft';
 $autor_id = $_SESSION['usuario_id'];
 
+// Validar status
+$valid_statuses = ['Draft', 'Pending Review', 'Published'];
+$status_map = [
+    'Borrador' => 'Draft',
+    'Pendiente' => 'Pending Review',
+    'Publicado' => 'Published'
+];
+$status = $status_map[$status] ?? $status;
+
+if (!in_array($status, $valid_statuses)) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Estado no válido: ' . htmlspecialchars($status) . '. Los valores permitidos son: ' . implode(', ', $valid_statuses)
+    ]);
+    exit;
+}
 
 if (empty($title) || empty($author) || empty($resource_type) || empty($categories) || empty($relevance) || empty($visibility) || empty($language) || empty($license) || empty($status)) {
     echo json_encode(['success' => false, 'message' => 'Todos los campos obligatorios deben estar completos.']);
@@ -42,7 +58,7 @@ if ($visibility === 'Group' && empty($group_id)) {
     exit;
 }
 
-// portada (obligatoria)
+
 if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
     echo json_encode(['success' => false, 'message' => 'Debes subir una imagen de portada.']);
     exit;
@@ -77,7 +93,6 @@ if (!move_uploaded_file($image['tmp_name'], $image_path)) {
 }
 
 $image_url = '../../uploads/' . $image_name;
-
 
 $file_url = null;
 if ($resource_type === 'video') {
@@ -135,14 +150,14 @@ if ($resource_type === 'video') {
         exit;
     }
 
-    $file_url = '/uploads/' . $file_name;
+    $file_url = '/Uploads/' . $file_name;
 }
 
 try {
     $db = conexionDB::getConexion();
     $db->beginTransaction();
 
-    // Insertar deel documento
+    
     $query = "INSERT INTO documentos (titulo, descripcion, autor, tipo, url_archivo, portada, fecha_publicacion, relevancia, visibilidad, grupo_id, idioma, licencia, estado, autor_id, duracion) 
               VALUES (:titulo, :descripcion, :autor, :tipo, :url_archivo, :portada, :fecha_publicacion, :relevancia, :visibilidad, :grupo_id, :idioma, :licencia, :estado, :autor_id, :duracion)";
     $stmt = $db->prepare($query);
@@ -166,14 +181,12 @@ try {
 
     $documento_id = $db->lastInsertId();
 
-    // Insert categorías
     foreach ($categories as $categoria_id) {
         $query = "INSERT INTO documento_categorias (documento_id, categoria_id) VALUES (:documento_id, :categoria_id)";
         $stmt = $db->prepare($query);
         $stmt->execute([':documento_id' => $documento_id, ':categoria_id' => $categoria_id]);
     }
 
-    // Insert etiquetas
     foreach ($tags as $tag_name) {
         $query = "SELECT id FROM etiquetas WHERE nombre = :nombre";
         $stmt = $db->prepare($query);
@@ -202,3 +215,4 @@ try {
     if (isset($file_path) && file_exists($file_path)) unlink($file_path);
     echo json_encode(['success' => false, 'message' => 'Error al guardar en la base de datos: ' . $e->getMessage()]);
 }
+?>

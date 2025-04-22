@@ -349,7 +349,7 @@ try {
                   <div class="form-group">
                     <label for="resource-status">Estado *</label>
                     <select id="resource-status" name="status" required>
-                      <option value="Publicado">Publicado</option>
+                      <option value="Published">Publicado</option>
                       <option value="Draft">Borrador</option>
                       <option value="Pending Review">Enviar para Revisión</option>
                     </select>
@@ -1227,6 +1227,7 @@ try {
                 });
               });
 
+
               resourcesGrid.querySelectorAll('.remove-favorite').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1323,6 +1324,7 @@ try {
                 });
               });
 
+
               resourcesGrid.querySelectorAll('.add-favorite').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1417,6 +1419,7 @@ try {
                 });
               });
 
+
               resourcesGrid.querySelectorAll('.remove-saved').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1490,6 +1493,7 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
+
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1522,6 +1526,7 @@ try {
                 });
               });
 
+
               resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1538,7 +1543,7 @@ try {
                       .then(data => {
                         if (data.success) {
                           alert(data.message);
-                          loadUserResources();
+
                         } else {
                           alert(data.message);
                         }

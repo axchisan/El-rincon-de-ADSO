@@ -16,14 +16,13 @@ try {
         $user_groups = $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    // Parámetros de búsqueda y filtro
-    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-    $category = isset($_GET['category']) ? $_GET['category'] : '';
-    $type = isset($_GET['type']) ? $_GET['type'] : '';
-    $relevance = isset($_GET['relevance']) ? $_GET['relevance'] : '';
-    $language = isset($_GET['language']) ? $_GET['language'] : '';
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 3;
+    $search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : null;
+    $category = isset($_GET['category']) ? (int)$_GET['category'] : null;
+    $type = isset($_GET['type']) ? $_GET['type'] : null;
+    $relevance = isset($_GET['relevance']) ? $_GET['relevance'] : null;
+    $language = isset($_GET['language']) ? $_GET['language'] : null;
 
-    // Construir la consulta base
     $query = "
         SELECT d.id, d.titulo, d.descripcion, d.autor, d.portada, d.tipo, d.url_archivo, d.duracion,
                d.fecha_publicacion, d.relevancia, d.visibilidad, d.grupo_id, d.idioma, d.licencia, d.estado,
@@ -41,7 +40,7 @@ try {
 
     $params = [];
 
-    // Ajustar la condición de visibilidad dependiendo de si el usuario está logueado
+    // Ajuster de la condición de visibilidad
     if ($usuario_id) {
         $query .= " AND (
             d.visibilidad = 'Public'
@@ -54,44 +53,49 @@ try {
         $query .= " AND d.visibilidad = 'Public'";
     }
 
+    // Aplicar filtros
     if ($search) {
-        $query .= " AND (d.titulo ILIKE :search OR d.autor ILIKE :search OR e.nombre ILIKE :search)";
-        $params[':search'] = "%$search%";
+        $query .= " AND (d.titulo ILIKE :search OR d.descripcion ILIKE :search OR d.autor ILIKE :search)";
+        $params[':search'] = $search;
     }
 
-    
     if ($category) {
-        $query .= " AND c.id = :category";
+        $query .= " AND dc.categoria_id = :category";
         $params[':category'] = $category;
     }
+
     if ($type) {
         $query .= " AND d.tipo = :type";
         $params[':type'] = $type;
     }
+
     if ($relevance) {
         $query .= " AND d.relevancia = :relevance";
         $params[':relevance'] = $relevance;
     }
+
     if ($language) {
         $query .= " AND d.idioma = :language";
         $params[':language'] = $language;
     }
 
-    $query .= " GROUP BY d.id, u.nombre_usuario ORDER BY d.fecha_publicacion DESC";
-
+    $query .= " GROUP BY d.id, u.nombre_usuario ORDER BY d.fecha_publicacion DESC LIMIT :limit";
     $stmt = $db->prepare($query);
-    $stmt->execute($params);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+    $stmt->execute();
     $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     foreach ($resources as &$resource) {
         $resource['categorias'] = $resource['categorias'] === '{}'
             ? []
             : array_map('trim', explode(',', trim($resource['categorias'], '{}')));
 
-        
         $resource['etiquetas'] = $resource['etiquetas'] === '{}'
             ? []
             : array_map('trim', explode(',', trim($resource['etiquetas'], '{}')));
+
         if (empty($resource['categorias'])) {
             $resource['categorias'] = [];
         }
@@ -99,6 +103,7 @@ try {
             $resource['etiquetas'] = [];
         }
     }
+
 
     if ($usuario_id) {
         $query = "SELECT documento_id FROM favoritos WHERE usuario_id = :usuario_id";
@@ -113,5 +118,6 @@ try {
 
     echo json_encode($resources);
 } catch (PDOException $e) {
-    echo json_encode(['error' => 'Error al buscar recursos: ' . $e->getMessage() . ' - Query: ' . $query]);
+    echo json_encode(['error' => 'Error al obtener recursos recientes: ' . $e->getMessage()]);
 }
+?>
