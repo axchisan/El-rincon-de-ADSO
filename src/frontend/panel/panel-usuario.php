@@ -1,11 +1,14 @@
 <?php
 session_start();
+ini_set('session.gc_maxlifetime', 3600);
+session_set_cookie_params(3600, '/');
 require_once "../../database/conexionDB.php";
 
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../inicio/index.php");
   exit();
 }
+error_log("Usuario ID en panel-usuario.php: " . $_SESSION['usuario_id']);
 
 try {
   $db = conexionDB::getConexion();
@@ -16,29 +19,17 @@ try {
   $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
   if (!$usuario) {
-    session_destroy();
     header("Location: ../inicio/index.php");
     exit();
   }
 
   $nombre_usuario = htmlspecialchars($usuario['nombre_usuario']);
-  $ultima_conexion = $usuario['ultima_conexion']
-    ? date('d \d\e F, Y', strtotime($usuario['ultima_conexion']))
-    : 'Sin registro';
+  $ultima_conexion = $usuario['ultima_conexion'] ? date('d \d\e F, Y', strtotime($usuario['ultima_conexion'])) : 'Sin registro';
 } catch (PDOException $e) {
-  session_destroy();
   header("Location: ../inicio/index.php");
   exit();
 }
-
-try {
-  $query = "UPDATE usuarios SET ultima_conexion = NOW() WHERE id = :id";
-  $stmt = $db->prepare($query);
-  $stmt->execute([':id' => $user_id]);
-} catch (PDOException $e) {
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -50,6 +41,72 @@ try {
   <link rel="stylesheet" href="./css/styles-panel.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .notifications-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .notifications-button:hover {
+      background-color: #0056b3;
+    }
+    .notifications-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #dc3545;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 8px;
+      font-size: 12px;
+    }
+    .notifications-panel {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 300px;
+      max-height: 400px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+    }
+    .notifications-panel.show {
+      display: block;
+    }
+    .notification-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    .notification-item.unread {
+      background-color: #f8f9fa;
+    }
+    .notification-item a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .notification-item a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
@@ -63,6 +120,7 @@ try {
         <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
         <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
         <li class="navbar__menu-item"><a href="../panel/panel-usuario.php">Panel</a></li>
+        <li class="navbar__menu-item"><a href="../friends/amigos.php">Amigos</a></li>
         <li class="navbar__menu-item navbar__menu-item--button"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
       <button id="mobile-menu-button" class="navbar__toggle">
@@ -74,6 +132,7 @@ try {
         <li class="navbar__mobile-item"><a href="../inicio/index.php">Inicio</a></li>
         <li class="navbar__mobile-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
         <li class="navbar__mobile-item navbar__mobile-item--active"><a href="../panel/panel-usuario.php">Panel</a></li>
+        <li class="navbar__mobile-item"><a href="../friends/amigos.php">Amigos</a></li>
         <li class="navbar__mobile-item"><a href="../../backend/logout.php">Cerrar sesión</a></li>
       </ul>
     </div>
@@ -765,7 +824,31 @@ try {
     </div>
   </main>
 
+  <!-- Botón Flotante de Notificaciones -->
+  <button class="notifications-button" id="notifications-button">
+    <i class="fas fa-bell"></i>
+    <?php if ($notificaciones_no_leidas > 0): ?>
+      <span class="notifications-count"><?php echo $notificaciones_no_leidas; ?></span>
+    <?php endif; ?>
+  </button>
+  <div class="notifications-panel" id="notifications-panel"></div>
+
   <script>
+    const usuarioId = <?php echo $user_id; ?>;
+    const ws = new WebSocket('ws://localhost:8080');
+
+    ws.onopen = function() {
+      ws.send(JSON.stringify({ type: 'register', user_id: usuarioId }));
+      console.log('Conectado al WebSocket');
+    };
+
+    ws.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      if (data.type === 'notification') {
+        loadNotifications();
+      }
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
       const mobileMenuButton = document.getElementById('mobile-menu-button');
       const mobileMenu = document.getElementById('mobile-menu');
@@ -797,7 +880,6 @@ try {
           const subTabId = this.getAttribute('data-subtab');
           parentSection.querySelector('#' + subTabId).classList.add('active');
 
-          // Cargar dinámicamente el contenido según la pestaña seleccionada
           if (subTabId === 'mis-favoritos') {
             loadUserFavorites();
           } else if (subTabId === 'recientes') {
@@ -810,7 +892,6 @@ try {
         });
       });
 
-      
       loadUserFavorites();
 
       const modal = document.getElementById('upload-modal');
@@ -1122,7 +1203,6 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video" (registrar vista)
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1147,7 +1227,6 @@ try {
                 });
               });
 
-              // Agregar eventos para "Quitar favorito"
               resourcesGrid.querySelectorAll('.remove-favorite').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1220,7 +1299,6 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video"
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1245,7 +1323,6 @@ try {
                 });
               });
 
-              // Agregar eventos para "Añadir a favoritos"
               resourcesGrid.querySelectorAll('.add-favorite').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1302,7 +1379,7 @@ try {
                             <p class="resource-card__author">Por ${resource.autor}</p>
                             <div class="resource-card__meta">
                                 <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                <span><i class="fas fa-bookmark"></i> Guardado el: ${new Date(resource.fecha_guardado).toLocaleDateString()}</span>
+                                <span><i class="fas fa-book  <span><i class="fas fa-bookmark"></i> Guardado el: ${new Date(resource.fecha_guardado).toLocaleDateString()}</span>
                             </div>
                             <div class="resource-card__actions">
                                 <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
@@ -1316,7 +1393,6 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video"
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1332,7 +1408,7 @@ try {
                     .then(data => {
                       if (data.success) {
                         console.log(data.message);
-                        alert('Vista registrada. Aquí iríca la lógica para ver el recurso.');
+                        alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
                       } else {
                         alert(data.message);
                       }
@@ -1341,7 +1417,6 @@ try {
                 });
               });
 
-              // Agregar eventos para "Quitar de guardados"
               resourcesGrid.querySelectorAll('.remove-saved').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1415,7 +1490,6 @@ try {
                 resourcesGrid.appendChild(resourceCard);
               });
 
-              // Agregar eventos para "Leer ahora" o "Ver video"
               resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1440,16 +1514,14 @@ try {
                 });
               });
 
-              // Agregar eventos para "Editar"
               resourcesGrid.querySelectorAll('.edit-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
                   const documentoId = button.getAttribute('data-id');
-                  alert(`Funcionalidad de edición para el recurso ${documentoId} no implementada aún.`); // Corrección: Comillas en la plantilla literal
+                  alert(`Funcionalidad de edición para el recurso ${documentoId} no implementada aún.`);
                 });
               });
 
-              // Agregar eventos para "Eliminar"
               resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
                 button.addEventListener('click', (e) => {
                   e.preventDefault();
@@ -1466,7 +1538,7 @@ try {
                       .then(data => {
                         if (data.success) {
                           alert(data.message);
-                          loadUserResources(); // Recargar la lista de aportes
+                          loadUserResources();
                         } else {
                           alert(data.message);
                         }
@@ -1482,6 +1554,60 @@ try {
             document.getElementById('resources-grid').innerHTML = '<p>Error al cargar tus aportes.</p>';
           });
       }
+
+      // Funcionalidad de Notificaciones
+      const notificationsButton = document.getElementById('notifications-button');
+      const notificationsPanel = document.getElementById('notifications-panel');
+
+      notificationsButton.addEventListener('click', function() {
+        notificationsPanel.classList.toggle('show');
+        if (notificationsPanel.classList.contains('show')) {
+          loadNotifications();
+        }
+      });
+
+      function loadNotifications() {
+        fetch('../../backend/api/notifications.php')
+          .then(response => response.json())
+          .then(notifications => {
+            const panel = document.getElementById('notifications-panel');
+            panel.innerHTML = '';
+            if (notifications.length === 0) {
+              panel.innerHTML = '<p>No tienes notificaciones.</p>';
+            } else {
+              notifications.forEach(notif => {
+                const div = document.createElement('div');
+                div.className = `notification-item ${notif.leida ? '' : 'unread'}`;
+                if (notif.tipo === 'solicitud_amistad') {
+                  div.innerHTML = `<p>${notif.mensaje} <a href="../panel/amigos.php">Ver solicitud</a></p>`;
+                } else if (notif.tipo === 'mensaje_nuevo') {
+                  div.innerHTML = `<p>${notif.mensaje} <a href="../panel/chat.php?destinatario_id=${notif.relacionado_id}">Ver mensaje</a></p>`;
+                } else {
+                  div.innerHTML = `<p>${notif.mensaje}</p>`;
+                }
+                panel.appendChild(div);
+              });
+            }
+
+            // Actualizar contador
+            const unreadCount = notifications.filter(n => !n.leida).length;
+            const countSpan = document.querySelector('.notifications-count');
+            if (unreadCount > 0) {
+              if (!countSpan) {
+                const newCountSpan = document.createElement('span');
+                newCountSpan.className = 'notifications-count';
+                newCountSpan.textContent = unreadCount;
+                notificationsButton.appendChild(newCountSpan);
+              } else {
+                countSpan.textContent = unreadCount;
+              }
+            } else if (countSpan) {
+              countSpan.remove();
+            }
+          });
+      }
+
+      loadNotifications();
     });
   </script>
 
