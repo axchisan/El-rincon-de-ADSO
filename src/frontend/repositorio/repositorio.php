@@ -378,7 +378,7 @@ try {
                                         ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
                                     </div>
                                     <div class="resource-card__actions">
-                                        <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <a href="../repositorio/ver_libro.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
                                             <i class="fas fa-book-reader"></i> Leer ahora
                                         </a>
                                         <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
@@ -424,7 +424,7 @@ try {
                                         ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
                                     </div>
                                     <div class="resource-card__actions">
-                                        <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <a href="../repositorio/ver_video.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
                                             <i class="fas fa-play-circle"></i> Ver video
                                         </a>
                                         <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
@@ -473,7 +473,7 @@ try {
                                         ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
                                     </div>
                                     <div class="resource-card__actions">
-                                        <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <a href="../repositorio/ver_documento.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
                                             <i class="fas fa-eye"></i> Ver documento
                                         </a>
                                         <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
@@ -494,7 +494,6 @@ try {
                         [booksGrid, videosGrid, documentsGrid].forEach(grid => {
                             grid.querySelectorAll('.view-resource').forEach(button => {
                                 button.addEventListener('click', (e) => {
-                                    e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
                                             method: 'POST',
@@ -507,9 +506,8 @@ try {
                                         .then(data => {
                                             if (data.success) {
                                                 console.log(data.message);
-                                                alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
                                             } else {
-                                                alert(data.message);
+                                                console.error(data.message);
                                             }
                                         })
                                         .catch(error => console.error('Error al registrar vista:', error));
