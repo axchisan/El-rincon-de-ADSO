@@ -216,14 +216,8 @@ if ($usuario_id) {
                 <p>Cargando recursos recientes...</p>
             </div>
             <div class="pagination" id="recent-pagination">
-                <a href="#" class="pagination__link pagination__link--active">1</a>
-                <a href="#" class="pagination__link">2</a>
-                <a href="#" class="pagination__link">3</a>
-                <span class="pagination__dots">...</span>
-                <a href="#" class="pagination__link">10</a>
-                <a href="#" class="pagination__link pagination__link--next">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
+               
+                
             </div>
             <div class="books__link-wrapper">
                 <a href="../repositorio/repositorio.php" class="books__link">Ver todos <i class="fas fa-arrow-right"></i></a>
