@@ -270,462 +270,437 @@ try {
             loadCategories();
 
             function loadResources(pageBooks = 1, pageVideos = 1, pageDocuments = 1) {
-                const search = searchInput.value.trim();
-                const category = filterCategory.value;
-                const type = filterType.value;
-                const relevance = filterRelevance.value;
-                const language = filterLanguage.value;
+    const search = searchInput.value.trim();
+    const category = filterCategory.value;
+    const type = filterType.value;
+    const relevance = filterRelevance.value;
+    const language = filterLanguage.value;
 
-                const params = new URLSearchParams();
-                if (search) params.append('search', search);
-                if (category) params.append('category', category);
-                if (type) params.append('type', type);
-                if (relevance) params.append('relevance', relevance);
-                if (language) params.append('language', language);
-                params.append('limit', 6);
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (category) params.append('category', category);
+    if (type) params.append('type', type);
+    if (relevance) params.append('relevance', relevance);
+    if (language) params.append('language', language);
+    params.append('limit', 6);
 
-                const booksSection = document.getElementById('booksSection');
-                const videosSection = document.getElementById('videosSection');
-                const documentsSection = document.getElementById('documentsSection');
-                const booksPagination = document.getElementById('books-pagination');
-                const videosPagination = document.getElementById('videos-pagination');
-                const documentsPagination = document.getElementById('documents-pagination');
+    const booksSection = document.getElementById('booksSection');
+    const videosSection = document.getElementById('videosSection');
+    const documentsSection = document.getElementById('documentsSection');
+    const booksPagination = document.getElementById('books-pagination');
+    const videosPagination = document.getElementById('videos-pagination');
+    const documentsPagination = document.getElementById('documents-pagination');
 
-                // Solicitud inicial para obtener los tipos disponibles
-                fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}&page=1`)
+    // Función para generar paginación
+    function generatePagination(totalItems, currentPage, section, callback) {
+        const totalPages = Math.ceil(totalItems / 6);
+        const paginationContainer = document.getElementById(`${section}-pagination`);
+        paginationContainer.innerHTML = '';
+
+        if (totalPages <= 1) return;
+
+        const prevLink = document.createElement('a');
+        prevLink.href = '#';
+        prevLink.className = 'pagination__link pagination__link--prev';
+        prevLink.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        if (currentPage === 1) {
+            prevLink.classList.add('pagination__link--disabled');
+        } else {
+            prevLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                callback(currentPage - 1);
+            });
+        }
+        paginationContainer.appendChild(prevLink);
+
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+
+        if (startPage > 1) {
+            const firstPage = document.createElement('a');
+            firstPage.href = '#';
+            firstPage.className = 'pagination__link';
+            firstPage.textContent = '1';
+            firstPage.addEventListener('click', (e) => {
+                e.preventDefault();
+                callback(1);
+            });
+            paginationContainer.appendChild(firstPage);
+
+            if (startPage > 2) {
+                const dots = document.createElement('span');
+                dots.className = 'pagination__dots';
+                dots.textContent = '...';
+                paginationContainer.appendChild(dots);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageLink = document.createElement('a');
+            pageLink.href = '#';
+            pageLink.className = 'pagination__link';
+            if (i === currentPage) {
+                pageLink.classList.add('pagination__link--active');
+            }
+            pageLink.textContent = i;
+            pageLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                callback(i);
+            });
+            paginationContainer.appendChild(pageLink);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const dots = document.createElement('span');
+                dots.className = 'pagination__dots';
+                dots.textContent = '...';
+                paginationContainer.appendChild(dots);
+            }
+
+            const lastPage = document.createElement('a');
+            lastPage.href = '#';
+            lastPage.className = 'pagination__link';
+            lastPage.textContent = totalPages;
+            lastPage.addEventListener('click', (e) => {
+                e.preventDefault();
+                callback(totalPages);
+            });
+            paginationContainer.appendChild(lastPage);
+        }
+
+        const nextLink = document.createElement('a');
+        nextLink.href = '#';
+        nextLink.className = 'pagination__link pagination__link--next';
+        nextLink.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        if (currentPage === totalPages) {
+            nextLink.classList.add('pagination__link--disabled');
+        } else {
+            nextLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                callback(currentPage + 1);
+            });
+        }
+        paginationContainer.appendChild(nextLink);
+    }
+
+    // Cargar libros
+    if (!type || type === 'libro') {
+        params.set('type', 'libro');
+        params.set('page', pageBooks);
+        fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Datos libros:', data);
+                const booksGrid = document.getElementById('books-grid');
+                booksGrid.innerHTML = '';
+
+                if (data.resources.length === 0) {
+                    booksGrid.innerHTML = '<p>No se encontraron libros.</p>';
+                    booksSection.style.display = 'none'; // Ocultar la sección si no hay resultados
+                    booksPagination.innerHTML = '';
+                } else {
+                    booksSection.style.display = 'block'; // Mostrar la sección si hay resultados
+                    data.resources.forEach(resource => {
+                        const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
+                        const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
+                        const resourceCard = document.createElement('div');
+                        resourceCard.className = 'resource-card book-card';
+                        resourceCard.innerHTML = `
+                            <div class="resource-card__image-container">
+                                <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                            </div>
+                            <div class="resource-card__content">
+                                <div class="resource-card__category">${categorias.join(', ')}</div>
+                                <h3 class="resource-card__title">${resource.titulo}</h3>
+                                <p class="resource-card__author">Por ${resource.autor}</p>
+                                <div class="resource-card__meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                    <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                </div>
+                                <div class="resource-card__tags">
+                                    ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                </div>
+                                <div class="resource-card__actions">
+                                    <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <i class="fas fa-book-reader"></i> Leer ahora
+                                    </a>
+                                    <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                        <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                        ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                    </a>
+                                    <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                        booksGrid.appendChild(resourceCard);
+                    });
+
+                    generatePagination(data.total, pageBooks, 'books', (newPage) => {
+                        loadResources(newPage, pageVideos, pageDocuments);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar libros:', error);
+                document.getElementById('books-grid').innerHTML = '<p>Error al cargar los libros.</p>';
+                booksSection.style.display = 'none'; // Ocultar la sección en caso de error
+                booksPagination.innerHTML = '';
+            });
+    } else {
+        booksSection.style.display = 'none';
+        booksPagination.innerHTML = '';
+    }
+
+    // Cargar videos
+    if (!type || type === 'video') {
+        params.set('type', 'video');
+        params.set('page', pageVideos);
+        fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Datos videos:', data);
+                const videosGrid = document.getElementById('videos-grid');
+                videosGrid.innerHTML = '';
+
+                if (data.resources.length === 0) {
+                    videosGrid.innerHTML = '<p>No se encontraron videos.</p>';
+                    videosSection.style.display = 'none'; // Ocultar la sección si no hay resultados
+                    videosPagination.innerHTML = '';
+                } else {
+                    videosSection.style.display = 'block'; // Mostrar la sección si hay resultados
+                    data.resources.forEach(resource => {
+                        const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
+                        const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
+                        const resourceCard = document.createElement('div');
+                        resourceCard.className = 'resource-card video-card';
+                        resourceCard.innerHTML = `
+                            <div class="resource-card__image-container">
+                                <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
+                                <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
+                            </div>
+                            <div class="resource-card__content">
+                                <div class="resource-card__category">${categorias.join(', ')}</div>
+                                <h3 class="resource-card__title">${resource.titulo}</h3>
+                                <p class="resource-card__author">Por ${resource.autor}</p>
+                                <div class="resource-card__meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                    <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                </div>
+                                <div class="resource-card__tags">
+                                    ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                </div>
+                                <div class="resource-card__actions">
+                                    <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <i class="fas fa-play-circle"></i> Ver video
+                                    </a>
+                                    <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                        <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                        ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                    </a>
+                                    <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                        videosGrid.appendChild(resourceCard);
+                    });
+
+                    generatePagination(data.total, pageVideos, 'videos', (newPage) => {
+                        loadResources(pageBooks, newPage, pageDocuments);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar videos:', error);
+                document.getElementById('videos-grid').innerHTML = '<p>Error al cargar los videos.</p>';
+                videosSection.style.display = 'none'; // Ocultar la sección en caso de error
+                videosPagination.innerHTML = '';
+            });
+    } else {
+        videosSection.style.display = 'none';
+        videosPagination.innerHTML = '';
+    }
+
+    // Cargar documentos e imágenes
+    if (!type || type === 'documento' || type === 'imagen') {
+        // Hacer una solicitud específica para documentos
+        params.set('type', 'documento');
+        params.set('page', pageDocuments);
+        fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
+            .then(response => response.json())
+            .then(dataDocs => {
+                console.log('Datos documentos:', dataDocs);
+
+                // Hacer una solicitud específica para imágenes
+                params.set('type', 'imagen');
+                fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
                     .then(response => response.json())
-                    .then(data => {
-                        console.log('Datos iniciales:', data);
+                    .then(dataImages => {
+                        console.log('Datos imágenes:', dataImages);
 
-                        if (data.error) {
-                            document.getElementById('books-grid').innerHTML = `<p>${data.error}</p>`;
-                            document.getElementById('videos-grid').innerHTML = `<p>${data.error}</p>`;
-                            document.getElementById('documents-grid').innerHTML = `<p>${data.error}</p>`;
-                            booksPagination.innerHTML = '';
-                            videosPagination.innerHTML = '';
+                        const documentsGrid = document.getElementById('documents-grid');
+                        documentsGrid.innerHTML = '';
+
+                        // Combinar documentos e imágenes
+                        const documents = [
+                            ...(dataDocs.resources || []),
+                            ...(dataImages.resources || [])
+                        ];
+
+                        if (documents.length === 0) {
+                            documentsGrid.innerHTML = '<p>No se encontraron documentos.</p>';
+                            documentsSection.style.display = 'none'; // Ocultar la sección si no hay resultados
                             documentsPagination.innerHTML = '';
-                            return;
-                        }
-
-                        const typesPresent = data.types || [];
-                        console.log('Tipos disponibles:', typesPresent);
-
-                        if (type) {
-                            booksSection.style.display = type === 'libro' ? 'block' : 'none';
-                            videosSection.style.display = type === 'video' ? 'block' : 'none';
-                            documentsSection.style.display = (type === 'documento' || type === 'imagen') ? 'block' : 'none';
                         } else {
-                            booksSection.style.display = typesPresent.includes('libro') ? 'block' : 'none';
-                            videosSection.style.display = typesPresent.includes('video') ? 'block' : 'none';
-                            documentsSection.style.display = (typesPresent.includes('documento') || typesPresent.includes('imagen')) ? 'block' : 'none';
-                        }
+                            documentsSection.style.display = 'block'; // Mostrar la sección si hay resultados
+                            documents.forEach(resource => {
+                                const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
+                                const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
+                                const defaultImage = '../inicio/img/default-cover.jpg';
+                                const coverImage = resource.portada && resource.portada !== '' ? resource.portada : defaultImage;
 
-                        function generatePagination(totalItems, currentPage, section, callback) {
-                            const totalPages = Math.ceil(totalItems / 6);
-                            const paginationContainer = document.getElementById(`${section}-pagination`);
-                            paginationContainer.innerHTML = '';
-
-                            if (totalPages <= 1) return;
-
-                            const prevLink = document.createElement('a');
-                            prevLink.href = '#';
-                            prevLink.className = 'pagination__link pagination__link--prev';
-                            prevLink.innerHTML = '<i class="fas fa-chevron-left"></i>';
-                            if (currentPage === 1) {
-                                prevLink.classList.add('pagination__link--disabled');
-                            } else {
-                                prevLink.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    callback(currentPage - 1);
-                                });
-                            }
-                            paginationContainer.appendChild(prevLink);
-
-                            let startPage = Math.max(1, currentPage - 2);
-                            let endPage = Math.min(totalPages, currentPage + 2);
-
-                            if (startPage > 1) {
-                                const firstPage = document.createElement('a');
-                                firstPage.href = '#';
-                                firstPage.className = 'pagination__link';
-                                firstPage.textContent = '1';
-                                firstPage.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    callback(1);
-                                });
-                                paginationContainer.appendChild(firstPage);
-
-                                if (startPage > 2) {
-                                    const dots = document.createElement('span');
-                                    dots.className = 'pagination__dots';
-                                    dots.textContent = '...';
-                                    paginationContainer.appendChild(dots);
-                                }
-                            }
-
-                            for (let i = startPage; i <= endPage; i++) {
-                                const pageLink = document.createElement('a');
-                                pageLink.href = '#';
-                                pageLink.className = 'pagination__link';
-                                if (i === currentPage) {
-                                    pageLink.classList.add('pagination__link--active');
-                                }
-                                pageLink.textContent = i;
-                                pageLink.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    callback(i);
-                                });
-                                paginationContainer.appendChild(pageLink);
-                            }
-
-                            if (endPage < totalPages) {
-                                if (endPage < totalPages - 1) {
-                                    const dots = document.createElement('span');
-                                    dots.className = 'pagination__dots';
-                                    dots.textContent = '...';
-                                    paginationContainer.appendChild(dots);
-                                }
-
-                                const lastPage = document.createElement('a');
-                                lastPage.href = '#';
-                                lastPage.className = 'pagination__link';
-                                lastPage.textContent = totalPages;
-                                lastPage.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    callback(totalPages);
-                                });
-                                paginationContainer.appendChild(lastPage);
-                            }
-
-                            const nextLink = document.createElement('a');
-                            nextLink.href = '#';
-                            nextLink.className = 'pagination__link pagination__link--next';
-                            nextLink.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                            if (currentPage === totalPages) {
-                                nextLink.classList.add('pagination__link--disabled');
-                            } else {
-                                nextLink.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    callback(currentPage + 1);
-                                });
-                            }
-                            paginationContainer.appendChild(nextLink);
-                        }
-
-                        // Cargar libros
-                        if (booksSection.style.display !== 'none') {
-                            params.set('type', 'libro');
-                            params.set('page', pageBooks);
-                            fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log('Datos libros:', data);
-                                    const booksGrid = document.getElementById('books-grid');
-                                    booksGrid.innerHTML = '';
-
-                                    if (data.resources.length === 0) {
-                                        booksGrid.innerHTML = '<p>No se encontraron libros.</p>';
-                                        booksPagination.innerHTML = '';
-                                    } else {
-                                        data.resources.forEach(resource => {
-                                            const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
-                                            const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
-                                            const resourceCard = document.createElement('div');
-                                            resourceCard.className = 'resource-card book-card';
-                                            resourceCard.innerHTML = `
-                                                <div class="resource-card__image-container">
-                                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                                </div>
-                                                <div class="resource-card__content">
-                                                    <div class="resource-card__category">${categorias.join(', ')}</div>
-                                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                                    <div class="resource-card__meta">
-                                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                                    </div>
-                                                    <div class="resource-card__tags">
-                                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                                    </div>
-                                                    <div class="resource-card__actions">
-                                                        <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                            <i class="fas fa-book-reader"></i> Leer ahora
-                                                        </a>
-                                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                        </a>
-                                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                            <i class="fas fa-bookmark"></i> Guardar para después
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            `;
-                                            booksGrid.appendChild(resourceCard);
-                                        });
-
-                                        generatePagination(data.total, pageBooks, 'books', (newPage) => {
-                                            loadResources(newPage, pageVideos, pageDocuments);
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error al cargar libros:', error);
-                                    document.getElementById('books-grid').innerHTML = '<p>Error al cargar los libros.</p>';
-                                    booksPagination.innerHTML = '';
-                                });
-                        } else {
-                            booksPagination.innerHTML = '';
-                        }
-
-                        // Cargar videos
-                        if (videosSection.style.display !== 'none') {
-                            params.set('type', 'video');
-                            params.set('page', pageVideos);
-                            fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log('Datos videos:', data);
-                                    const videosGrid = document.getElementById('videos-grid');
-                                    videosGrid.innerHTML = '';
-
-                                    if (data.resources.length === 0) {
-                                        videosGrid.innerHTML = '<p>No se encontraron videos.</p>';
-                                        videosPagination.innerHTML = '';
-                                    } else {
-                                        data.resources.forEach(resource => {
-                                            const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
-                                            const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
-                                            const resourceCard = document.createElement('div');
-                                            resourceCard.className = 'resource-card video-card';
-                                            resourceCard.innerHTML = `
-                                                <div class="resource-card__image-container">
-                                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                                    <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
-                                                    <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
-                                                </div>
-                                                <div class="resource-card__content">
-                                                    <div class="resource-card__category">${categorias.join(', ')}</div>
-                                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                                    <div class="resource-card__meta">
-                                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                                    </div>
-                                                    <div class="resource-card__tags">
-                                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                                    </div>
-                                                    <div class="resource-card__actions">
-                                                        <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                            <i class="fas fa-play-circle"></i> Ver video
-                                                        </a>
-                                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                        </a>
-                                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                            <i class="fas fa-bookmark"></i> Guardar para después
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            `;
-                                            videosGrid.appendChild(resourceCard);
-                                        });
-
-                                        generatePagination(data.total, pageVideos, 'videos', (newPage) => {
-                                            loadResources(pageBooks, newPage, pageDocuments);
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error al cargar videos:', error);
-                                    document.getElementById('videos-grid').innerHTML = '<p>Error al cargar los videos.</p>';
-                                    videosPagination.innerHTML = '';
-                                });
-                        } else {
-                            videosPagination.innerHTML = '';
-                        }
-
-                        // Cargar documentos e imágenes
-                        if (documentsSection.style.display !== 'none') {
-                            // Hacer una solicitud específica para documentos
-                            params.set('type', 'documento');
-                            params.set('page', pageDocuments);
-                            fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
-                                .then(response => response.json())
-                                .then(dataDocs => {
-                                    console.log('Datos documentos:', dataDocs);
-
-                                    // Hacer una solicitud específica para imágenes
-                                    params.set('type', 'imagen');
-                                    fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
-                                        .then(response => response.json())
-                                        .then(dataImages => {
-                                            console.log('Datos imágenes:', dataImages);
-
-                                            const documentsGrid = document.getElementById('documents-grid');
-                                            documentsGrid.innerHTML = '';
-
-                                            // Combinar documentos e imágenes
-                                            const documents = [
-                                                ...(dataDocs.resources || []),
-                                                ...(dataImages.resources || [])
-                                            ];
-
-                                            if (documents.length === 0) {
-                                                documentsGrid.innerHTML = '<p>No se encontraron documentos.</p>';
-                                                documentsPagination.innerHTML = '';
-                                            } else {
-                                                documents.forEach(resource => {
-                                                    const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
-                                                    const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
-                                                    const defaultImage = '../inicio/img/default-cover.jpg';
-                                                    const coverImage = resource.portada && resource.portada !== '' ? resource.portada : defaultImage;
-
-                                                    const resourceCard = document.createElement('div');
-                                                    resourceCard.className = 'resource-card document-card';
-                                                    resourceCard.innerHTML = `
-                                                        <div class="resource-card__image-container">
-                                                            <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                                        </div>
-                                                        <div class="resource-card__content">
-                                                            <div class="resource-card__category">${categorias.join(', ')}</div>
-                                                            <h3 class="resource-card__title">${resource.titulo}</h3>
-                                                            <p class="resource-card__author">Por ${resource.autor}</p>
-                                                            <div class="resource-card__meta">
-                                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                                <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                                            </div>
-                                                            <div class="resource-card__tags">
-                                                                ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                                            </div>
-                                                            <div class="resource-card__actions">
-                                                                <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                                    <i class="fas fa-eye"></i> Ver documento
-                                                                </a>
-                                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                                </a>
-                                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    `;
-                                                    documentsGrid.appendChild(resourceCard);
-                                                });
-
-                                                const totalDocuments = (dataDocs.total || 0) + (dataImages.total || 0);
-                                                generatePagination(totalDocuments, pageDocuments, 'documents', (newPage) => {
-                                                    loadResources(pageBooks, pageVideos, newPage);
-                                                });
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error('Error al cargar imágenes:', error);
-                                            document.getElementById('documents-grid').innerHTML = '<p>Error al cargar los documentos.</p>';
-                                            documentsPagination.innerHTML = '';
-                                        });
-                                })
-                                .catch(error => {
-                                    console.error('Error al cargar documentos:', error);
-                                    document.getElementById('documents-grid').innerHTML = '<p>Error al cargar los documentos.</p>';
-                                    documentsPagination.innerHTML = '';
-                                });
-                        } else {
-                            documentsPagination.innerHTML = '';
-                        }
-
-                        // Agregar eventos para acciones
-                        [document.getElementById('books-grid'), document.getElementById('videos-grid'), document.getElementById('documents-grid')].forEach(grid => {
-                            grid.querySelectorAll('.view-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            console.log(data.message);
-                                            alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error('Error al registrar vista:', error));
-                                });
+                                const resourceCard = document.createElement('div');
+                                resourceCard.className = 'resource-card document-card';
+                                resourceCard.innerHTML = `
+                                    <div class="resource-card__image-container">
+                                        <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                        <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                    </div>
+                                    <div class="resource-card__content">
+                                        <div class="resource-card__category">${categorias.join(', ')}</div>
+                                        <h3 class="resource-card__title">${resource.titulo}</h3>
+                                        <p class="resource-card__author">Por ${resource.autor}</p>
+                                        <div class="resource-card__meta">
+                                            <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                            <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                        </div>
+                                        <div class="resource-card__tags">
+                                            ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                        </div>
+                                        <div class="resource-card__actions">
+                                            <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                                <i class="fas fa-eye"></i> Ver documento
+                                            </a>
+                                            <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                                <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                                ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                            </a>
+                                            <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                                <i class="fas fa-bookmark"></i> Guardar para después
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+                                documentsGrid.appendChild(resourceCard);
                             });
 
-                            grid.querySelectorAll('.add-favorite, .remove-favorite').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    const action = button.classList.contains('add-favorite') ? 'add' : 'remove';
-                                    const endpoint = action === 'add' ? '../../backend/gestionRecursos/add_to_favorites.php' : '../../backend/gestionRecursos/remove_from_favorites.php';
-
-                                    fetch(endpoint, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            alert(data.message);
-                                            loadResources(pageBooks, pageVideos, pageDocuments);
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error(`Error al ${action === 'add' ? 'añadir a' : 'quitar de'} favoritos:`, error));
-                                });
+                            const totalDocuments = (dataDocs.total || 0) + (dataImages.total || 0);
+                            generatePagination(totalDocuments, pageDocuments, 'documents', (newPage) => {
+                                loadResources(pageBooks, pageVideos, newPage);
                             });
-
-                            grid.querySelectorAll('.save-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    fetch('../../backend/gestionRecursos/add_to_saved.php', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            alert(data.message);
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error('Error al guardar recurso:', error));
-                                });
-                            });
-                        });
+                        }
                     })
                     .catch(error => {
-                        console.error('Error al cargar recursos:', error);
-                        document.getElementById('books-grid').innerHTML = '<p>Error al cargar los libros.</p>';
-                        document.getElementById('videos-grid').innerHTML = '<p>Error al cargar los videos.</p>';
+                        console.error('Error al cargar imágenes:', error);
                         document.getElementById('documents-grid').innerHTML = '<p>Error al cargar los documentos.</p>';
-                        booksPagination.innerHTML = '';
-                        videosPagination.innerHTML = '';
+                        documentsSection.style.display = 'none'; // Ocultar la sección en caso de error
                         documentsPagination.innerHTML = '';
                     });
-            }
+            })
+            .catch(error => {
+                console.error('Error al cargar documentos:', error);
+                document.getElementById('documents-grid').innerHTML = '<p>Error al cargar los documentos.</p>';
+                documentsSection.style.display = 'none'; // Ocultar la sección en caso de error
+                documentsPagination.innerHTML = '';
+            });
+    } else {
+        documentsSection.style.display = 'none';
+        documentsPagination.innerHTML = '';
+    }
+
+    // Agregar eventos para acciones
+    [document.getElementById('books-grid'), document.getElementById('videos-grid'), document.getElementById('documents-grid')].forEach(grid => {
+        grid.querySelectorAll('.view-resource').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const documentoId = button.getAttribute('data-id');
+                fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `documento_id=${documentoId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(data.message);
+                        alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error al registrar vista:', error));
+            });
+        });
+
+        grid.querySelectorAll('.add-favorite, .remove-favorite').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const documentoId = button.getAttribute('data-id');
+                const action = button.classList.contains('add-favorite') ? 'add' : 'remove';
+                const endpoint = action === 'add' ? '../../backend/gestionRecursos/add_to_favorites.php' : '../../backend/gestionRecursos/remove_from_favorites.php';
+
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `documento_id=${documentoId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        loadResources(pageBooks, pageVideos, pageDocuments);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error(`Error al ${action === 'add' ? 'añadir a' : 'quitar de'} favoritos:`, error));
+            });
+        });
+
+        grid.querySelectorAll('.save-resource').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const documentoId = button.getAttribute('data-id');
+                fetch('../../backend/gestionRecursos/add_to_saved.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `documento_id=${documentoId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error al guardar recurso:', error));
+            });
+        });
+    });
+}
 
             searchButton.addEventListener('click', () => loadResources(1, 1, 1));
             searchInput.addEventListener('keypress', function(e) {
