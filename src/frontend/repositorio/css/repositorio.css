@@ -955,3 +955,7 @@ ol {
   background-color: #f0f0f0;
   color: #007bff; /* Ajusta el color según tu diseño */
 }
+.pagination__link--disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
