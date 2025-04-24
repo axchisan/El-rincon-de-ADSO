@@ -979,7 +979,7 @@ try {
             }
 
             function loadCategories() {
-                fetch('../backend/gestionRecursos/get_categories.php')
+                fetch('../../backend/gestionRecursos/get_categories.php')
                     .then(response => response.json())
                     .then(data => {
                         const categoryTags = document.getElementById('category-tags');
@@ -1039,7 +1039,7 @@ try {
             }
 
             function loadGroups() {
-                fetch('../backend/gestionRecursos/get_user_groups.php')
+                fetch('../../backend/gestionRecursos/get_user_groups.php')
                     .then(response => response.json())
                     .then(data => {
                         const groupSelect = document.getElementById('resource-group');
@@ -1075,7 +1075,7 @@ try {
                 progressBar.style.display = 'block';
                 progressBarFill.style.width = '0%';
 
-                fetch('../backend/gestionRecursos/upload_resource.php', {
+                fetch('../../backend/gestionRecursos/upload_resource.php', {
                     method: 'POST',
                     body: formData
                 })
@@ -1115,7 +1115,7 @@ try {
             });
 
             function loadUserFavorites() {
-                fetch('../backend/gestionRecursos/get_user_favorites.php')
+                fetch('../../backend/gestionRecursos/get_user_favorites.php')
                     .then(response => response.json())
                     .then(data => {
                         const resourcesGrid = document.getElementById('favorites-grid');
@@ -1158,7 +1158,7 @@ try {
                                 button.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
-                                    fetch('../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -1184,7 +1184,7 @@ try {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     if (confirm('¿Estás seguro de que deseas quitar este recurso de tus favoritos?')) {
-                                        fetch('../backend/gestionRecursos/remove_from_favorites.php', {
+                                        fetch('../../backend/gestionRecursos/remove_from_favorites.php', {
                                             method: 'POST',
                                             headers: {
                                                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -1213,7 +1213,7 @@ try {
             }
 
             function loadRecentlyViewed() {
-                fetch('../backend/gestionRecursos/get_recently_viewed.php')
+                fetch('../../backend/gestionRecursos/get_recently_viewed.php')
                     .then(response => response.json())
                     .then(data => {
                         const resourcesGrid = document.getElementById('recently-viewed-grid');
@@ -1256,7 +1256,7 @@ try {
                                 button.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
-                                    fetch('../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -1281,7 +1281,7 @@ try {
                                 button.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
-                                    fetch('../backend/gestionRecursos/add_to_favorites.php', {
+                                    fetch('../../backend/gestionRecursos/add_to_favorites.php', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -1309,7 +1309,7 @@ try {
             }
 
             function loadSavedResources() {
-                fetch('../backend/gestionRecursos/get_saved_resources.php')
+                fetch('../../backend/gestionRecursos/get_saved_resources.php')
                     .then(response => response.json())
                     .then(data => {
                         const resourcesGrid = document.getElementById('saved-grid');
@@ -1352,7 +1352,7 @@ try {
                                 button.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
-                                    fetch('../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -1378,7 +1378,7 @@ try {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     if (confirm('¿Estás seguro de que deseas quitar este recurso de tus guardados?')) {
-                                        fetch('../backend/gestionRecursos/remove_from_saved.php', {
+                                        fetch('../../backend/gestionRecursos/remove_from_saved.php', {
                                             method: 'POST',
                                             headers: {
                                                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -1407,7 +1407,7 @@ try {
             }
 
             function loadUserResources() {
-                fetch('../backend/gestionRecursos/get_user_resources.php')
+                fetch('../../backend/gestionRecursos/get_user_resources.php')
                     .then(response => response.json())
                     .then(data => {
                         const resourcesGrid = document.getElementById('resources-grid');
@@ -1451,7 +1451,7 @@ try {
                                 button.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
-                                    fetch('../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -1486,7 +1486,7 @@ try {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     if (confirm('¿Estás seguro de que deseas eliminar este recurso?')) {
-                                        fetch('../backend/gestionRecursos/delete_resource.php', {
+                                        fetch('../../backend/gestionRecursos/delete_resource.php', {
                                             method: 'POST',
                                             headers: {
                                                 'Content-Type': 'application/x-www-form-urlencoded'
