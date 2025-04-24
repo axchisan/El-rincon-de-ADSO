@@ -366,7 +366,7 @@ try {
             <?php $status = getOnlineStatus($friend['ultima_conexion']); ?>
             <div class="friend-card">
               <div class="friend-card__avatar">
-                <img src="<?php echo $friend['imagen'] ? '../backend/perfil/' . htmlspecialchars($friend['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $friend['id']; ?>" alt="Avatar">
+                <img src="<?php echo $friend['imagen'] ? '../../backend/perfil/' . htmlspecialchars($friend['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $friend['id']; ?>" alt="Avatar">
               </div>
               <div class="friend-card__info">
                 <h3 class="friend-card__name"><?php echo htmlspecialchars($friend['nombre_usuario']); ?></h3>
