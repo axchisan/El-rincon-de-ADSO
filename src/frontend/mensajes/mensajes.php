@@ -78,7 +78,7 @@ try {
   $friend_name = htmlspecialchars($friend['nombre_usuario']);
   $friend_email = htmlspecialchars($friend['correo']);
   // Ajustar la ruta de la imagen con el parámetro de caché
-  $friend_image = $friend['imagen'] ? "../backend/perfil/" . htmlspecialchars($friend['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$friend_id";
+  $friend_image = $friend['imagen'] ? "../../backend/perfil/" . htmlspecialchars($friend['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$friend_id";
 
 } catch (PDOException $e) {
   error_log("Error de base de datos: " . $e->getMessage());

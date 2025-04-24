@@ -82,7 +82,7 @@ try {
   $profile_phone = !empty($profile_user['telefono']) ? htmlspecialchars($profile_user['telefono']) : 'No especificado';
   $profile_profession = !empty($profile_user['profesion']) ? htmlspecialchars($profile_user['profesion']) : 'No especificado';
   $profile_bio = !empty($profile_user['bio']) ? htmlspecialchars($profile_user['bio']) : 'Este usuario aún no ha añadido una biografía.';
-  $profile_image = $profile_user['imagen'] ? "../backend/perfil/" . htmlspecialchars($profile_user['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$profile_user_id";
+  $profile_image = $profile_user['imagen'] ? "../../backend/perfil/" . htmlspecialchars($profile_user['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$profile_user_id";
   $last_connection = $profile_user['ultima_conexion'];
 
   // Función para determinar si un usuario está en línea y formatear la última conexión
