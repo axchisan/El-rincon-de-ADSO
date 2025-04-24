@@ -150,7 +150,7 @@ if ($resource_type === 'video') {
         exit;
     }
 
-    $file_url = '/Uploads/' . $file_name;
+    $file_url = '../../uploads/' . $file_name;
 }
 
 try {
