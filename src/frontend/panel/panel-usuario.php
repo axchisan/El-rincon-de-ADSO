@@ -69,6 +69,7 @@ try {
                 <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
                 <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
                 <li class="navbar__menu-item"><a href="panel-usuario.php">Panel</a></li>
+                <li class="navbar__menu-item"><a href="../friends/amigos.php">Amigos</a></li>
                 <li class="navbar__menu-item navbar__menu-item--button"><a href="../../backend/logout.php">Cerrar sesión</a></li>
             </ul>
             <button id="mobile-menu-button" class="navbar__toggle">
@@ -80,6 +81,7 @@ try {
                 <li class="navbar__mobile-item"><a href="../inicio/index.php">Inicio</a></li>
                 <li class="navbar__mobile-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
                 <li class="navbar__mobile-item navbar__mobile-item--active"><a href="panel-usuario.php">Panel</a></li>
+                <li class="navbar__mobile-item"><a href="../friends/amigos.php">Amigos</a></li>
                 <li class="navbar__mobile-item"><a href="../../backend/logout.php">Cerrar sesión</a></li>
             </ul>
         </div>
