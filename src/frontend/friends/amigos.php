@@ -40,7 +40,7 @@ try {
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_user'])) {
     $search_term = trim($_POST['search_term']);
     if (!empty($search_term)) {
-      $query = "SELECT id, nombre_usuario, correo 
+      $query = "SELECT id, nombre_usuario, correo, imagen 
                 FROM usuarios 
                 WHERE nombre_usuario ILIKE :search_term 
                 AND id != :current_user_id 
@@ -179,7 +179,7 @@ try {
   }
 
   // Obtener solicitudes recibidas
-  $query = "SELECT a.id, a.usuario_id AS sender_id, u.nombre_usuario, u.correo 
+  $query = "SELECT a.id, a.usuario_id AS sender_id, u.nombre_usuario, u.correo, u.imagen 
             FROM amistades a 
             JOIN usuarios u ON a.usuario_id = u.id 
             WHERE a.amigo_id = :user_id AND a.estado = 'pending'";
@@ -188,7 +188,7 @@ try {
   $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   // Obtener lista de amigos con su última conexión
-  $query = "SELECT u.id, u.nombre_usuario, u.correo, u.ultima_conexion 
+  $query = "SELECT u.id, u.nombre_usuario, u.correo, u.ultima_conexion, u.imagen 
             FROM amistades a 
             JOIN usuarios u ON (u.id = a.usuario_id OR u.id = a.amigo_id) 
             WHERE ((a.usuario_id = :user_id AND u.id = a.amigo_id) OR (a.amigo_id = :user_id AND u.id = a.usuario_id)) 
@@ -304,7 +304,7 @@ try {
             <?php foreach ($search_results as $result): ?>
               <div class="friend-card">
                 <div class="friend-card__avatar">
-                  <img src="https://i.pravatar.cc/150?img=<?php echo $result['id']; ?>" alt="Avatar">
+                  <img src="<?php echo $result['imagen'] ? '../backend/perfil/' . htmlspecialchars($result['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $result['id']; ?>" alt="Avatar">
                 </div>
                 <div class="friend-card__info">
                   <h3 class="friend-card__name"><?php echo htmlspecialchars($result['nombre_usuario']); ?></h3>
@@ -335,7 +335,7 @@ try {
           <?php foreach ($requests as $request): ?>
             <div class="request-card">
               <div class="request-card__avatar">
-                <img src="https://i.pravatar.cc/150?img=<?php echo $request['sender_id']; ?>" alt="Avatar">
+                <img src="<?php echo $request['imagen'] ? '../backend/perfil/' . htmlspecialchars($request['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $request['sender_id']; ?>" alt="Avatar">
               </div>
               <div class="request-card__info">
                 <h3 class="request-card__name"><?php echo htmlspecialchars($request['nombre_usuario']); ?></h3>
@@ -366,7 +366,7 @@ try {
             <?php $status = getOnlineStatus($friend['ultima_conexion']); ?>
             <div class="friend-card">
               <div class="friend-card__avatar">
-                <img src="https://i.pravatar.cc/150?img=<?php echo $friend['id']; ?>" alt="Avatar">
+                <img src="<?php echo $friend['imagen'] ? '../backend/perfil/' . htmlspecialchars($friend['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $friend['id']; ?>" alt="Avatar">
               </div>
               <div class="friend-card__info">
                 <h3 class="friend-card__name"><?php echo htmlspecialchars($friend['nombre_usuario']); ?></h3>
