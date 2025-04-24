@@ -82,7 +82,7 @@ try {
   $profile_phone = !empty($profile_user['telefono']) ? htmlspecialchars($profile_user['telefono']) : 'No especificado';
   $profile_profession = !empty($profile_user['profesion']) ? htmlspecialchars($profile_user['profesion']) : 'No especificado';
   $profile_bio = !empty($profile_user['bio']) ? htmlspecialchars($profile_user['bio']) : 'Este usuario aún no ha añadido una biografía.';
-  $profile_image = !empty($profile_user['imagen']) ? htmlspecialchars($profile_user['imagen']) : "https://i.pravatar.cc/150?img=$profile_user_id";
+  $profile_image = $profile_user['imagen'] ? "../backend/perfil/" . htmlspecialchars($profile_user['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$profile_user_id";
   $last_connection = $profile_user['ultima_conexion'];
 
   // Función para determinar si un usuario está en línea y formatear la última conexión
@@ -173,31 +173,50 @@ try {
   <!-- Sección principal -->
   <section class="profile-section">
     <div class="container">
-      <div class="profile-header">
-        <div class="profile-header__avatar">
-          <img src="<?php echo $profile_image; ?>" alt="Avatar">
-        </div>
-        <div class="profile-header__info">
-          <h1 class="profile-header__title"><?php echo $profile_name; ?></h1>
-          <p class="profile-header__email"><?php echo $profile_email; ?></p>
-          <p class="profile-header__status <?php echo $status['is_online'] ? 'profile-header__status--online' : 'profile-header__status--offline'; ?>">
-            <?php echo $status['status_text']; ?>
-          </p>
-        </div>
-        <div class="profile-header__actions">
-          <a href="../friends/amigos.php" class="profile-header__back">
-            <i class="fas fa-arrow-left"></i> Volver a Amigos
-          </a>
-        </div>
-      </div>
+      <div class="profile-container">
+        <h1 class="profile-container__title">Perfil de <?php echo $profile_name; ?></h1>
+        <p class="profile-container__subtitle">Información personal</p>
+        <div class="profile-content">
+          <!-- Sección de la foto de perfil -->
+          <div class="profile-image-section">
+            <div class="profile-image-wrapper">
+              <img src="<?php echo $profile_image; ?>" alt="Foto de perfil de <?php echo $profile_name; ?>" class="profile-image">
+            </div>
+            <p class="profile-image-label"><?php echo $status['status_text']; ?></p>
+          </div>
 
-      <!-- Información del perfil -->
-      <div class="profile-info">
-        <h2 class="profile-info__title">Acerca de <?php echo $profile_name; ?></h2>
-        <div class="profile-info__details">
-          <p><strong>Teléfono:</strong> <?php echo $profile_phone; ?></p>
-          <p><strong>Profesión:</strong> <?php echo $profile_profession; ?></p>
-          <p><strong>Biografía:</strong> <?php echo $profile_bio; ?></p>
+          <!-- Sección de información -->
+          <div class="profile-info-section">
+            <div class="profile-info-row">
+              <div class="profile-info-field">
+                <label>Nombre</label>
+                <p><?php echo $profile_name; ?></p>
+              </div>
+              <div class="profile-info-field">
+                <label>Correo electrónico</label>
+                <p><?php echo $profile_email; ?></p>
+              </div>
+            </div>
+            <div class="profile-info-row">
+              <div class="profile-info-field">
+                <label>Teléfono</label>
+                <p><?php echo $profile_phone; ?></p>
+              </div>
+              <div class="profile-info-field">
+                <label>Profesión</label>
+                <p><?php echo $profile_profession; ?></p>
+              </div>
+            </div>
+            <div class="profile-info-row">
+              <div class="profile-info-field profile-info-field--full">
+                <label>Biografía</label>
+                <p><?php echo $profile_bio; ?></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <a href="../friends/amigos.php" class="profile-actions__button profile-actions__button--back">Volver a Amigos</a>
         </div>
       </div>
     </div>

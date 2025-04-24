@@ -63,8 +63,8 @@ try {
     exit();
   }
 
-  // Obtener datos del amigo
-  $query = "SELECT nombre_usuario, correo FROM usuarios WHERE id = :friend_id";
+  // Obtener datos del amigo, incluyendo la imagen
+  $query = "SELECT nombre_usuario, correo, imagen FROM usuarios WHERE id = :friend_id";
   $stmt = $db->prepare($query);
   $stmt->execute([':friend_id' => $friend_id]);
   $friend = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -77,6 +77,8 @@ try {
 
   $friend_name = htmlspecialchars($friend['nombre_usuario']);
   $friend_email = htmlspecialchars($friend['correo']);
+  // Ajustar la ruta de la imagen con el parámetro de caché
+  $friend_image = $friend['imagen'] ? "../backend/perfil/" . htmlspecialchars($friend['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$friend_id";
 
 } catch (PDOException $e) {
   error_log("Error de base de datos: " . $e->getMessage());
@@ -147,7 +149,7 @@ try {
     <div class="container">
       <div class="chat-header">
         <div class="chat-header__avatar">
-          <img src="https://i.pravatar.cc/150?img=<?php echo $friend_id; ?>" alt="Avatar">
+          <img src="<?php echo $friend_image; ?>" alt="Avatar">
         </div>
         <div class="chat-header__info">
           <h1 class="chat-header__title">Chat con <?php echo $friend_name; ?></h1>
