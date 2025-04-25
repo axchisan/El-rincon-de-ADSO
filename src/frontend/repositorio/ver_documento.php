@@ -10,6 +10,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $documento_id = intval($_GET['id']);
 $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
+$nombre_usuario = isset($_SESSION['nombre_usuario']) ? $_SESSION['nombre_usuario'] : '';
 
 try {
     $db = conexionDB::getConexion();
@@ -116,6 +117,7 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+<script src="../lib/Bootstrap/js"></script>
     <!-- Navegación -->
     <nav class="navbar">
         <div class="container navbar__container">
@@ -284,102 +286,65 @@ try {
                     </div>
                 </div>
                 
-                <div class="resource-viewer__content">
-                    <div class="resource-section">
-                        <h2 class="resource-section__title">Visualización del Documento</h2>
-                        
-                        <?php if (!empty($documento['url_archivo'])): ?>
-                        <div class="resource-viewer__iframe-container">
-                            <?php 
-                            $extension = pathinfo($documento['url_archivo'], PATHINFO_EXTENSION);
-                            $isPdf = $extension === 'pdf';
-                            $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif']);
-                            ?>
-                            
-                            <?php if ($isPdf): ?>
-                            <iframe src="<?php echo htmlspecialchars($documento['url_archivo']); ?>" class="resource-viewer__iframe" allowfullscreen></iframe>
-                            <?php elseif ($isImage): ?>
-                            <div class="resource-viewer__image-container">
-                                <img src="<?php echo htmlspecialchars($documento['url_archivo']); ?>" alt="<?php echo htmlspecialchars($documento['titulo']); ?>" class="resource-viewer__image">
-                            </div>
-                            <?php else: ?>
-                            <div class="resource-viewer__no-preview">
-                                <i class="fas fa-file-alt resource-viewer__no-preview-icon"></i>
-                                <p>La vista previa no está disponible para este tipo de archivo.</p>
-                                <a href="<?php echo htmlspecialchars($documento['url_archivo']); ?>" class="btn btn--primary" download>
-                                    <i class="fas fa-download"></i> Descargar Archivo
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                        <?php else: ?>
-                        <div class="resource-viewer__no-preview">
-                            <i class="fas fa-exclamation-circle resource-viewer__no-preview-icon"></i>
-                            <p>No hay archivo disponible para este recurso.</p>
-                        </div>
-                        <?php endif; ?>
+               <!-- Reemplazar la sección de comentarios en ver_libro.php, ver_documento.php y ver_video.php con este código mejorado -->
+
+<div class="resource-comments">
+    <div class="resource-section">
+        <h2 class="resource-section__title">Comentarios</h2>
+        
+        <?php if ($usuario_id): ?>
+        <div class="comment-form">
+            <form id="form-comentario" data-documento-id="<?php echo $documento_id; ?>" data-usuario-id="<?php echo $usuario_id; ?>" data-nombre-usuario="<?php echo htmlspecialchars($nombre_usuario); ?>">
+                <div class="comment-form__input">
+                    <textarea name="comentario" placeholder="Escribe un comentario..." required></textarea>
+                    <button type="submit" class="btn btn--primary" id="btn-enviar-comentario">
+                        <i class="fas fa-paper-plane"></i> Enviar comentario
+                    </button>
+                    <div id="comentario-status" class="comment-status" style="display: none;">
+                        <div class="spinner"><i class="fas fa-spinner fa-spin"></i> Enviando...</div>
                     </div>
                 </div>
-                
-                <div class="resource-comments">
-                    <div class="resource-section">
-                        <h2 class="resource-section__title">Comentarios</h2>
-                        
-                        <?php if ($usuario_id): ?>
-                        <div class="comment-form">
-                            <form id="form-comentario" data-documento-id="<?php echo $documento_id; ?>">
-                                <div class="comment-form__avatar">
-                                    <img src="../inicio/img/default-avatar.png" alt="Avatar">
-                                </div>
-                                <div class="comment-form__input">
-                                    <textarea name="comentario" placeholder="Escribe un comentario..." required></textarea>
-                                    <button type="submit" class="btn btn--primary">
-                                        <i class="fas fa-paper-plane"></i> Enviar
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <?php else: ?>
-                        <div class="comment-login-prompt">
-                            <p>Debes <a href="../login/login.php">iniciar sesión</a> para comentar.</p>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <div class="comments-list" id="comments-container">
-                            <?php if (empty($comentarios)): ?>
-                            <div class="no-comments">
-                                <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
-                            </div>
-                            <?php else: ?>
-                                <?php foreach ($comentarios as $comentario): ?>
-                                <div class="comment">
-                                    <div class="comment__avatar">
-                                        <img src="../inicio/img/default-avatar.png" alt="Avatar">
-                                    </div>
-                                    <div class="comment__content">
-                                        <div class="comment__header">
-                                            <span class="comment__author"><?php echo htmlspecialchars($comentario['nombre_usuario']); ?></span>
-                                            <span class="comment__date"><?php echo date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])); ?></span>
-                                        </div>
-                                        <div class="comment__text">
-                                            <p><?php echo nl2br(htmlspecialchars($comentario['contenido'])); ?></p>
-                                        </div>
-                                        <?php if ($usuario_id == $comentario['usuario_id']): ?>
-                                        <div class="comment__actions">
-                                            <button class="btn-delete-comment" data-id="<?php echo $comentario['id']; ?>">
-                                                <i class="fas fa-trash-alt"></i> Eliminar
-                                            </button>
-                                        </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
+        <?php else: ?>
+        <div class="comment-login-prompt">
+            <p>Debes <a href="../login/login.php">iniciar sesión</a> para comentar.</p>
+        </div>
+        <?php endif; ?>
+        
+        <div class="comments-list" id="comments-container">
+            <?php if (empty($comentarios)): ?>
+            <div class="no-comments">
+                <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+            </div>
+            <?php else: ?>
+                <?php foreach ($comentarios as $comentario): ?>
+                <div class="comment <?php echo ($comentario['autor_id'] == $usuario_id) ? 'comment--own' : ''; ?>">
+                    <div class="comment__content">
+                        <div class="comment__header">
+                            <span class="comment__author"><?php echo htmlspecialchars($comentario['nombre_usuario']); ?></span>
+                            <span class="comment__date"><?php echo date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])); ?></span>
+                        </div>
+                        <div class="comment__text">
+                            <p><?php echo nl2br(htmlspecialchars($comentario['contenido'])); ?></p>
+                        </div>
+                        <?php if ($usuario_id == $comentario['autor_id']): ?>
+                        <div class="comment__actions">
+                            <button class="btn-edit-comment" data-id="<?php echo $comentario['id']; ?>" data-content="<?php echo htmlspecialchars(urlencode($comentario['contenido'])); ?>">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn-delete-comment" data-id="<?php echo $comentario['id']; ?>">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
     </main>
 
     <footer class="footer">
@@ -491,75 +456,11 @@ try {
                     window.location.href = `../panel/editar-recurso.php?id=${documentoId}`;
                 });
             }
-            
-            // Comentarios
-            const formComentario = document.getElementById('form-comentario');
-            if (formComentario) {
-                formComentario.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const documentoId = this.getAttribute('data-documento-id');
-                    const comentario = this.querySelector('textarea[name="comentario"]').value;
-                    
-                    if (!comentario.trim()) {
-                        alert('El comentario no puede estar vacío.');
-                        return;
-                    }
-                    
-                    fetch('../../backend/gestionRecursos/add_comment.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: `documento_id=${documentoId}&comentario=${encodeURIComponent(comentario)}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Recargar la página para mostrar el nuevo comentario
-                            location.reload();
-                        } else {
-                            alert(data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Ha ocurrido un error al enviar el comentario.');
-                    });
-                });
-            }
-            
-            // Eliminar comentario
-            document.querySelectorAll('.btn-delete-comment').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (confirm('¿Estás seguro de que deseas eliminar este comentario?')) {
-                        const comentarioId = this.getAttribute('data-id');
-                        
-                        fetch('../../backend/gestionRecursos/delete_comment.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `comentario_id=${comentarioId}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Recargar la página para actualizar los comentarios
-                                location.reload();
-                            } else {
-                                alert(data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Ha ocurrido un error al eliminar el comentario.');
-                        });
-                    }
-                });
-            });
         });
     </script>
+
+<script src="../repositorio/js/script-comentarios.js"></script>
 </body>
 </html>
+
 

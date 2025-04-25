@@ -23,11 +23,11 @@ try {
     $db = conexionDB::getConexion();
     
     // Verificar si el comentario existe y pertenece al usuario
-    $query = "SELECT id FROM comentarios WHERE id = :comentario_id AND usuario_id = :usuario_id";
+    $query = "SELECT id FROM comentarios WHERE id = :comentario_id AND autor_id = :autor_id";
     $stmt = $db->prepare($query);
     $stmt->execute([
         ':comentario_id' => $comentario_id,
-        ':usuario_id' => $usuario_id
+        ':autor_id' => $usuario_id
     ]);
     
     if (!$stmt->fetch()) {
@@ -46,3 +46,5 @@ try {
     echo json_encode(['success' => false, 'message' => 'Error al eliminar el comentario: ' . $e->getMessage()]);
 }
 ?>
+
+
