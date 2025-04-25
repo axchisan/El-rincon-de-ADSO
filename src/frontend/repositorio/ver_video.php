@@ -125,6 +125,7 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+<script src="../lib/Bootstrap/js"></script>
     <!-- Navegación -->
     <nav class="navbar">
         <div class="container navbar__container">
@@ -220,8 +221,7 @@ try {
                     
                     <h1 class="resource-title"><?php echo htmlspecialchars($documento['titulo']); ?></h1>
                     
-                    <div class="resource-author">
-                        <img src="../inicio/img/default-avatar.png" alt="Avatar" class="resource-author__avatar">
+                    
                         <div class="resource-author__info">
                             <span class="resource-author__name"><?php echo htmlspecialchars($documento['autor_nombre']); ?></span>
                             <span class="resource-author__date">Publicado el <?php echo date('d/m/Y', strtotime($documento['fecha_publicacion'])); ?></span>
@@ -325,65 +325,64 @@ try {
                     </div>
                 </div>
                 
-                <div class="resource-comments">
-                    <div class="resource-section">
-                        <h2 class="resource-section__title">Comentarios</h2>
-                        
-                        <?php if ($usuario_id): ?>
-                        <div class="comment-form">
-                            <form id="form-comentario" data-documento-id="<?php echo $documento_id; ?>">
-                                <div class="comment-form__avatar">
-                                    <img src="../inicio/img/default-avatar.png" alt="Avatar">
-                                </div>
-                                <div class="comment-form__input">
-                                    <textarea name="comentario" placeholder="Escribe un comentario..." required></textarea>
-                                    <button type="submit" class="btn btn--primary">
-                                        <i class="fas fa-paper-plane"></i> Enviar
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <?php else: ?>
-                        <div class="comment-login-prompt">
-                            <p>Debes <a href="../login/login.php">iniciar sesión</a> para comentar.</p>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <div class="comments-list" id="comments-container">
-                            <?php if (empty($comentarios)): ?>
-                            <div class="no-comments">
-                                <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
-                            </div>
-                            <?php else: ?>
-                                <?php foreach ($comentarios as $comentario): ?>
-                                <div class="comment">
-                                    <div class="comment__avatar">
-                                        <img src="../inicio/img/default-avatar.png" alt="Avatar">
-                                    </div>
-                                    <div class="comment__content">
-                                        <div class="comment__header">
-                                            <span class="comment__author"><?php echo htmlspecialchars($comentario['nombre_usuario']); ?></span>
-                                            <span class="comment__date"><?php echo date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])); ?></span>
-                                        </div>
-                                        <div class="comment__text">
-                                            <p><?php echo nl2br(htmlspecialchars($comentario['contenido'])); ?></p>
-                                        </div>
-                                        <?php if ($usuario_id == $comentario['usuario_id']): ?>
-                                        <div class="comment__actions">
-                                            <button class="btn-delete-comment" data-id="<?php echo $comentario['id']; ?>">
-                                                <i class="fas fa-trash-alt"></i> Eliminar
-                                            </button>
-                                        </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
+                <!-- Reemplazar la sección de comentarios en ver_libro.php, ver_documento.php y ver_video.php con este código mejorado -->
+
+<div class="resource-comments">
+    <div class="resource-section">
+        <h2 class="resource-section__title">Comentarios</h2>
+        
+        <?php if ($usuario_id): ?>
+        <div class="comment-form">
+            <form id="form-comentario" data-documento-id="<?php echo $documento_id; ?>">
+                <div class="comment-form__input">
+                    <textarea name="comentario" placeholder="Escribe un comentario..." required></textarea>
+                    <button type="submit" class="btn btn--primary" id="btn-enviar-comentario">
+                        <i class="fas fa-paper-plane"></i> Enviar comentario
+                    </button>
+                    <div id="comentario-status" class="comment-status" style="display: none;">
+                        <div class="spinner"><i class="fas fa-spinner fa-spin"></i> Enviando...</div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
+        <?php else: ?>
+        <div class="comment-login-prompt">
+            <p>Debes <a href="../login/login.php">iniciar sesión</a> para comentar.</p>
+        </div>
+        <?php endif; ?>
+        
+        <div class="comments-list" id="comments-container">
+            <?php if (empty($comentarios)): ?>
+            <div class="no-comments">
+                <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+            </div>
+            <?php else: ?>
+                <?php foreach ($comentarios as $comentario): ?>
+                <div class="comment">
+                    <div class="comment__content">
+                        <div class="comment__header">
+                            <span class="comment__author"><?php echo htmlspecialchars($comentario['nombre_usuario']); ?></span>
+                            <span class="comment__date"><?php echo date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])); ?></span>
+                        </div>
+                          ?></span>
+                        </div>
+                        <div class="comment__text">
+                            <p><?php echo nl2br(htmlspecialchars($comentario['contenido'])); ?></p>
+                        </div>
+                        <?php if ($usuario_id == $comentario['autor_id']): ?>
+                        <div class="comment__actions">
+                            <button class="btn-delete-comment" data-id="<?php echo $comentario['id']; ?>">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
     </main>
 
     <footer class="footer">
@@ -564,7 +563,10 @@ try {
             });
         });
     </script>
+
+<!-- Agregar el script de comentarios al final del archivo, justo antes de </body> -->
+
+<script src="../lib/Bootstrap/js/script-comentarios.js"></script>
 </body>
 </html>
-
 
