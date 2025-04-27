@@ -77,12 +77,12 @@ try {
         $stmt->execute([':usuario_id' => $usuario_id, ':documento_id' => $documento_id]);
     }
     
-    // Obtener comentarios
+    // Obtener comentarios directamente asociados al documento
     $query = "
         SELECT c.*, u.nombre_usuario
         FROM comentarios c
         JOIN usuarios u ON c.autor_id = u.id
-        WHERE c.publicacion_id = :documento_id
+        WHERE c.documento_id = :documento_id
         ORDER BY c.fecha_creacion DESC
     ";
     $stmt = $db->prepare($query);
@@ -125,7 +125,6 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<script src="../lib/Bootstrap/js"></script>
     <!-- Navegación -->
     <nav class="navbar">
         <div class="container navbar__container">
@@ -221,11 +220,9 @@ try {
                     
                     <h1 class="resource-title"><?php echo htmlspecialchars($documento['titulo']); ?></h1>
                     
-                    
-                        <div class="resource-author__info">
-                            <span class="resource-author__name"><?php echo htmlspecialchars($documento['autor_nombre']); ?></span>
-                            <span class="resource-author__date">Publicado el <?php echo date('d/m/Y', strtotime($documento['fecha_publicacion'])); ?></span>
-                        </div>
+                    <div class="resource-author__info">
+                        <span class="resource-author__name"><?php echo htmlspecialchars($documento['autor_nombre']); ?></span>
+                        <span class="resource-author__date">Publicado el <?php echo date('d/m/Y', strtotime($documento['fecha_publicacion'])); ?></span>
                     </div>
                 </div>
             </div>
@@ -325,64 +322,63 @@ try {
                     </div>
                 </div>
                 
-                <!-- Reemplazar la sección de comentarios en ver_libro.php, ver_documento.php y ver_video.php con este código mejorado -->
-
-<div class="resource-comments">
-    <div class="resource-section">
-        <h2 class="resource-section__title">Comentarios</h2>
-        
-        <?php if ($usuario_id): ?>
-        <div class="comment-form">
-            <form id="form-comentario" data-documento-id="<?php echo $documento_id; ?>">
-                <div class="comment-form__input">
-                    <textarea name="comentario" placeholder="Escribe un comentario..." required></textarea>
-                    <button type="submit" class="btn btn--primary" id="btn-enviar-comentario">
-                        <i class="fas fa-paper-plane"></i> Enviar comentario
-                    </button>
-                    <div id="comentario-status" class="comment-status" style="display: none;">
-                        <div class="spinner"><i class="fas fa-spinner fa-spin"></i> Enviando...</div>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <?php else: ?>
-        <div class="comment-login-prompt">
-            <p>Debes <a href="../login/login.php">iniciar sesión</a> para comentar.</p>
-        </div>
-        <?php endif; ?>
-        
-        <div class="comments-list" id="comments-container">
-            <?php if (empty($comentarios)): ?>
-            <div class="no-comments">
-                <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
-            </div>
-            <?php else: ?>
-                <?php foreach ($comentarios as $comentario): ?>
-                <div class="comment">
-                    <div class="comment__content">
-                        <div class="comment__header">
-                            <span class="comment__author"><?php echo htmlspecialchars($comentario['nombre_usuario']); ?></span>
-                            <span class="comment__date"><?php echo date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])); ?></span>
+                <!-- Sección de comentarios -->
+                <div class="resource-comments">
+                    <div class="resource-section">
+                        <h2 class="resource-section__title">Comentarios</h2>
+                        
+                        <?php if ($usuario_id): ?>
+                        <div class="comment-form">
+                            <form id="form-comentario" data-documento-id="<?php echo $documento_id; ?>">
+                                <div class="comment-form__input">
+                                    <textarea name="contenido" placeholder="Escribe un comentario..." required></textarea>
+                                    <button type="submit" class="btn btn--primary" id="btn-enviar-comentario">
+                                        <i class="fas fa-paper-plane"></i> Enviar comentario
+                                    </button>
+                                    <div id="comentario-status" class="comment-status" style="display: none;">
+                                        <div class="spinner"><i class="fas fa-spinner fa-spin"></i> Enviando...</div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                          ?></span>
-                        </div>
-                        <div class="comment__text">
-                            <p><?php echo nl2br(htmlspecialchars($comentario['contenido'])); ?></p>
-                        </div>
-                        <?php if ($usuario_id == $comentario['autor_id']): ?>
-                        <div class="comment__actions">
-                            <button class="btn-delete-comment" data-id="<?php echo $comentario['id']; ?>">
-                                <i class="fas fa-trash-alt"></i> Eliminar
-                            </button>
+                        <?php else: ?>
+                        <div class="comment-login-prompt">
+                            <p>Debes <a href="../login/login.php">iniciar sesión</a> para comentar.</p>
                         </div>
                         <?php endif; ?>
+                        
+                        <div class="comments-list" id="comments-container">
+                            <?php if (empty($comentarios)): ?>
+                            <div class="no-comments">
+                                <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+                            </div>
+                            <?php else: ?>
+                                <?php foreach ($comentarios as $comentario): ?>
+                                <div class="comment" data-id="<?php echo $comentario['id']; ?>">
+                                    <div class="comment__content">
+                                        <div class="comment__header">
+                                            <span class="comment__author"><?php echo htmlspecialchars($comentario['nombre_usuario']); ?></span>
+                                            <span class="comment__date"><?php echo date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])); ?></span>
+                                        </div>
+                                        <div class="comment__text">
+                                            <p><?php echo nl2br(htmlspecialchars($comentario['contenido'])); ?></p>
+                                        </div>
+                                        <?php if ($usuario_id == $comentario['autor_id']): ?>
+                                        <div class="comment__actions">
+                                            <button class="btn-delete-comment" data-id="<?php echo $comentario['id']; ?>">
+                                                <i class="fas fa-trash-alt"></i> Eliminar
+                                            </button>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            </div>
         </div>
-    </div>
-</div>
     </main>
 
     <footer class="footer">
@@ -392,11 +388,12 @@ try {
                     <i class="fas fa-book-open"></i>
                     <span>El Rincón de ADSO</span>
                 </div>
-                <p class="footer__copyright">&copy; <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.</p>
+                <p class="footer__copyright">© <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 
+    <script src="../lib/Bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Menú móvil
@@ -494,79 +491,117 @@ try {
                     window.location.href = `../panel/editar-recurso.php?id=${documentoId}`;
                 });
             }
-            
-            // Comentarios
+
+            // Enviar comentario
             const formComentario = document.getElementById('form-comentario');
+            const comentarioStatus = document.getElementById('comentario-status');
             if (formComentario) {
                 formComentario.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    
+
                     const documentoId = this.getAttribute('data-documento-id');
-                    const comentario = this.querySelector('textarea[name="comentario"]').value;
-                    
-                    if (!comentario.trim()) {
+                    const contenido = this.querySelector('textarea[name="contenido"]').value.trim();
+
+                    if (!contenido) {
                         alert('El comentario no puede estar vacío.');
                         return;
                     }
-                    
+
+                    comentarioStatus.style.display = 'block';
+
                     fetch('../../backend/gestionRecursos/add_comment.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `documento_id=${documentoId}&comentario=${encodeURIComponent(comentario)}`
+                        body: `documento_id=${documentoId}&contenido=${encodeURIComponent(contenido)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        comentarioStatus.style.display = 'none';
+                        if (data.success) {
+                            // Añadir el comentario al DOM sin recargar la página
+                            const commentsContainer = document.getElementById('comments-container');
+                            const noCommentsDiv = commentsContainer.querySelector('.no-comments');
+                            if (noCommentsDiv) {
+                                noCommentsDiv.remove();
+                            }
+
+                            const newComment = document.createElement('div');
+                            newComment.className = 'comment';
+                            newComment.setAttribute('data-id', data.comentario_id);
+                            newComment.innerHTML = `
+                                <div class="comment__content">
+                                    <div class="comment__header">
+                                        <span class="comment__author">${data.autor_nombre}</span>
+                                        <span class="comment__date">${data.fecha_creacion}</span>
+                                    </div>
+                                    <div class="comment__text">
+                                        <p>${contenido.replace(/\n/g, '<br>')}</p>
+                                    </div>
+                                    <div class="comment__actions">
+                                        <button class="btn-delete-comment" data-id="${data.comentario_id}">
+                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+
+                            // Limpiar el formulario
+                            formComentario.querySelector('textarea').value = '';
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        comentarioStatus.style.display = 'none';
+                        console.error('Error:', error);
+                        alert('Ha ocurrido un error al enviar el comentario.');
+                    });
+                });
+            }
+
+            // Eliminar comentario
+            document.getElementById('comments-container').addEventListener('click', function(e) {
+                const btnDelete = e.target.closest('.btn-delete-comment');
+                if (btnDelete) {
+                    if (!confirm('¿Estás seguro de que deseas eliminar este comentario?')) return;
+
+                    const comentarioId = btnDelete.getAttribute('data-id');
+
+                    fetch('../../backend/gestionRecursos/delete_comment.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `comentario_id=${comentarioId}`
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Recargar la página para mostrar el nuevo comentario
-                            location.reload();
+                            const commentDiv = btnDelete.closest('.comment');
+                            commentDiv.remove();
+
+                            const commentsContainer = document.getElementById('comments-container');
+                            if (!commentsContainer.querySelector('.comment')) {
+                                commentsContainer.innerHTML = `
+                                    <div class="no-comments">
+                                        <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+                                    </div>
+                                `;
+                            }
                         } else {
                             alert(data.message);
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Ha ocurrido un error al enviar el comentario.');
+                        alert('Ha ocurrido un error al eliminar el comentario.');
                     });
-                });
-            }
-            
-            // Eliminar comentario
-            document.querySelectorAll('.btn-delete-comment').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (confirm('¿Estás seguro de que deseas eliminar este comentario?')) {
-                        const comentarioId = this.getAttribute('data-id');
-                        
-                        fetch('../../backend/gestionRecursos/delete_comment.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `comentario_id=${comentarioId}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Recargar la página para actualizar los comentarios
-                                location.reload();
-                            } else {
-                                alert(data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Ha ocurrido un error al eliminar el comentario.');
-                        });
-                    }
-                });
+                }
             });
         });
     </script>
-
-<!-- Agregar el script de comentarios al final del archivo, justo antes de </body> -->
-
-<script src="../lib/Bootstrap/js/script-comentarios.js"></script>
 </body>
 </html>
-
