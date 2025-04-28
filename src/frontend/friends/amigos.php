@@ -304,7 +304,7 @@ try {
             <?php foreach ($search_results as $result): ?>
               <div class="friend-card">
                 <div class="friend-card__avatar">
-                  <img src="<?php echo $result['imagen'] ? '../backend/perfil/' . htmlspecialchars($result['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $result['id']; ?>" alt="Avatar">
+                  <img src="<?php echo $result['imagen'] ? '../../backend/perfil/' . htmlspecialchars($result['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $result['id']; ?>" alt="Avatar">
                 </div>
                 <div class="friend-card__info">
                   <h3 class="friend-card__name"><?php echo htmlspecialchars($result['nombre_usuario']); ?></h3>
@@ -335,7 +335,7 @@ try {
           <?php foreach ($requests as $request): ?>
             <div class="request-card">
               <div class="request-card__avatar">
-                <img src="<?php echo $request['imagen'] ? '../backend/perfil/' . htmlspecialchars($request['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $request['sender_id']; ?>" alt="Avatar">
+                <img src="<?php echo $request['imagen'] ? '../../backend/perfil/' . htmlspecialchars($request['imagen']) . '?v=' . time() : 'https://i.pravatar.cc/150?img=' . $request['sender_id']; ?>" alt="Avatar">
               </div>
               <div class="request-card__info">
                 <h3 class="request-card__name"><?php echo htmlspecialchars($request['nombre_usuario']); ?></h3>
