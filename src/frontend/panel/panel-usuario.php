@@ -15,6 +15,8 @@ if (!isset($_SESSION['usuario_id'])) {
 try {
     $db = conexionDB::getConexion();
     $user_id = $_SESSION['usuario_id'];
+
+    // Obtener datos del usuario
     $query = "SELECT nombre_usuario, correo, telefono, profesion, bio, ultima_conexion, imagen FROM usuarios WHERE id = :id";
     $stmt = $db->prepare($query);
     $stmt->execute([':id' => $user_id]);
@@ -30,7 +32,14 @@ try {
     $ultima_conexion = $usuario['ultima_conexion']
         ? date('d \d\e F, Y', strtotime($usuario['ultima_conexion']))
         : 'Sin registro';
-        $imagen_perfil = $usuario['imagen'] ? "../../backend/perfil/" . $usuario['imagen'] . "?v=" . time() : 'https://i.pravatar.cc/150?img=12';
+    $imagen_perfil = $usuario['imagen'] ? "../../backend/perfil/" . $usuario['imagen'] . "?v=" . time() : 'https://i.pravatar.cc/150?img=12';
+
+    // Contar notificaciones no leídas
+    $query = "SELECT COUNT(*) FROM notificaciones WHERE usuario_id = :user_id AND leida = FALSE";
+    $stmt = $db->prepare($query);
+    $stmt->execute([':user_id' => $user_id]);
+    $unread_count = $stmt->fetchColumn();
+
 } catch (PDOException $e) {
     session_destroy();
     header("Location: ../inicio/index.php");
@@ -47,17 +56,58 @@ try {
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-<meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Usuario - El Rincón de ADSO</title>
-  <link rel="icon" type="image/png" href="../inicio/img/icono.png">
-  <link rel="stylesheet" href="./css/styles-panel.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Usuario - El Rincón de ADSO</title>
+    <link rel="icon" type="image/png" href="../inicio/img/icono.png">
+    <link rel="stylesheet" href="./css/styles-panel.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo para el botón flotante */
+        .floating-notifications-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        .floating-notifications-btn:hover {
+            background-color: #45a049;
+        }
+        .floating-notifications-btn i {
+            font-size: 24px;
+        }
+        /* Estilo para el círculo rojo de notificaciones no leídas */
+        .notification-dot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-
 <body>
     <nav class="navbar">
         <div class="container navbar__container">
@@ -68,8 +118,14 @@ try {
             <ul class="navbar__menu">
                 <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
                 <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
-                <li class="navbar__menu-item"><a href="panel-usuario.php">Panel</a></li>
+                <li class="navbar__menu-item navbar__menu-item--active"><a href="panel-usuario.php">Panel</a></li>
                 <li class="navbar__menu-item"><a href="../friends/amigos.php">Amigos</a></li>
+                <li class="navbar__menu-item"><a href="../notificaciones/notificaciones.php">
+                    Notificaciones
+                    <?php if ($unread_count > 0): ?>
+                        <span class="notification-badge"><?php echo $unread_count; ?></span>
+                    <?php endif; ?>
+                </a></li>
                 <li class="navbar__menu-item navbar__menu-item--button"><a href="../../backend/logout.php">Cerrar sesión</a></li>
             </ul>
             <button id="mobile-menu-button" class="navbar__toggle">
@@ -82,6 +138,12 @@ try {
                 <li class="navbar__mobile-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
                 <li class="navbar__mobile-item navbar__mobile-item--active"><a href="panel-usuario.php">Panel</a></li>
                 <li class="navbar__mobile-item"><a href="../friends/amigos.php">Amigos</a></li>
+                <li class="navbar__mobile-item"><a href="../notificaciones/notificaciones.php">
+                    Notificaciones
+                    <?php if ($unread_count > 0): ?>
+                        <span class="notification-badge"><?php echo $unread_count; ?></span>
+                    <?php endif; ?>
+                </a></li>
                 <li class="navbar__mobile-item"><a href="../../backend/logout.php">Cerrar sesión</a></li>
             </ul>
         </div>
@@ -598,77 +660,77 @@ try {
                     <button class="sub-tab" data-subtab="notificaciones">Notificaciones</button>
                 </div>
                 <div class="sub-content">
-                <div id="datos-personales" class="sub-panel active">
-    <div class="panel-header-secondary">
-        <h2>Datos Personales</h2>
-        <p>Gestiona tu información personal</p>
-    </div>
-    <!-- Mostrar mensajes de éxito o error -->
-    <?php if (isset($_SESSION['success_message'])): ?>
-        <div class="success-message" style="display: block; margin-bottom: 20px; color: green;">
-            <?php echo htmlspecialchars($_SESSION['success_message']); ?>
-        </div>
-        <?php unset($_SESSION['success_message']); ?>
-    <?php endif; ?>
-    <?php if (isset($_SESSION['error_message'])): ?>
-        <div class="error-message" style="display: block; margin-bottom: 20px; color: red;">
-            <?php echo htmlspecialchars($_SESSION['error_message']); ?>
-        </div>
-        <?php unset($_SESSION['error_message']); ?>
-    <?php endif; ?>
-    <div class="profile-container">
-        <div class="profile-sidebar">
-            <div class="profile-avatar">
-                <img id="profile-image-preview" src="<?php echo $imagen_perfil; ?>" alt="Tu avatar">
-                <button type="button" class="change-avatar-btn" onclick="document.getElementById('profile-image').click();"><i class="fas fa-camera"></i></button>
-            </div>
-            <div class="profile-badges">
-                <h4>Insignias</h4>
-                <div class="badges-container">
-                    <div class="badge" title="Colaborador Activo">
-                        <i class="fas fa-award"></i>
+                    <div id="datos-personales" class="sub-panel active">
+                        <div class="panel-header-secondary">
+                            <h2>Datos Personales</h2>
+                            <p>Gestiona tu información personal</p>
+                        </div>
+                        <!-- Mostrar mensajes de éxito o error -->
+                        <?php if (isset($_SESSION['success_message'])): ?>
+                            <div class="success-message" style="display: block; margin-bottom: 20px; color: green;">
+                                <?php echo htmlspecialchars($_SESSION['success_message']); ?>
+                            </div>
+                            <?php unset($_SESSION['success_message']); ?>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['error_message'])): ?>
+                            <div class="error-message" style="display: block; margin-bottom: 20px; color: red;">
+                                <?php echo htmlspecialchars($_SESSION['error_message']); ?>
+                            </div>
+                            <?php unset($_SESSION['error_message']); ?>
+                        <?php endif; ?>
+                        <div class="profile-container">
+                            <div class="profile-sidebar">
+                                <div class="profile-avatar">
+                                    <img id="profile-image-preview" src="<?php echo $imagen_perfil; ?>" alt="Tu avatar">
+                                    <button type="button" class="change-avatar-btn" onclick="document.getElementById('profile-image').click();"><i class="fas fa-camera"></i></button>
+                                </div>
+                                <div class="profile-badges">
+                                    <h4>Insignias</h4>
+                                    <div class="badges-container">
+                                        <div class="badge" title="Colaborador Activo">
+                                            <i class="fas fa-award"></i>
+                                        </div>
+                                        <div class="badge" title="Experto en Python">
+                                            <i class="fab fa-python"></i>
+                                        </div>
+                                        <div class="badge" title="Mentor">
+                                            <i class="fas fa-user-graduate"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profile-main">
+                                <form class="profile-form" action="../../backend/perfil/update.php" method="POST" enctype="multipart/form-data">
+                                    <!-- Input oculto para la subida de la imagen -->
+                                    <input type="file" id="profile-image" name="imagen" accept="image/*" style="display: none;" onchange="previewProfileImage(event)">
+                                    <div class="form-group">
+                                        <label for="nombre">Nombre</label>
+                                        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre_usuario']); ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Correo electrónico</label>
+                                        <input type="email" id="email" name="correo" value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="telefono">Teléfono</label>
+                                        <input type="tel" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profesion">Profesión</label>
+                                        <input type="text" id="profesion" name="profesion" value="<?php echo htmlspecialchars($usuario['profesion'] ?? ''); ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bio">Biografía</label>
+                                        <textarea id="bio" name="bio" rows="4"><?php echo htmlspecialchars($usuario['bio'] ?? ''); ?></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn--primary">Guardar cambios</button>
+                                        <button type="reset" class="btn btn--outline">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div class="badge" title="Experto en Python">
-                        <i class="fab fa-python"></i>
-                    </div>
-                    <div class="badge" title="Mentor">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="profile-main">
-            <form class="profile-form" action="../../backend/perfil/update.php" method="POST" enctype="multipart/form-data">
-                <!-- Input oculto para la subida de la imagen -->
-                <input type="file" id="profile-image" name="imagen" accept="image/*" style="display: none;" onchange="previewProfileImage(event)">
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre_usuario']); ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Correo electrónico</label>
-                    <input type="email" id="email" name="correo" value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Teléfono</label>
-                    <input type="tel" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="profesion">Profesión</label>
-                    <input type="text" id="profesion" name="profesion" value="<?php echo htmlspecialchars($usuario['profesion'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="bio">Biografía</label>
-                    <textarea id="bio" name="bio" rows="4"><?php echo htmlspecialchars($usuario['bio'] ?? ''); ?></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn--primary">Guardar cambios</button>
-                    <button type="reset" class="btn btn--outline">Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
                     <div id="seguridad" class="sub-panel">
                         <div class="panel-header-secondary">
                             <h2>Seguridad</h2>
@@ -787,6 +849,16 @@ try {
             </section>
         </div>
     </main>
+
+    <!-- Botón flotante de notificaciones -->
+    <a href="../notificaciones/notificaciones.php">
+        <button class="floating-notifications-btn">
+            <i class="fas fa-bell"></i>
+            <?php if ($unread_count > 0): ?>
+                <span class="notification-dot"><?php echo $unread_count; ?></span>
+            <?php endif; ?>
+        </button>
+    </a>
 
     <script>
         function previewProfileImage(event) {

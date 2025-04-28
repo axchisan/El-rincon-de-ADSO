@@ -5,25 +5,37 @@ require_once "../../database/conexionDB.php";
 // Verificar si el usuario está logueado
 $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 $nombre_usuario = '';
+$usuario_imagen = '';
+$unread_count = 0; // Variable para contar notificaciones no leídas
+
 if ($usuario_id) {
     try {
         $db = conexionDB::getConexion();
-        $query = "SELECT nombre_usuario FROM usuarios WHERE id = :id";
+        // Obtener nombre_usuario e imagen del usuario logueado
+        $query = "SELECT nombre_usuario, imagen FROM usuarios WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->execute([':id' => $usuario_id]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($usuario) {
             $nombre_usuario = htmlspecialchars($usuario['nombre_usuario']);
+            // Construir la ruta de la imagen del usuario
+            $usuario_imagen = $usuario['imagen'] ? "../../backend/perfil/" . htmlspecialchars($usuario['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$usuario_id";
         }
+
+        // Contar notificaciones no leídas
+        $query = "SELECT COUNT(*) FROM notificaciones WHERE usuario_id = :user_id AND leida = FALSE";
+        $stmt = $db->prepare($query);
+        $stmt->execute([':user_id' => $usuario_id]);
+        $unread_count = $stmt->fetchColumn();
+
     } catch (PDOException $e) {
-        // No redirigimos aquí, ya que el index puede ser visto por usuarios no logueados
+        error_log("Error al obtener datos del usuario o notificaciones: " . $e->getMessage());
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="./img/icono.png">
@@ -34,8 +46,70 @@ if ($usuario_id) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" media="print" onload="this.media='all'">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo para la imagen del perfil */
+        .navbar__profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .navbar__profile {
+            position: relative;
+            display: inline-block;
+        }
+        .navbar__profile-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .navbar__profile-menu.active {
+            display: block;
+        }
+        .navbar__profile-menu a, .navbar__profile-menu button {
+            display: block;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .navbar__profile-menu a:hover, .navbar__profile-menu button:hover {
+            background-color: #f0f0f0;
+        }
+        /* Estilo para el círculo de notificaciones */
+        .navbar__profile {
+            position: relative;
+        }
+        .navbar__notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        /* Asegurar que el círculo esté oculto si no hay notificaciones */
+        .navbar__notification-badge.hidden {
+            display: none;
+        }
+    </style>
 </head>
-
 <body>
     <!-- Navegación -->
     <nav class="navbar">
@@ -57,11 +131,15 @@ if ($usuario_id) {
                     <li class="navbar__menu-item"><a href="../register/registro.php">Registro</a></li>
                 <?php endif; ?>
                 <?php if ($usuario_id): ?>
-                    <!-- Si hay sesión activa, mostrar el icono de perfil -->
+                    <!-- Si hay sesión activa, mostrar la imagen de perfil con el círculo de notificaciones -->
                     <li class="navbar__profile">
-                        <i class="fas fa-user-circle navbar__profile-icon"></i>
-                        <div class="navbar__profile-menu">
+                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" id="profile-img">
+                        <span class="navbar__notification-badge <?php echo $unread_count == 0 ? 'hidden' : ''; ?>">
+                            <?php echo $unread_count; ?>
+                        </span>
+                        <div class="navbar__profile-menu" id="profile-menu">
                             <a href="../panel/panel-usuario.php">Ver Perfil</a>
+                            <a href="../notificaciones/notificaciones.php">Notificaciones</a>
                             <form action="../../backend/logout.php" method="POST">
                                 <button type="submit">Cerrar Sesión</button>
                             </form>
@@ -91,7 +169,18 @@ if ($usuario_id) {
                     <li class="navbar__mobile-item"><a href="../register/registro.php">Registro</a></li>
                 <?php endif; ?>
                 <?php if ($usuario_id): ?>
+                    <li class="navbar__mobile-item">
+                        <!-- Mostrar la imagen de perfil en el menú móvil también -->
+                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" style="vertical-align: middle; margin-right: 10px;">
+                        <span><?php echo $nombre_usuario; ?></span>
+                        <?php if ($unread_count > 0): ?>
+                            <span class="navbar__notification-badge" style="margin-left: 10px; vertical-align: middle;">
+                                <?php echo $unread_count; ?>
+                            </span>
+                        <?php endif; ?>
+                    </li>
                     <li class="navbar__mobile-item"><a href="../panel/panel-usuario.php">Ver Perfil</a></li>
+                    <li class="navbar__mobile-item"><a href="../notificaciones/notificaciones.php">Notificaciones</a></li>
                     <li class="navbar__mobile-item">
                         <form action="../../backend/logout.php" method="POST">
                             <button type="submit" class="navbar__menu-item--button">Cerrar Sesión</button>
@@ -215,10 +304,7 @@ if ($usuario_id) {
             <div class="resources-grid" id="recent-resources-grid">
                 <p>Cargando recursos recientes...</p>
             </div>
-            <div class="pagination" id="recent-pagination">
-               
-                
-            </div>
+            <div class="pagination" id="recent-pagination"></div>
             <div class="books__link-wrapper">
                 <a href="../repositorio/repositorio.php" class="books__link">Ver todos <i class="fas fa-arrow-right"></i></a>
             </div>
@@ -356,12 +442,24 @@ if ($usuario_id) {
             });
 
             // Mostrar/ocultar menú de perfil
-            document.querySelectorAll('.navbar__profile-icon').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    const menu = this.nextElementSibling;
-                    menu.classList.toggle('active');
+            const profileImg = document.getElementById('profile-img');
+            const profileMenu = document.getElementById('profile-menu');
+            
+            if (profileImg && profileMenu) {
+                profileImg.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Evitar que el clic se propague y cierre el menú inmediatamente
+                    profileMenu.classList.toggle('active');
                 });
-            });
+
+                // Cerrar el menú al hacer clic fuera de él
+                document.addEventListener('click', function(event) {
+                    if (!profileImg.contains(event.target) && !profileMenu.contains(event.target)) {
+                        profileMenu.classList.remove('active');
+                    }
+                });
+            } else {
+                console.error('No se encontraron los elementos profile-img o profile-menu');
+            }
 
             document.querySelectorAll('.comment-card__like').forEach(button => {
                 button.addEventListener('click', function() {
@@ -466,7 +564,6 @@ if ($usuario_id) {
                                     ['Sin categoría'];
                                 const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
 
-                                // Imagen predeterminada en caso de que portada no exista o sea inválida
                                 const defaultImage = './img/default-cover.jpg';
                                 const coverImage = resource.portada && resource.portada !== '' ? resource.portada : defaultImage;
 
@@ -688,5 +785,4 @@ if ($usuario_id) {
         });
     </script>
 </body>
-
 </html>

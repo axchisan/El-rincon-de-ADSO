@@ -77,7 +77,6 @@ try {
 
   $friend_name = htmlspecialchars($friend['nombre_usuario']);
   $friend_email = htmlspecialchars($friend['correo']);
-  // Ajustar la ruta de la imagen con el parámetro de caché
   $friend_image = $friend['imagen'] ? "../../backend/perfil/" . htmlspecialchars($friend['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$friend_id";
 
 } catch (PDOException $e) {
@@ -97,6 +96,59 @@ try {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="../friends/css/style.css">
   <link rel="stylesheet" href="./css/style.css">
+  <style>
+    .message__actions {
+      display: none;
+      margin-top: 5px;
+    }
+    .message:hover .message__actions {
+      display: flex;
+      gap: 10px;
+    }
+    .message__action-btn {
+      background: none;
+      border: none;
+      color: #007bff;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+    }
+    .message__action-btn:hover {
+      text-decoration: underline;
+    }
+    .message__edit-form {
+      display: none;
+      margin-top: 10px;
+    }
+    .message__edit-input {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    .message__edit-submit {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .message__edit-submit:hover {
+      background-color: #0056b3;
+    }
+    .message__edit-cancel {
+      background: none;
+      border: none;
+      color: #dc3545;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .message__edit-cancel:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   <!-- Navegación -->
@@ -212,7 +264,7 @@ try {
         const result = await response.json();
 
         if (result.status !== 'success') {
-          chatMessages.innerHTML = '<p class="chat-messages__empty">Error al cargar mensajes.</p>';
+          chatMessages.innerHTML = `<p class="chat-messages__empty">Error al cargar mensajes: ${result.message}</p>`;
           return;
         }
 
@@ -237,11 +289,23 @@ try {
         newMessages.forEach(message => {
           const messageDiv = document.createElement('div');
           messageDiv.className = `message ${message.remitente_id == userId ? 'message--sent' : 'message--received'}`;
+          messageDiv.dataset.messageId = message.id; // Añadir ID del mensaje para referencia
           messageDiv.innerHTML = `
             <div class="message__content">
               <p>${message.contenido}</p>
               <span class="message__time">${formatDate(message.fecha_envio)}</span>
             </div>
+            ${message.remitente_id == userId ? `
+              <div class="message__actions">
+                <button class="message__action-btn message__edit-btn">Editar</button>
+                <button class="message__action-btn message__delete-btn">Borrar</button>
+              </div>
+              <div class="message__edit-form">
+                <input type="text" class="message__edit-input" value="${message.contenido}" />
+                <button class="message__edit-submit">Guardar</button>
+                <button class="message__edit-cancel">Cancelar</button>
+              </div>
+            ` : ''}
           `;
           chatMessages.appendChild(messageDiv);
 
@@ -251,12 +315,115 @@ try {
           }
         });
 
+        // Añadir eventos a los botones de editar y borrar
+        addMessageEventListeners();
+
         // Desplazar al final del chat
         chatMessages.scrollTop = chatMessages.scrollHeight;
       } catch (error) {
         console.error('Error al cargar mensajes:', error);
         chatMessages.innerHTML = '<p class="chat-messages__empty">Error al cargar mensajes.</p>';
       }
+    }
+
+    // Función para añadir eventos a los botones de editar y borrar
+    function addMessageEventListeners() {
+      // Botones de editar
+      document.querySelectorAll('.message__edit-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const messageDiv = e.target.closest('.message');
+          const editForm = messageDiv.querySelector('.message__edit-form');
+          const messageContent = messageDiv.querySelector('.message__content p');
+          editForm.style.display = 'block';
+          messageContent.style.display = 'none';
+          messageDiv.querySelector('.message__actions').style.display = 'none';
+        });
+      });
+
+      // Botones de cancelar edición
+      document.querySelectorAll('.message__edit-cancel').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const messageDiv = e.target.closest('.message');
+          const editForm = messageDiv.querySelector('.message__edit-form');
+          const messageContent = messageDiv.querySelector('.message__content p');
+          editForm.style.display = 'none';
+          messageContent.style.display = 'block';
+          messageDiv.querySelector('.message__actions').style.display = 'flex';
+        });
+      });
+
+      // Formularios de edición
+      document.querySelectorAll('.message__edit-submit').forEach(button => {
+        button.addEventListener('click', async (e) => {
+          const messageDiv = e.target.closest('.message');
+          const messageId = messageDiv.dataset.messageId;
+          const newContent = messageDiv.querySelector('.message__edit-input').value.trim();
+
+          if (!newContent) {
+            alert('El mensaje no puede estar vacío.');
+            return;
+          }
+
+          try {
+            const response = await fetch('../../backend/api/mensajes.php', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message_id: messageId,
+                content: newContent
+              })
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+              await loadMessages(); // Recargar los mensajes para reflejar los cambios
+            } else {
+              alert('Error al editar el mensaje: ' + result.message);
+            }
+          } catch (error) {
+            console.error('Error al editar mensaje:', error);
+            alert('Error al editar el mensaje.');
+          }
+        });
+      });
+
+      // Botones de borrar
+      document.querySelectorAll('.message__delete-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+          if (!confirm('¿Estás seguro de que quieres borrar este mensaje?')) {
+            return;
+          }
+
+          const messageDiv = e.target.closest('.message');
+          const messageId = messageDiv.dataset.messageId;
+
+          try {
+            const response = await fetch('../../backend/api/mensajes.php', {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message_id: messageId
+              })
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+              await loadMessages(); // Recargar los mensajes para reflejar los cambios
+            } else {
+              alert('Error al borrar el mensaje: ' + result.message);
+            }
+          } catch (error) {
+            console.error('Error al borrar mensaje:', error);
+            alert('Error al borrar el mensaje.');
+          }
+        });
+      });
     }
 
     // Función para enviar un mensaje
