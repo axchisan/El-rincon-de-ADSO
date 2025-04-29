@@ -78,7 +78,7 @@ if ($image['size'] > $max_image_size) {
     exit;
 }
 
-$upload_dir = __DIR__ . '/../../uploads/';
+$upload_dir = __DIR__ . '../../uploads/';
 if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0755, true);
 }
