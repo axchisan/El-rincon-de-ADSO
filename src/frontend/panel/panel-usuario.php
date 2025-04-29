@@ -109,6 +109,33 @@ try {
             font-size: 12px;
             font-weight: bold;
         }
+        .password-requirements {
+    font-size: 0.9em;
+    color: #ff4d4d;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.password-requirements-checklist {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+.password-requirements-checklist div {
+    margin-bottom: 5px;
+}
+
+.password-requirements-checklist .icon {
+    margin-right: 5px;
+}
+
+.password-requirements-checklist .fulfilled {
+    color: #4CAF50; /* Verde para requisitos cumplidos */
+}
+
+.password-requirements-checklist .not-fulfilled {
+    color: #ff4d4d; /* Rojo para requisitos no cumplidos */
+}
     </style>
 </head>
 
@@ -736,7 +763,7 @@ try {
                         </div>
                     </div>
                     <div id="seguridad" class="sub-panel">
-    <div class="panel-header-secondary">
+                    <div class="panel-header-secondary">
         <h2>Seguridad</h2>
         <p>Gestiona la seguridad de tu cuenta</p>
     </div>
@@ -754,6 +781,12 @@ try {
                     <input type="password" id="new-password" name="new_password" required>
                     <div class="password-requirements">
                         La contraseña debe tener al menos: 1 mayúscula, 3 números y 1 carácter especial (ej. @, #, $).
+                    </div>
+                    <!-- Contenedor para mensajes de requisitos en tiempo real -->
+                    <div class="password-requirements-checklist" id="password-requirements-checklist">
+                        <div id="uppercase-check"><span class="icon">✖</span> Mayúscula: Falta</div>
+                        <div id="numbers-check"><span class="icon">✖</span> 3 números: Falta</div>
+                        <div id="special-char-check"><span class="icon">✖</span> Carácter especial: Falta</div>
                     </div>
                     <div class="password-strength">
                         <div class="strength-meter">
@@ -867,8 +900,17 @@ try {
             <?php endif; ?>
         </button>
     </a>
-
     <script>
+function previewProfileImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById('profile-image-preview');
+        const headerAvatar = document.querySelector('.avatar-img');
+        output.src = reader.result;
+        headerAvatar.src = reader.result; // Actualizar también la imagen del encabezado
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
 
 function validatePasswordForm() {
     const newPassword = document.getElementById('new-password').value;
@@ -879,124 +921,377 @@ function validatePasswordForm() {
         return false;
     }
 
-    // Validación adicional en el frontend para los requisitos (opcional, ya que el backend lo maneja)
-    if (!/[A-Z]/.test(newPassword) || (newPassword.match(/\d/g) || []).length < 3 || !/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
-        alert('La nueva contraseña debe contener al menos 1 mayúscula, 3 números y 1 carácter especial.');
+    // Validar los requisitos
+    if (!/[A-Z]/.test(newPassword)) {
+        alert('La nueva contraseña debe contener al menos 1 mayúscula.');
+        return false;
+    }
+    if ((newPassword.match(/\d/g) || []).length < 3) {
+        alert('La nueva contraseña debe contener al menos 3 números.');
+        return false;
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+        alert('La nueva contraseña debe contener al menos 1 carácter especial.');
         return false;
     }
 
     return true;
 }
-        function previewProfileImage(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const output = document.getElementById('profile-image-preview');
-                output.src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación de la contraseña en tiempo real
+    const newPasswordInput = document.getElementById('new-password');
+    const strengthMeterFill = document.getElementById('strength-meter-fill');
+    const strengthText = document.getElementById('strength-text');
+    const uppercaseCheck = document.getElementById('uppercase-check');
+    const numbersCheck = document.getElementById('numbers-check');
+    const specialCharCheck = document.getElementById('special-char-check');
+
+    newPasswordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+
+        // Validar mayúscula
+        const hasUppercase = /[A-Z]/.test(password);
+        if (hasUppercase) {
+            uppercaseCheck.innerHTML = '<span class="icon fulfilled">✔</span> Mayúscula: Cumple';
+            uppercaseCheck.classList.remove('not-fulfilled');
+            uppercaseCheck.classList.add('fulfilled');
+            strength += 33;
+        } else {
+            uppercaseCheck.innerHTML = '<span class="icon not-fulfilled">✖</span> Mayúscula: Falta';
+            uppercaseCheck.classList.remove('fulfilled');
+            uppercaseCheck.classList.add('not-fulfilled');
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
-                });
+        // Validar 3 números
+        const numberCount = (password.match(/\d/g) || []).length;
+        if (numberCount >= 3) {
+            numbersCheck.innerHTML = '<span class="icon fulfilled">✔</span> 3 números: Cumple';
+            numbersCheck.classList.remove('not-fulfilled');
+            numbersCheck.classList.add('fulfilled');
+            strength += 33;
+        } else {
+            numbersCheck.innerHTML = `<span class="icon not-fulfilled">✖</span> 3 números: Falta (${numberCount}/3)`;
+            numbersCheck.classList.remove('fulfilled');
+            numbersCheck.classList.add('not-fulfilled');
+        }
+
+        // Validar carácter especial
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        if (hasSpecialChar) {
+            specialCharCheck.innerHTML = '<span class="icon fulfilled">✔</span> Carácter especial: Cumple';
+            specialCharCheck.classList.remove('not-fulfilled');
+            specialCharCheck.classList.add('fulfilled');
+            strength += 34;
+        } else {
+            specialCharCheck.innerHTML = '<span class="icon not-fulfilled">✖</span> Carácter especial: Falta';
+            specialCharCheck.classList.remove('fulfilled');
+            specialCharCheck.classList.add('not-fulfilled');
+        }
+
+        // Actualizar el medidor de fuerza
+        strengthMeterFill.style.width = strength + '%';
+        if (strength < 50) {
+            strengthText.textContent = 'Seguridad: Débil';
+            strengthMeterFill.style.backgroundColor = '#ff4d4d';
+        } else if (strength < 90) {
+            strengthText.textContent = 'Seguridad: Media';
+            strengthMeterFill.style.backgroundColor = '#ffd700';
+        } else {
+            strengthText.textContent = 'Seguridad: Fuerte';
+            strengthMeterFill.style.backgroundColor = '#4CAF50';
+        }
+    });
+
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+
+    const mainTabs = document.querySelectorAll('.main-tab');
+    const tabSections = document.querySelectorAll('.tab-section');
+    mainTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            mainTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            tabSections.forEach(section => section.classList.remove('active'));
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    const subTabs = document.querySelectorAll('.sub-tab');
+    subTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const parentSection = this.closest('.tab-section');
+            parentSection.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            parentSection.querySelectorAll('.sub-panel').forEach(panel => panel.classList.remove('active'));
+            const subTabId = this.getAttribute('data-subtab');
+            parentSection.querySelector('#' + subTabId).classList.add('active');
+
+            // Cargar dinámicamente el contenido según la pestaña seleccionada
+            if (subTabId === 'mis-favoritos') {
+                loadUserFavorites();
+            } else if (subTabId === 'recientes') {
+                loadRecentlyViewed();
+            } else if (subTabId === 'guardados') {
+                loadSavedResources();
+            } else if (subTabId === 'mis-aportes') {
+                loadUserResources();
             }
+        });
+    });
 
-            const mainTabs = document.querySelectorAll('.main-tab');
-            const tabSections = document.querySelectorAll('.tab-section');
-            mainTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    mainTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    tabSections.forEach(section => section.classList.remove('active'));
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
+    loadUserFavorites();
+
+    const modal = document.getElementById('upload-modal');
+    const openModalBtn = document.getElementById('open-upload-modal');
+    const closeModalBtn = document.getElementById('close-upload-modal');
+    const uploadForm = document.getElementById('upload-resource-form');
+    const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
+    const resourceType = document.getElementById('resource-type');
+    const videoUrlGroup = document.getElementById('video-url-group');
+    const videoDurationGroup = document.getElementById('video-duration-group');
+    const fileUploadGroup = document.getElementById('file-upload-group');
+    const videoUrlInput = document.getElementById('resource-video-url');
+    const videoPreview = document.getElementById('video-preview');
+    const visibilitySelect = document.getElementById('resource-visibility');
+    const groupSelectGroup = document.getElementById('group-select-group');
+    const resourceImage = document.getElementById('resource-image');
+    const previewImage = document.getElementById('preview-image');
+    const previewTitle = document.getElementById('preview-title');
+    const previewAuthor = document.getElementById('preview-author');
+    const previewDescription = document.getElementById('preview-description');
+    const previewMeta = document.getElementById('preview-meta');
+    const submitButton = document.getElementById('submit-resource');
+    const progressBar = document.getElementById('progress-bar');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+
+    let selectedCategories = [];
+    let customTags = [];
+
+    openModalBtn.addEventListener('click', function() {
+        modal.style.display = 'flex';
+        loadCategories();
+        loadGroups();
+        updatePreview();
+    });
+
+    closeModalBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        uploadForm.reset();
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
+        videoUrlGroup.style.display = 'none';
+        videoDurationGroup.style.display = 'none';
+        fileUploadGroup.style.display = 'block';
+        groupSelectGroup.style.display = 'none';
+        selectedCategories = [];
+        customTags = [];
+        document.getElementById('category-tags').innerHTML = '';
+        document.getElementById('custom-tags').innerHTML = '';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            uploadForm.reset();
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            videoUrlGroup.style.display = 'none';
+            videoDurationGroup.style.display = 'none';
+            fileUploadGroup.style.display = 'block';
+            groupSelectGroup.style.display = 'none';
+            selectedCategories = [];
+            customTags = [];
+            document.getElementById('category-tags').innerHTML = '';
+            document.getElementById('custom-tags').innerHTML = '';
+        }
+    });
+
+    resourceType.addEventListener('change', function() {
+        const type = this.value;
+        if (type === 'video') {
+            videoUrlGroup.style.display = 'block';
+            videoDurationGroup.style.display = 'block';
+            fileUploadGroup.style.display = 'none';
+            document.getElementById('resource-file').removeAttribute('required');
+        } else {
+            videoUrlGroup.style.display = 'none';
+            videoDurationGroup.style.display = 'none';
+            fileUploadGroup.style.display = 'block';
+            document.getElementById('resource-file').setAttribute('required', '');
+        }
+        updatePreview();
+    });
+
+    videoUrlInput.addEventListener('input', function() {
+        const url = this.value;
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=)?([a-zA-Z0-9_-]{11})/;
+        if (youtubeRegex.test(url)) {
+            const videoId = url.match(youtubeRegex)[5];
+            videoPreview.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+            errorMessage.style.display = 'none';
+        } else {
+            videoPreview.innerHTML = '';
+            errorMessage.textContent = 'Por favor, ingresa una URL válida de YouTube.';
+            errorMessage.style.display = 'block';
+        }
+        updatePreview();
+    });
+
+    visibilitySelect.addEventListener('change', function() {
+        if (this.value === 'Group') {
+            groupSelectGroup.style.display = 'block';
+            document.getElementById('resource-group').setAttribute('required', '');
+        } else {
+            groupSelectGroup.style.display = 'none';
+            document.getElementById('resource-group').removeAttribute('required');
+        }
+    });
+
+    resourceImage.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('resource-title').addEventListener('input', updatePreview);
+    document.getElementById('resource-author').addEventListener('input', updatePreview);
+    document.getElementById('resource-description').addEventListener('input', updatePreview);
+    document.getElementById('resource-publication-date').addEventListener('input', updatePreview);
+
+    function updatePreview() {
+        previewTitle.textContent = document.getElementById('resource-title').value || 'Título del Recurso';
+        previewAuthor.textContent = 'Por ' + (document.getElementById('resource-author').value || 'Autor');
+        previewDescription.textContent = document.getElementById('resource-description').value || 'Descripción del recurso.';
+        const pubDate = document.getElementById('resource-publication-date').value;
+        previewMeta.textContent = pubDate ? `Publicado el: ${pubDate}` : '';
+        if (resourceType.value === 'video' && videoUrlInput.value) {
+            previewImage.src = `https://img.youtube.com/vi/${videoUrlInput.value.match(/(?:v=)([a-zA-Z0-9_-]{11})/)?.[1]}/maxresdefault.jpg`;
+        }
+    }
+
+    function loadCategories() {
+        fetch('../../backend/gestionRecursos/get_categories.php')
+            .then(response => response.json())
+            .then(data => {
+                const categoryTags = document.getElementById('category-tags');
+                categoryTags.innerHTML = '';
+                data.forEach(category => {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.textContent = category.nombre;
+                    tag.dataset.id = category.id;
+                    tag.addEventListener('click', function() {
+                        const index = selectedCategories.indexOf(category.id);
+                        if (index === -1) {
+                            selectedCategories.push(category.id);
+                            this.classList.add('selected');
+                        } else {
+                            selectedCategories.splice(index, 1);
+                            this.classList.remove('selected');
+                        }
+                        document.getElementById('selected-categories').value = JSON.stringify(selectedCategories);
+                    });
+                    categoryTags.appendChild(tag);
                 });
+            })
+            .catch(error => {
+                console.error('Error al cargar categorías:', error);
+                errorMessage.textContent = 'Error al cargar las categorías. Intenta de nuevo.';
+                errorMessage.style.display = 'block';
             });
+    }
 
-            const subTabs = document.querySelectorAll('.sub-tab');
-            subTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const parentSection = this.closest('.tab-section');
-                    parentSection.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    parentSection.querySelectorAll('.sub-panel').forEach(panel => panel.classList.remove('active'));
-                    const subTabId = this.getAttribute('data-subtab');
-                    parentSection.querySelector('#' + subTabId).classList.add('active');
+    document.getElementById('add-custom-tag').addEventListener('click', addCustomTag);
+    document.getElementById('custom-tag-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addCustomTag();
+        }
+    });
 
-                    // Cargar dinámicamente el contenido según la pestaña seleccionada
-                    if (subTabId === 'mis-favoritos') {
-                        loadUserFavorites();
-                    } else if (subTabId === 'recientes') {
-                        loadRecentlyViewed();
-                    } else if (subTabId === 'guardados') {
-                        loadSavedResources();
-                    } else if (subTabId === 'mis-aportes') {
-                        loadUserResources();
-                    }
+    function addCustomTag() {
+        const input = document.getElementById('custom-tag-input');
+        const tagName = input.value.trim();
+        if (tagName && !customTags.includes(tagName)) {
+            customTags.push(tagName);
+            const tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.textContent = tagName;
+            tag.addEventListener('click', function() {
+                const index = customTags.indexOf(tagName);
+                customTags.splice(index, 1);
+                this.remove();
+                document.getElementById('selected-tags').value = JSON.stringify(customTags);
+            });
+            document.getElementById('custom-tags').appendChild(tag);
+            document.getElementById('selected-tags').value = JSON.stringify(customTags);
+            input.value = '';
+        }
+    }
+
+    function loadGroups() {
+        fetch('../../backend/gestionRecursos/get_user_groups.php')
+            .then(response => response.json())
+            .then(data => {
+                const groupSelect = document.getElementById('resource-group');
+                groupSelect.innerHTML = '<option value="">Selecciona un grupo</option>';
+                data.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.id;
+                    option.textContent = group.nombre;
+                    groupSelect.appendChild(option);
                 });
+            })
+            .catch(error => {
+                console.error('Error al cargar grupos:', error);
+                errorMessage.textContent = 'Error al cargar los grupos. Intenta de nuevo.';
+                errorMessage.style.display = 'block';
             });
+    }
 
-            loadUserFavorites();
+    submitButton.addEventListener('click', function() {
+        if (selectedCategories.length === 0) {
+            errorMessage.textContent = 'Por favor, selecciona al menos una categoría.';
+            errorMessage.style.display = 'block';
+            return;
+        }
 
-            const modal = document.getElementById('upload-modal');
-            const openModalBtn = document.getElementById('open-upload-modal');
-            const closeModalBtn = document.getElementById('close-upload-modal');
-            const uploadForm = document.getElementById('upload-resource-form');
-            const errorMessage = document.getElementById('error-message');
-            const successMessage = document.getElementById('success-message');
-            const resourceType = document.getElementById('resource-type');
-            const videoUrlGroup = document.getElementById('video-url-group');
-            const videoDurationGroup = document.getElementById('video-duration-group');
-            const fileUploadGroup = document.getElementById('file-upload-group');
-            const videoUrlInput = document.getElementById('resource-video-url');
-            const videoPreview = document.getElementById('video-preview');
-            const visibilitySelect = document.getElementById('resource-visibility');
-            const groupSelectGroup = document.getElementById('group-select-group');
-            const resourceImage = document.getElementById('resource-image');
-            const previewImage = document.getElementById('preview-image');
-            const previewTitle = document.getElementById('preview-title');
-            const previewAuthor = document.getElementById('preview-author');
-            const previewDescription = document.getElementById('preview-description');
-            const previewMeta = document.getElementById('preview-meta');
-            const submitButton = document.getElementById('submit-resource');
-            const progressBar = document.getElementById('progress-bar');
-            const progressBarFill = document.getElementById('progress-bar-fill');
+        const confirmation = confirm('¿Estás seguro de que deseas subir este recurso?');
+        if (!confirmation) return;
 
-            let selectedCategories = [];
-            let customTags = [];
+        const formData = new FormData(uploadForm);
+        formData.append('categories', JSON.stringify(selectedCategories));
+        formData.append('tags', JSON.stringify(customTags));
 
-            openModalBtn.addEventListener('click', function() {
-                modal.style.display = 'flex';
-                loadCategories();
-                loadGroups();
-                updatePreview();
-            });
+        progressBar.style.display = 'block';
+        progressBarFill.style.width = '0%';
 
-            closeModalBtn.addEventListener('click', function() {
-                modal.style.display = 'none';
-                uploadForm.reset();
-                errorMessage.style.display = 'none';
-                successMessage.style.display = 'none';
-                videoUrlGroup.style.display = 'none';
-                videoDurationGroup.style.display = 'none';
-                fileUploadGroup.style.display = 'block';
-                groupSelectGroup.style.display = 'none';
-                selectedCategories = [];
-                customTags = [];
-                document.getElementById('category-tags').innerHTML = '';
-                document.getElementById('custom-tags').innerHTML = '';
-            });
-
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                    uploadForm.reset();
+        fetch('../../backend/gestionRecursos/upload_resource.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                progressBar.style.display = 'none';
+                if (data.success) {
+                    successMessage.textContent = 'Recurso subido exitosamente.';
+                    successMessage.style.display = 'block';
                     errorMessage.style.display = 'none';
-                    successMessage.style.display = 'none';
+                    uploadForm.reset();
                     videoUrlGroup.style.display = 'none';
                     videoDurationGroup.style.display = 'none';
                     fileUploadGroup.style.display = 'block';
@@ -1005,629 +1300,442 @@ function validatePasswordForm() {
                     customTags = [];
                     document.getElementById('category-tags').innerHTML = '';
                     document.getElementById('custom-tags').innerHTML = '';
-                }
-            });
-
-            resourceType.addEventListener('change', function() {
-                const type = this.value;
-                if (type === 'video') {
-                    videoUrlGroup.style.display = 'block';
-                    videoDurationGroup.style.display = 'block';
-                    fileUploadGroup.style.display = 'none';
-                    document.getElementById('resource-file').removeAttribute('required');
-                } else {
-                    videoUrlGroup.style.display = 'none';
-                    videoDurationGroup.style.display = 'none';
-                    fileUploadGroup.style.display = 'block';
-                    document.getElementById('resource-file').setAttribute('required', '');
-                }
-                updatePreview();
-            });
-
-            videoUrlInput.addEventListener('input', function() {
-                const url = this.value;
-                const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=)?([a-zA-Z0-9_-]{11})/;
-                if (youtubeRegex.test(url)) {
-                    const videoId = url.match(youtubeRegex)[5];
-                    videoPreview.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-                    errorMessage.style.display = 'none';
-                } else {
-                    videoPreview.innerHTML = '';
-                    errorMessage.textContent = 'Por favor, ingresa una URL válida de YouTube.';
-                    errorMessage.style.display = 'block';
-                }
-                updatePreview();
-            });
-
-            visibilitySelect.addEventListener('change', function() {
-                if (this.value === 'Group') {
-                    groupSelectGroup.style.display = 'block';
-                    document.getElementById('resource-group').setAttribute('required', '');
-                } else {
-                    groupSelectGroup.style.display = 'none';
-                    document.getElementById('resource-group').removeAttribute('required');
-                }
-            });
-
-            resourceImage.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImage.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            document.getElementById('resource-title').addEventListener('input', updatePreview);
-            document.getElementById('resource-author').addEventListener('input', updatePreview);
-            document.getElementById('resource-description').addEventListener('input', updatePreview);
-            document.getElementById('resource-publication-date').addEventListener('input', updatePreview);
-
-            function updatePreview() {
-                previewTitle.textContent = document.getElementById('resource-title').value || 'Título del Recurso';
-                previewAuthor.textContent = 'Por ' + (document.getElementById('resource-author').value || 'Autor');
-                previewDescription.textContent = document.getElementById('resource-description').value || 'Descripción del recurso.';
-                const pubDate = document.getElementById('resource-publication-date').value;
-                previewMeta.textContent = pubDate ? `Publicado el: ${pubDate}` : '';
-                if (resourceType.value === 'video' && videoUrlInput.value) {
-                    previewImage.src = `https://img.youtube.com/vi/${videoUrlInput.value.match(/(?:v=)([a-zA-Z0-9_-]{11})/)?.[1]}/maxresdefault.jpg`;
-                }
-            }
-
-            function loadCategories() {
-                fetch('../../backend/gestionRecursos/get_categories.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const categoryTags = document.getElementById('category-tags');
-                        categoryTags.innerHTML = '';
-                        data.forEach(category => {
-                            const tag = document.createElement('span');
-                            tag.className = 'tag';
-                            tag.textContent = category.nombre;
-                            tag.dataset.id = category.id;
-                            tag.addEventListener('click', function() {
-                                const index = selectedCategories.indexOf(category.id);
-                                if (index === -1) {
-                                    selectedCategories.push(category.id);
-                                    this.classList.add('selected');
-                                } else {
-                                    selectedCategories.splice(index, 1);
-                                    this.classList.remove('selected');
-                                }
-                                document.getElementById('selected-categories').value = JSON.stringify(selectedCategories);
-                            });
-                            categoryTags.appendChild(tag);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar categorías:', error);
-                        errorMessage.textContent = 'Error al cargar las categorías. Intenta de nuevo.';
-                        errorMessage.style.display = 'block';
-                    });
-            }
-
-            document.getElementById('add-custom-tag').addEventListener('click', addCustomTag);
-            document.getElementById('custom-tag-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addCustomTag();
-                }
-            });
-
-            function addCustomTag() {
-                const input = document.getElementById('custom-tag-input');
-                const tagName = input.value.trim();
-                if (tagName && !customTags.includes(tagName)) {
-                    customTags.push(tagName);
-                    const tag = document.createElement('span');
-                    tag.className = 'tag';
-                    tag.textContent = tagName;
-                    tag.addEventListener('click', function() {
-                        const index = customTags.indexOf(tagName);
-                        customTags.splice(index, 1);
-                        this.remove();
-                        document.getElementById('selected-tags').value = JSON.stringify(customTags);
-                    });
-                    document.getElementById('custom-tags').appendChild(tag);
-                    document.getElementById('selected-tags').value = JSON.stringify(customTags);
-                    input.value = '';
-                }
-            }
-
-            function loadGroups() {
-                fetch('../../backend/gestionRecursos/get_user_groups.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const groupSelect = document.getElementById('resource-group');
-                        groupSelect.innerHTML = '<option value="">Selecciona un grupo</option>';
-                        data.forEach(group => {
-                            const option = document.createElement('option');
-                            option.value = group.id;
-                            option.textContent = group.nombre;
-                            groupSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar grupos:', error);
-                        errorMessage.textContent = 'Error al cargar los grupos. Intenta de nuevo.';
-                        errorMessage.style.display = 'block';
-                    });
-            }
-
-            submitButton.addEventListener('click', function() {
-                if (selectedCategories.length === 0) {
-                    errorMessage.textContent = 'Por favor, selecciona al menos una categoría.';
-                    errorMessage.style.display = 'block';
-                    return;
-                }
-
-                const confirmation = confirm('¿Estás seguro de que deseas subir este recurso?');
-                if (!confirmation) return;
-
-                const formData = new FormData(uploadForm);
-                formData.append('categories', JSON.stringify(selectedCategories));
-                formData.append('tags', JSON.stringify(customTags));
-
-                progressBar.style.display = 'block';
-                progressBarFill.style.width = '0%';
-
-                fetch('../../backend/gestionRecursos/upload_resource.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        progressBar.style.display = 'none';
-                        if (data.success) {
-                            successMessage.textContent = 'Recurso subido exitosamente.';
-                            successMessage.style.display = 'block';
-                            errorMessage.style.display = 'none';
-                            uploadForm.reset();
-                            videoUrlGroup.style.display = 'none';
-                            videoDurationGroup.style.display = 'none';
-                            fileUploadGroup.style.display = 'block';
-                            groupSelectGroup.style.display = 'none';
-                            selectedCategories = [];
-                            customTags = [];
-                            document.getElementById('category-tags').innerHTML = '';
-                            document.getElementById('custom-tags').innerHTML = '';
-                            setTimeout(() => {
-                                modal.style.display = 'none';
-                                successMessage.style.display = 'none';
-                            }, 2000);
-                            loadUserResources();
-                        } else {
-                            errorMessage.textContent = data.message;
-                            errorMessage.style.display = 'block';
-                            successMessage.style.display = 'none';
-                        }
-                    })
-                    .catch(error => {
-                        progressBar.style.display = 'none';
-                        errorMessage.textContent = 'Error al subir el recurso. Intenta de nuevo.';
-                        errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
                         successMessage.style.display = 'none';
-                    });
+                    }, 2000);
+                    loadUserResources();
+                } else {
+                    errorMessage.textContent = data.message;
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                progressBar.style.display = 'none';
+                errorMessage.textContent = 'Error al subir el recurso. Intenta de nuevo.';
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
             });
+    });
 
-            function loadUserFavorites() {
-                fetch('../../backend/gestionRecursos/get_user_favorites.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const resourcesGrid = document.getElementById('favorites-grid');
-                        resourcesGrid.innerHTML = '';
-                        if (data.length === 0) {
-                            resourcesGrid.innerHTML = '<p>No tienes recursos favoritos aún.</p>';
+    function loadUserFavorites() {
+        fetch('../../backend/gestionRecursos/get_user_favorites.php')
+            .then(response => response.json())
+            .then(data => {
+                const resourcesGrid = document.getElementById('favorites-grid');
+                resourcesGrid.innerHTML = '';
+                if (data.length === 0) {
+                    resourcesGrid.innerHTML = '<p>No tienes recursos favoritos aún.</p>';
+                } else {
+                    data.forEach(resource => {
+                        const resourceCard = document.createElement('div');
+                        resourceCard.className = 'resource-card';
+                        let viewUrl;
+                        if (resource.tipo === 'video') {
+                            viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                        } else if (resource.tipo === 'libro') {
+                            viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
                         } else {
-                            data.forEach(resource => {
-                                const resourceCard = document.createElement('div');
-                                resourceCard.className = 'resource-card';
-                                let viewUrl;
-                                if (resource.tipo === 'video') {
-                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
-                                } else if (resource.tipo === 'libro') {
-                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
-                                } else {
-                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
-                                }
-                                resourceCard.innerHTML = `
-                                <div class="resource-card__image-container">
-                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                </div>
-                                <div class="resource-card__content">
-                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                    <div class="resource-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                        <span><i class="fas fa-star"></i> Favorito desde: ${new Date(resource.fecha_agregado).toLocaleDateString()}</span>
-                                    </div>
-                                    <div class="resource-card__actions">
-                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                        </a>
-                                        <a href="#" class="btn btn--outline remove-favorite" data-id="${resource.id}"><i class="fas fa-heart-broken"></i> Quitar favorito</a>
-                                    </div>
-                                </div>
-                            `;
-                                resourcesGrid.appendChild(resourceCard);
-                            });
+                            viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                        }
+                        resourceCard.innerHTML = `
+                        <div class="resource-card__image-container">
+                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                            ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                            ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                        </div>
+                        <div class="resource-card__content">
+                            <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                            <h3 class="resource-card__title">${resource.titulo}</h3>
+                            <p class="resource-card__author">Por ${resource.autor}</p>
+                            <div class="resource-card__meta">
+                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                <span><i class="fas fa-star"></i> Favorito desde: ${new Date(resource.fecha_agregado).toLocaleDateString()}</span>
+                            </div>
+                            <div class="resource-card__actions">
+                                <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                    <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                    ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                </a>
+                                <a href="#" class="btn btn--outline remove-favorite" data-id="${resource.id}"><i class="fas fa-heart-broken"></i> Quitar favorito</a>
+                            </div>
+                        </div>
+                    `;
+                        resourcesGrid.appendChild(resourceCard);
+                    });
 
-                            resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    const documentoId = button.getAttribute('data-id');
-                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/x-www-form-urlencoded'
-                                            },
-                                            body: `documento_id=${documentoId}`
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                console.log(data.message);
-                                            } else {
-                                                alert(data.message);
-                                            }
-                                        })
-                                        .catch(error => console.error('Error al registrar vista:', error));
-                                });
-                            });
-
-                            resourcesGrid.querySelectorAll('.remove-favorite').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    if (confirm('¿Estás seguro de que deseas quitar este recurso de tus favoritos?')) {
-                                        fetch('../../backend/gestionRecursos/remove_from_favorites.php', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                                },
-                                                body: `documento_id=${documentoId}`
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.success) {
-                                                    alert(data.message);
-                                                    loadUserFavorites();
-                                                } else {
-                                                    alert(data.message);
-                                                }
-                                            })
-                                            .catch(error => console.error('Error al quitar favorito:', error));
+                    resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const documentoId = button.getAttribute('data-id');
+                            fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        console.log(data.message);
+                                    } else {
+                                        alert(data.message);
                                     }
-                                });
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar favoritos:', error);
-                        document.getElementById('favorites-grid').innerHTML = '<p>Error al cargar los recursos favoritos.</p>';
+                                })
+                                .catch(error => console.error('Error al registrar vista:', error));
+                        });
                     });
-            }
 
-            function loadRecentlyViewed() {
-                fetch('../../backend/gestionRecursos/get_recently_viewed.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const resourcesGrid = document.getElementById('recently-viewed-grid');
-                        resourcesGrid.innerHTML = '';
-                        if (data.length === 0) {
-                            resourcesGrid.innerHTML = '<p>No has visto recursos recientemente.</p>';
-                        } else {
-                            data.forEach(resource => {
-                                const resourceCard = document.createElement('div');
-                                resourceCard.className = 'resource-card';
-                                let viewUrl;
-                                if (resource.tipo === 'video') {
-                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
-                                } else if (resource.tipo === 'libro') {
-                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
-                                } else {
-                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
-                                }
-                                resourceCard.innerHTML = `
-                                <div class="resource-card__image-container">
-                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                </div>
-                                <div class="resource-card__content">
-                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                    <div class="resource-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                        <span><i class="fas fa-eye"></i> Visto el: ${new Date(resource.fecha_vista).toLocaleDateString()}</span>
-                                    </div>
-                                    <div class="resource-card__actions">
-                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                        </a>
-                                        <a href="#" class="btn btn--outline add-favorite" data-id="${resource.id}"><i class="fas fa-heart"></i> Añadir a favoritos</a>
-                                    </div>
-                                </div>
-                            `;
-                                resourcesGrid.appendChild(resourceCard);
-                            });
-
-                            resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    const documentoId = button.getAttribute('data-id');
-                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/x-www-form-urlencoded'
-                                            },
-                                            body: `documento_id=${documentoId}`
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                console.log(data.message);
-                                            } else {
-                                                alert(data.message);
-                                            }
-                                        })
-                                        .catch(error => console.error('Error al registrar vista:', error));
-                                });
-                            });
-
-                            resourcesGrid.querySelectorAll('.add-favorite').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    fetch('../../backend/gestionRecursos/add_to_favorites.php', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/x-www-form-urlencoded'
-                                            },
-                                            body: `documento_id=${documentoId}`
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                alert(data.message);
-                                                loadRecentlyViewed();
-                                            } else {
-                                                alert(data.message);
-                                            }
-                                        })
-                                        .catch(error => console.error('Error al añadir a favoritos:', error));
-                                });
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar recursos recientes:', error);
-                        document.getElementById('recently-viewed-grid').innerHTML = '<p>Error al cargar los recursos vistos recientemente.</p>';
+                    resourcesGrid.querySelectorAll('.remove-favorite').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const documentoId = button.getAttribute('data-id');
+                            if (confirm('¿Estás seguro de que deseas quitar este recurso de tus favoritos?')) {
+                                fetch('../../backend/gestionRecursos/remove_from_favorites.php', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded'
+                                        },
+                                        body: `documento_id=${documentoId}`
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            loadUserFavorites();
+                                        } else {
+                                            alert(data.message);
+                                        }
+                                    })
+                                    .catch(error => console.error('Error al quitar favorito:', error));
+                            }
+                        });
                     });
-            }
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar favoritos:', error);
+                document.getElementById('favorites-grid').innerHTML = '<p>Error al cargar los recursos favoritos.</p>';
+            });
+    }
 
-            function loadSavedResources() {
-                fetch('../../backend/gestionRecursos/get_saved_resources.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const resourcesGrid = document.getElementById('saved-grid');
-                        resourcesGrid.innerHTML = '';
-                        if (data.length === 0) {
-                            resourcesGrid.innerHTML = '<p>No tienes recursos guardados aún.</p>';
+    function loadRecentlyViewed() {
+        fetch('../../backend/gestionRecursos/get_recently_viewed.php')
+            .then(response => response.json())
+            .then(data => {
+                const resourcesGrid = document.getElementById('recently-viewed-grid');
+                resourcesGrid.innerHTML = '';
+                if (data.length === 0) {
+                    resourcesGrid.innerHTML = '<p>No has visto recursos recientemente.</p>';
+                } else {
+                    data.forEach(resource => {
+                        const resourceCard = document.createElement('div');
+                        resourceCard.className = 'resource-card';
+                        let viewUrl;
+                        if (resource.tipo === 'video') {
+                            viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                        } else if (resource.tipo === 'libro') {
+                            viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
                         } else {
-                            data.forEach(resource => {
-                                const resourceCard = document.createElement('div');
-                                resourceCard.className = 'resource-card';
-                                let viewUrl;
-                                if (resource.tipo === 'video') {
-                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
-                                } else if (resource.tipo === 'libro') {
-                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
-                                } else {
-                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
-                                }
-                                resourceCard.innerHTML = `
-                                <div class="resource-card__image-container">
-                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                </div>
-                                <div class="resource-card__content">
-                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                    <div class="resource-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                        <span><i class="fas fa-bookmark"></i> Guardado el: ${new Date(resource.fecha_guardado).toLocaleDateString()}</span>
-                                    </div>
-                                    <div class="resource-card__actions">
-                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                        </a>
-                                        <a href="#" class="btn btn--outline remove-saved" data-id="${resource.id}"><i class="fas fa-bookmark"></i> Quitar de guardados</a>
-                                    </div>
-                                </div>
-                            `;
-                                resourcesGrid.appendChild(resourceCard);
-                            });
+                            viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                        }
+                        resourceCard.innerHTML = `
+                        <div class="resource-card__image-container">
+                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                            ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                            ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                        </div>
+                        <div class="resource-card__content">
+                            <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                            <h3 class="resource-card__title">${resource.titulo}</h3>
+                            <p class="resource-card__author">Por ${resource.autor}</p>
+                            <div class="resource-card__meta">
+                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                <span><i class="fas fa-eye"></i> Visto el: ${new Date(resource.fecha_vista).toLocaleDateString()}</span>
+                            </div>
+                            <div class="resource-card__actions">
+                                <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                    <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                    ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                </a>
+                                <a href="#" class="btn btn--outline add-favorite" data-id="${resource.id}"><i class="fas fa-heart"></i> Añadir a favoritos</a>
+                            </div>
+                        </div>
+                    `;
+                        resourcesGrid.appendChild(resourceCard);
+                    });
 
-                            resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    const documentoId = button.getAttribute('data-id');
-                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/x-www-form-urlencoded'
-                                            },
-                                            body: `documento_id=${documentoId}`
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                console.log(data.message);
-                                            } else {
-                                                alert(data.message);
-                                            }
-                                        })
-                                        .catch(error => console.error('Error al registrar vista:', error));
-                                });
-                            });
-
-                            resourcesGrid.querySelectorAll('.remove-saved').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    if (confirm('¿Estás seguro de que deseas quitar este recurso de tus guardados?')) {
-                                        fetch('../../backend/gestionRecursos/remove_from_saved.php', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                                },
-                                                body: `documento_id=${documentoId}`
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.success) {
-                                                    alert(data.message);
-                                                    loadSavedResources();
-                                                } else {
-                                                    alert(data.message);
-                                                }
-                                            })
-                                            .catch(error => console.error('Error al quitar de guardados:', error));
+                    resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const documentoId = button.getAttribute('data-id');
+                            fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        console.log(data.message);
+                                    } else {
+                                        alert(data.message);
                                     }
-                                });
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar recursos guardados:', error);
-                        document.getElementById('saved-grid').innerHTML = '<p>Error al cargar los recursos guardados.</p>';
+                                })
+                                .catch(error => console.error('Error al registrar vista:', error));
+                        });
                     });
-            }
 
-            function loadUserResources() {
-                fetch('../../backend/gestionRecursos/get_user_resources.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const resourcesGrid = document.getElementById('resources-grid');
-                        resourcesGrid.innerHTML = '';
-                        if (data.length === 0) {
-                            resourcesGrid.innerHTML = '<p>No has subido ningún recurso aún.</p>';
-                        } else {
-                            data.forEach(resource => {
-                                const resourceCard = document.createElement('div');
-                                resourceCard.className = 'resource-card';
-                                let viewUrl;
-                                if (resource.tipo === 'video') {
-                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
-                                } else if (resource.tipo === 'libro') {
-                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
-                                } else {
-                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
-                                }
-                                resourceCard.innerHTML = `
-                                <div class="resource-card__image-container">
-                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                </div>
-                                <div class="resource-card__content">
-                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                    <div class="resource-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                    </div>
-                                    <div class="resource-card__actions">
-                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                        </a>
-                                        <a href="#" class="btn btn--outline edit-resource" data-id="${resource.id}"><i class="fas fa-edit"></i> Editar</a>
-                                        <a href="#" class="btn btn--outline delete-resource" data-id="${resource.id}"><i class="fas fa-trash"></i> Eliminar</a>
-                                    </div>
-                                </div>
-                            `;
-                                resourcesGrid.appendChild(resourceCard);
-                            });
-
-                            resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    const documentoId = button.getAttribute('data-id');
-                                    fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/x-www-form-urlencoded'
-                                            },
-                                            body: `documento_id=${documentoId}`
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                console.log(data.message);
-                                            } else {
-                                                alert(data.message);
-                                            }
-                                        })
-                                        .catch(error => console.error('Error al registrar vista:', error));
-                                });
-                            });
-
-                            resourcesGrid.querySelectorAll('.edit-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    alert('Funcionalidad de edición no implementada. ID del recurso: ' + documentoId);
-                                });
-                            });
-
-                            resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    if (confirm('¿Estás seguro de que deseas eliminar este recurso?')) {
-                                        fetch('../../backend/gestionRecursos/delete_resource.php', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                                },
-                                                body: `documento_id=${documentoId}`
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.success) {
-                                                    alert(data.message);
-                                                    loadUserResources();
-                                                } else {
-                                                    alert(data.message);
-                                                }
-                                            })
-                                            .catch(error => console.error('Error al eliminar recurso:', error));
+                    resourcesGrid.querySelectorAll('.add-favorite').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const documentoId = button.getAttribute('data-id');
+                            fetch('../../backend/gestionRecursos/add_to_favorites.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert(data.message);
+                                        loadRecentlyViewed();
+                                    } else {
+                                        alert(data.message);
                                     }
-                                });
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar tus recursos:', error);
-                        document.getElementById('resources-grid').innerHTML = '<p>Error al cargar tus aportes.</p>';
+                                })
+                                .catch(error => console.error('Error al añadir a favoritos:', error));
+                        });
                     });
-            }
-        });
-    </script>
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar recursos recientes:', error);
+                document.getElementById('recently-viewed-grid').innerHTML = '<p>Error al cargar los recursos vistos recientemente.</p>';
+            });
+    }
+
+    function loadSavedResources() {
+        fetch('../../backend/gestionRecursos/get_saved_resources.php')
+            .then(response => response.json())
+            .then(data => {
+                const resourcesGrid = document.getElementById('saved-grid');
+                resourcesGrid.innerHTML = '';
+                if (data.length === 0) {
+                    resourcesGrid.innerHTML = '<p>No tienes recursos guardados aún.</p>';
+                } else {
+                    data.forEach(resource => {
+                        const resourceCard = document.createElement('div');
+                        resourceCard.className = 'resource-card';
+                        let viewUrl;
+                        if (resource.tipo === 'video') {
+                            viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                        } else if (resource.tipo === 'libro') {
+                            viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
+                        } else {
+                            viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                        }
+                        resourceCard.innerHTML = `
+                        <div class="resource-card__image-container">
+                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                            ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                            ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                        </div>
+                        <div class="resource-card__content">
+                            <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                            <h3 class="resource-card__title">${resource.titulo}</h3>
+                            <p class="resource-card__author">Por ${resource.autor}</p>
+                            <div class="resource-card__meta">
+                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                <span><i class="fas fa-bookmark"></i> Guardado el: ${new Date(resource.fecha_guardado).toLocaleDateString()}</span>
+                            </div>
+                            <div class="resource-card__actions">
+                                <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                    <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                    ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                </a>
+                                <a href="#" class="btn btn--outline remove-saved" data-id="${resource.id}"><i class="fas fa-bookmark"></i> Quitar de guardados</a>
+                            </div>
+                        </div>
+                    `;
+                        resourcesGrid.appendChild(resourceCard);
+                    });
+
+                    resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const documentoId = button.getAttribute('data-id');
+                            fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        console.log(data.message);
+                                    } else {
+                                        alert(data.message);
+                                    }
+                                })
+                                .catch(error => console.error('Error al registrar vista:', error));
+                        });
+                    });
+
+                    resourcesGrid.querySelectorAll('.remove-saved').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const documentoId = button.getAttribute('data-id');
+                            if (confirm('¿Estás seguro de que deseas quitar este recurso de tus guardados?')) {
+                                fetch('../../backend/gestionRecursos/remove_from_saved.php', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded'
+                                        },
+                                        body: `documento_id=${documentoId}`
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            loadSavedResources();
+                                        } else {
+                                            alert(data.message);
+                                        }
+                                    })
+                                    .catch(error => console.error('Error al quitar de guardados:', error));
+                            }
+                        });
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar recursos guardados:', error);
+                document.getElementById('saved-grid').innerHTML = '<p>Error al cargar los recursos guardados.</p>';
+            });
+    }
+
+    function loadUserResources() {
+        fetch('../../backend/gestionRecursos/get_user_resources.php')
+            .then(response => response.json())
+            .then(data => {
+                const resourcesGrid = document.getElementById('resources-grid');
+                resourcesGrid.innerHTML = '';
+                if (data.length === 0) {
+                    resourcesGrid.innerHTML = '<p>No has subido ningún recurso aún.</p>';
+                } else {
+                    data.forEach(resource => {
+                        const resourceCard = document.createElement('div');
+                        resourceCard.className = 'resource-card';
+                        let viewUrl;
+                        if (resource.tipo === 'video') {
+                            viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                        } else if (resource.tipo === 'libro') {
+                            viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
+                        } else {
+                            viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                        }
+                        resourceCard.innerHTML = `
+                        <div class="resource-card__image-container">
+                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                            ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                            ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                        </div>
+                        <div class="resource-card__content">
+                            <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                            <h3 class="resource-card__title">${resource.titulo}</h3>
+                            <p class="resource-card__author">Por ${resource.autor}</p>
+                            <div class="resource-card__meta">
+                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                            </div>
+                            <div class="resource-card__actions">
+                                <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                    <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                    ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                </a>
+                                <a href="#" class="btn btn--outline edit-resource" data-id="${resource.id}"><i class="fas fa-edit"></i> Editar</a>
+                                <a href="#" class="btn btn--outline delete-resource" data-id="${resource.id}"><i class="fas fa-trash"></i> Eliminar</a>
+                            </div>
+                        </div>
+                    `;
+                        resourcesGrid.appendChild(resourceCard);
+                    });
+
+                    resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const documentoId = button.getAttribute('data-id');
+                            fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        console.log(data.message);
+                                    } else {
+                                        alert(data.message);
+                                    }
+                                })
+                                .catch(error => console.error('Error al registrar vista:', error));
+                        });
+                    });
+
+                    resourcesGrid.querySelectorAll('.edit-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const documentoId = button.getAttribute('data-id');
+                            alert('Funcionalidad de edición en desarrollo para el recurso ID: ' + documentoId);
+                        });
+                    });
+
+                    resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const documentoId = button.getAttribute('data-id');
+                            if (confirm('¿Estás seguro de que deseas eliminar este recurso?')) {
+                                fetch('../../backend/gestionRecursos/delete_resource.php', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded'
+                                        },
+                                        body: `documento_id=${documentoId}`
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            loadUserResources();
+                                        } else {
+                                            alert(data.message);
+                                        }
+                                    })
+                                    .catch(error => console.error('Error al eliminar recurso:', error));
+                            }
+                        });
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar recursos del usuario:', error);
+                document.getElementById('resources-grid').innerHTML = '<p>Error al cargar tus aportes.</p>';
+            });
+    }
+});
+</script>
+
 </body>
 
 </html>
