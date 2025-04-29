@@ -8,7 +8,7 @@ header("Pragma: no-cache");
 require_once "../../database/conexionDB.php";
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../inicio/index.php");
+    header("Location: ../login/login.php");
     exit();
 }
 
@@ -39,7 +39,6 @@ try {
     $stmt = $db->prepare($query);
     $stmt->execute([':user_id' => $user_id]);
     $unread_count = $stmt->fetchColumn();
-
 } catch (PDOException $e) {
     session_destroy();
     header("Location: ../inicio/index.php");
@@ -56,6 +55,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,12 +84,15 @@ try {
             z-index: 1000;
             transition: background-color 0.3s;
         }
+
         .floating-notifications-btn:hover {
             background-color: #45a049;
         }
+
         .floating-notifications-btn i {
             font-size: 24px;
         }
+
         /* Estilo para el círculo rojo de notificaciones no leídas */
         .notification-dot {
             position: absolute;
@@ -108,6 +111,7 @@ try {
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="container navbar__container">
@@ -121,11 +125,11 @@ try {
                 <li class="navbar__menu-item navbar__menu-item--active"><a href="panel-usuario.php">Panel</a></li>
                 <li class="navbar__menu-item"><a href="../friends/amigos.php">Amigos</a></li>
                 <li class="navbar__menu-item"><a href="../notificaciones/notificaciones.php">
-                    Notificaciones
-                    <?php if ($unread_count > 0): ?>
-                        <span class="notification-badge"><?php echo $unread_count; ?></span>
-                    <?php endif; ?>
-                </a></li>
+                        Notificaciones
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notification-badge"><?php echo $unread_count; ?></span>
+                        <?php endif; ?>
+                    </a></li>
                 <li class="navbar__menu-item navbar__menu-item--button"><a href="../../backend/logout.php">Cerrar sesión</a></li>
             </ul>
             <button id="mobile-menu-button" class="navbar__toggle">
@@ -139,11 +143,11 @@ try {
                 <li class="navbar__mobile-item navbar__mobile-item--active"><a href="panel-usuario.php">Panel</a></li>
                 <li class="navbar__mobile-item"><a href="../friends/amigos.php">Amigos</a></li>
                 <li class="navbar__mobile-item"><a href="../notificaciones/notificaciones.php">
-                    Notificaciones
-                    <?php if ($unread_count > 0): ?>
-                        <span class="notification-badge"><?php echo $unread_count; ?></span>
-                    <?php endif; ?>
-                </a></li>
+                        Notificaciones
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notification-badge"><?php echo $unread_count; ?></span>
+                        <?php endif; ?>
+                    </a></li>
                 <li class="navbar__mobile-item"><a href="../../backend/logout.php">Cerrar sesión</a></li>
             </ul>
         </div>
@@ -1148,42 +1152,42 @@ try {
                 progressBarFill.style.width = '0%';
 
                 fetch('../../backend/gestionRecursos/upload_resource.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    progressBar.style.display = 'none';
-                    if (data.success) {
-                        successMessage.textContent = 'Recurso subido exitosamente.';
-                        successMessage.style.display = 'block';
-                        errorMessage.style.display = 'none';
-                        uploadForm.reset();
-                        videoUrlGroup.style.display = 'none';
-                        videoDurationGroup.style.display = 'none';
-                        fileUploadGroup.style.display = 'block';
-                        groupSelectGroup.style.display = 'none';
-                        selectedCategories = [];
-                        customTags = [];
-                        document.getElementById('category-tags').innerHTML = '';
-                        document.getElementById('custom-tags').innerHTML = '';
-                        setTimeout(() => {
-                            modal.style.display = 'none';
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        progressBar.style.display = 'none';
+                        if (data.success) {
+                            successMessage.textContent = 'Recurso subido exitosamente.';
+                            successMessage.style.display = 'block';
+                            errorMessage.style.display = 'none';
+                            uploadForm.reset();
+                            videoUrlGroup.style.display = 'none';
+                            videoDurationGroup.style.display = 'none';
+                            fileUploadGroup.style.display = 'block';
+                            groupSelectGroup.style.display = 'none';
+                            selectedCategories = [];
+                            customTags = [];
+                            document.getElementById('category-tags').innerHTML = '';
+                            document.getElementById('custom-tags').innerHTML = '';
+                            setTimeout(() => {
+                                modal.style.display = 'none';
+                                successMessage.style.display = 'none';
+                            }, 2000);
+                            loadUserResources();
+                        } else {
+                            errorMessage.textContent = data.message;
+                            errorMessage.style.display = 'block';
                             successMessage.style.display = 'none';
-                        }, 2000);
-                        loadUserResources();
-                    } else {
-                        errorMessage.textContent = data.message;
+                        }
+                    })
+                    .catch(error => {
+                        progressBar.style.display = 'none';
+                        errorMessage.textContent = 'Error al subir el recurso. Intenta de nuevo.';
                         errorMessage.style.display = 'block';
                         successMessage.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    progressBar.style.display = 'none';
-                    errorMessage.textContent = 'Error al subir el recurso. Intenta de nuevo.';
-                    errorMessage.style.display = 'block';
-                    successMessage.style.display = 'none';
-                });
+                    });
             });
 
             function loadUserFavorites() {
@@ -1198,65 +1202,45 @@ try {
                             data.forEach(resource => {
                                 const resourceCard = document.createElement('div');
                                 resourceCard.className = 'resource-card';
+                                let viewUrl;
+                                if (resource.tipo === 'video') {
+                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                                } else if (resource.tipo === 'libro') {
+                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
+                                } else {
+                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                                }
                                 resourceCard.innerHTML = `
-                                        <div class="resource-card__image-container">
-                                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image">
-                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                            ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                            ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                        </div>
-                                        <div class="resource-card__content">
-                                            <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                            <h3 class="resource-card__title">${resource.titulo}</h3>
-                                            <p class="resource-card__author">Por ${resource.autor}</p>
-                                            <div class="resource-card__meta">
-                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                <span><i class="fas fa-star"></i> Favorito desde: ${new Date(resource.fecha_agregado).toLocaleDateString()}</span>
-                                            </div>
-                                            <div class="resource-card__actions">
-                                                <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                                    ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline remove-favorite" data-id="${resource.id}"><i class="fas fa-heart-broken"></i> Quitar favorito</a>
-                                            </div>
-                                        </div>
-                                    `;
+                                <div class="resource-card__image-container">
+                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                                </div>
+                                <div class="resource-card__content">
+                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                                    <h3 class="resource-card__title">${resource.titulo}</h3>
+                                    <p class="resource-card__author">Por ${resource.autor}</p>
+                                    <div class="resource-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                        <span><i class="fas fa-star"></i> Favorito desde: ${new Date(resource.fecha_agregado).toLocaleDateString()}</span>
+                                    </div>
+                                    <div class="resource-card__actions">
+                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline remove-favorite" data-id="${resource.id}"><i class="fas fa-heart-broken"></i> Quitar favorito</a>
+                                    </div>
+                                </div>
+                            `;
                                 resourcesGrid.appendChild(resourceCard);
                             });
 
-                            // eventos para Leer ahora o Ver video
                             resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                                 button.addEventListener('click', (e) => {
-                                    e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            console.log(data.message);
-                                            alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error('Error al registrar vista:', error));
-                                });
-                            });
-
-                            //  eventos para Quitar favorito
-                            resourcesGrid.querySelectorAll('.remove-favorite').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    if (confirm('¿Estás seguro de que deseas quitar este recurso de tus favoritos?')) {
-                                        fetch('../../backend/gestionRecursos/remove_from_favorites.php', {
                                             method: 'POST',
                                             headers: {
                                                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -1266,13 +1250,37 @@ try {
                                         .then(response => response.json())
                                         .then(data => {
                                             if (data.success) {
-                                                alert(data.message);
-                                                loadUserFavorites();
+                                                console.log(data.message);
                                             } else {
                                                 alert(data.message);
                                             }
                                         })
-                                        .catch(error => console.error('Error al quitar favorito:', error));
+                                        .catch(error => console.error('Error al registrar vista:', error));
+                                });
+                            });
+
+                            resourcesGrid.querySelectorAll('.remove-favorite').forEach(button => {
+                                button.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    const documentoId = button.getAttribute('data-id');
+                                    if (confirm('¿Estás seguro de que deseas quitar este recurso de tus favoritos?')) {
+                                        fetch('../../backend/gestionRecursos/remove_from_favorites.php', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                                },
+                                                body: `documento_id=${documentoId}`
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    alert(data.message);
+                                                    loadUserFavorites();
+                                                } else {
+                                                    alert(data.message);
+                                                }
+                                            })
+                                            .catch(error => console.error('Error al quitar favorito:', error));
                                     }
                                 });
                             });
@@ -1296,80 +1304,84 @@ try {
                             data.forEach(resource => {
                                 const resourceCard = document.createElement('div');
                                 resourceCard.className = 'resource-card';
+                                let viewUrl;
+                                if (resource.tipo === 'video') {
+                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                                } else if (resource.tipo === 'libro') {
+                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
+                                } else {
+                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                                }
                                 resourceCard.innerHTML = `
-                                            <div class="resource-card__image-container">
-                                                <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image">
-                                                <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                                ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                                ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                            </div>
-                                            <div class="resource-card__content">
-                                                <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                                <h3 class="resource-card__title">${resource.titulo}</h3>
-                                                <p class="resource-card__author">Por ${resource.autor}</p>
-                                                <div class="resource-card__meta">
-                                                    <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                    <span><i class="fas fa-eye"></i> Visto el: ${new Date(resource.fecha_vista).toLocaleDateString()}</span>
-                                                </div>
-                                                <div class="resource-card__actions">
-                                                    <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                        <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                                        ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                                    </a>
-                                                    <a href="#" class="btn btn--outline add-favorite" data-id="${resource.id}"><i class="fas fa-heart"></i> Añadir a favoritos</a>
-                                                </div>
-                                            </div>
-                                        `;
+                                <div class="resource-card__image-container">
+                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                                </div>
+                                <div class="resource-card__content">
+                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                                    <h3 class="resource-card__title">${resource.titulo}</h3>
+                                    <p class="resource-card__author">Por ${resource.autor}</p>
+                                    <div class="resource-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                        <span><i class="fas fa-eye"></i> Visto el: ${new Date(resource.fecha_vista).toLocaleDateString()}</span>
+                                    </div>
+                                    <div class="resource-card__actions">
+                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline add-favorite" data-id="${resource.id}"><i class="fas fa-heart"></i> Añadir a favoritos</a>
+                                    </div>
+                                </div>
+                            `;
                                 resourcesGrid.appendChild(resourceCard);
                             });
 
-                            // eventos para Leer ahora o Ver video
                             resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                                 button.addEventListener('click', (e) => {
-                                    e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            console.log(data.message);
-                                            alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error('Error al registrar vista:', error));
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/x-www-form-urlencoded'
+                                            },
+                                            body: `documento_id=${documentoId}`
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                console.log(data.message);
+                                            } else {
+                                                alert(data.message);
+                                            }
+                                        })
+                                        .catch(error => console.error('Error al registrar vista:', error));
                                 });
                             });
 
-                            // eventos para Añadir a favoritos
                             resourcesGrid.querySelectorAll('.add-favorite').forEach(button => {
                                 button.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     fetch('../../backend/gestionRecursos/add_to_favorites.php', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            alert(data.message);
-                                            loadRecentlyViewed();
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error('Error al añadir a favoritos:', error));
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/x-www-form-urlencoded'
+                                            },
+                                            body: `documento_id=${documentoId}`
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                alert(data.message);
+                                                loadRecentlyViewed();
+                                            } else {
+                                                alert(data.message);
+                                            }
+                                        })
+                                        .catch(error => console.error('Error al añadir a favoritos:', error));
                                 });
                             });
                         }
@@ -1392,65 +1404,45 @@ try {
                             data.forEach(resource => {
                                 const resourceCard = document.createElement('div');
                                 resourceCard.className = 'resource-card';
+                                let viewUrl;
+                                if (resource.tipo === 'video') {
+                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                                } else if (resource.tipo === 'libro') {
+                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
+                                } else {
+                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                                }
                                 resourceCard.innerHTML = `
-                                        <div class="resource-card__image-container">
-                                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image">
-                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                            ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                            ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                        </div>
-                                        <div class="resource-card__content">
-                                            <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                            <h3 class="resource-card__title">${resource.titulo}</h3>
-                                            <p class="resource-card__author">Por ${resource.autor}</p>
-                                            <div class="resource-card__meta">
-                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                <span><i class="fas fa-bookmark"></i> Guardado el: ${new Date(resource.fecha_guardado).toLocaleDateString()}</span>
-                                            </div>
-                                            <div class="resource-card__actions">
-                                                <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                                    ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline remove-saved" data-id="${resource.id}"><i class="fas fa-bookmark"></i> Quitar de guardados</a>
-                                            </div>
-                                        </div>
-                                    `;
+                                <div class="resource-card__image-container">
+                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                                </div>
+                                <div class="resource-card__content">
+                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                                    <h3 class="resource-card__title">${resource.titulo}</h3>
+                                    <p class="resource-card__author">Por ${resource.autor}</p>
+                                    <div class="resource-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                        <span><i class="fas fa-bookmark"></i> Guardado el: ${new Date(resource.fecha_guardado).toLocaleDateString()}</span>
+                                    </div>
+                                    <div class="resource-card__actions">
+                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline remove-saved" data-id="${resource.id}"><i class="fas fa-bookmark"></i> Quitar de guardados</a>
+                                    </div>
+                                </div>
+                            `;
                                 resourcesGrid.appendChild(resourceCard);
                             });
 
-                            //eventos para Leer ahora o Ver video
                             resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                                 button.addEventListener('click', (e) => {
-                                    e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            console.log(data.message);
-                                            alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error('Error al registrar vista:', error));
-                                });
-                            });
-
-                            // eventos para Quitar de guardados
-                            resourcesGrid.querySelectorAll('.remove-saved').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    if (confirm('¿Estás seguro de que deseas quitar este recurso de tus guardados?')) {
-                                        fetch('../../backend/gestionRecursos/remove_from_saved.php', {
                                             method: 'POST',
                                             headers: {
                                                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -1460,13 +1452,37 @@ try {
                                         .then(response => response.json())
                                         .then(data => {
                                             if (data.success) {
-                                                alert(data.message);
-                                                loadSavedResources();
+                                                console.log(data.message);
                                             } else {
                                                 alert(data.message);
                                             }
                                         })
-                                        .catch(error => console.error('Error al quitar de guardados:', error));
+                                        .catch(error => console.error('Error al registrar vista:', error));
+                                });
+                            });
+
+                            resourcesGrid.querySelectorAll('.remove-saved').forEach(button => {
+                                button.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    const documentoId = button.getAttribute('data-id');
+                                    if (confirm('¿Estás seguro de que deseas quitar este recurso de tus guardados?')) {
+                                        fetch('../../backend/gestionRecursos/remove_from_saved.php', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                                },
+                                                body: `documento_id=${documentoId}`
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    alert(data.message);
+                                                    loadSavedResources();
+                                                } else {
+                                                    alert(data.message);
+                                                }
+                                            })
+                                            .catch(error => console.error('Error al quitar de guardados:', error));
                                     }
                                 });
                             });
@@ -1490,75 +1506,46 @@ try {
                             data.forEach(resource => {
                                 const resourceCard = document.createElement('div');
                                 resourceCard.className = 'resource-card';
+                                let viewUrl;
+                                if (resource.tipo === 'video') {
+                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                                } else if (resource.tipo === 'libro') {
+                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
+                                } else {
+                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`;
+                                }
                                 resourceCard.innerHTML = `
-                                        <div class="resource-card__image-container">
-                                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image">
-                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                            ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
-                                            ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
-                                        </div>
-                                        <div class="resource-card__content">
-                                            <div class="resource-card__category">${resource.categorias.join(', ')}</div>
-                                            <h3 class="resource-card__title">${resource.titulo}</h3>
-                                            <p class="resource-card__author">Por ${resource.autor}</p>
-                                            <div class="resource-card__meta">
-                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                            </div>
-                                            <div class="resource-card__actions">
-                                                <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
-                                                    ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline edit-resource" data-id="${resource.id}"><i class="fas fa-edit"></i> Editar</a>
-                                                <a href="#" class="btn btn--outline delete-resource" data-id="${resource.id}"><i class="fas fa-trash"></i> Eliminar</a>
-                                            </div>
-                                        </div>
-                                    `;
+                                <div class="resource-card__image-container">
+                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                    ${resource.tipo === 'video' && resource.duracion ? `<div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>` : ''}
+                                    ${resource.tipo === 'video' ? `<div class="resource-card__play-button"><i class="fas fa-play"></i></div>` : ''}
+                                </div>
+                                <div class="resource-card__content">
+                                    <div class="resource-card__category">${resource.categorias.join(', ')}</div>
+                                    <h3 class="resource-card__title">${resource.titulo}</h3>
+                                    <p class="resource-card__author">Por ${resource.autor}</p>
+                                    <div class="resource-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                    </div>
+                                    <div class="resource-card__actions">
+                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                            <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
+                                            ${resource.tipo === 'video' ? 'Ver video' : 'Leer ahora'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline edit-resource" data-id="${resource.id}"><i class="fas fa-edit"></i> Editar</a>
+                                        <a href="#" class="btn btn--outline delete-resource" data-id="${resource.id}"><i class="fas fa-trash"></i> Eliminar</a>
+                                    </div>
+                                </div>
+                            `;
                                 resourcesGrid.appendChild(resourceCard);
                             });
 
-                            // eventos para Leer ahora o Ver video
                             resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                                 button.addEventListener('click', (e) => {
-                                    e.preventDefault();
                                     const documentoId = button.getAttribute('data-id');
                                     fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: `documento_id=${documentoId}`
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            console.log(data.message);
-                                            alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
-                                        } else {
-                                            alert(data.message);
-                                        }
-                                    })
-                                    .catch(error => console.error('Error al registrar vista:', error));
-                                });
-                            });
-
-                            // eventos Editar
-                            resourcesGrid.querySelectorAll('.edit-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    alert('Funcionalidad de edición no implementada. ID del recurso: ' + documentoId);
-                                });
-                            });
-
-                            // eventos Eliminar
-                            resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
-                                button.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    const documentoId = button.getAttribute('data-id');
-                                    if (confirm('¿Estás seguro de que deseas eliminar este recurso?')) {
-                                        fetch('../../backend/gestionRecursos/delete_resource.php', {
                                             method: 'POST',
                                             headers: {
                                                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -1568,13 +1555,45 @@ try {
                                         .then(response => response.json())
                                         .then(data => {
                                             if (data.success) {
-                                                alert(data.message);
-                                                loadUserResources();
+                                                console.log(data.message);
                                             } else {
                                                 alert(data.message);
                                             }
                                         })
-                                        .catch(error => console.error('Error al eliminar recurso:', error));
+                                        .catch(error => console.error('Error al registrar vista:', error));
+                                });
+                            });
+
+                            resourcesGrid.querySelectorAll('.edit-resource').forEach(button => {
+                                button.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    const documentoId = button.getAttribute('data-id');
+                                    alert('Funcionalidad de edición no implementada. ID del recurso: ' + documentoId);
+                                });
+                            });
+
+                            resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
+                                button.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    const documentoId = button.getAttribute('data-id');
+                                    if (confirm('¿Estás seguro de que deseas eliminar este recurso?')) {
+                                        fetch('../../backend/gestionRecursos/delete_resource.php', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                                },
+                                                body: `documento_id=${documentoId}`
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    alert(data.message);
+                                                    loadUserResources();
+                                                } else {
+                                                    alert(data.message);
+                                                }
+                                            })
+                                            .catch(error => console.error('Error al eliminar recurso:', error));
                                     }
                                 });
                             });
@@ -1588,4 +1607,5 @@ try {
         });
     </script>
 </body>
+
 </html>

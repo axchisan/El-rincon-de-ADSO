@@ -7,6 +7,11 @@ $nombre_usuario = '';
 $usuario_imagen = '';
 $unread_count = 0; // Variable para contar notificaciones no leídas
 
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../login/login.php");
+    exit();
+}
+
 if ($usuario_id) {
     try {
         $db = conexionDB::getConexion();
@@ -117,7 +122,7 @@ if ($usuario_id) {
             <ul class="navbar__menu">
                 <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
                 <li class="navbar__menu-item navbar__menu-item--active"><a href="../repositorio/repositorio.php">Repositorio</a></li>
-                <li class="navbar__menu-item"><a href="../inicio/index.php#buscar">Búsquedas</a></li>
+                <li class="navbar__menu-item"><a href="#buscar">Búsquedas</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#nosotros">Nosotros</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
@@ -147,7 +152,7 @@ if ($usuario_id) {
             <ul>
                 <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
                 <li class="navbar__menu-item navbar__menu-item--active"><a href="../repositorio/repositorio.php">Repositorio</a></li>
-                <li class="navbar__menu-item"><a href="../inicio/index.php#buscar">Búsquedas</a></li>
+                <li class="navbar__menu-item"><a href="#buscar">Búsquedas</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#nosotros">Nosotros</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
@@ -198,7 +203,7 @@ if ($usuario_id) {
     </section>
 
     <!-- Buscador y Filtros -->
-    <section class="search-section">
+    <section class="search-section"  id="buscar">
         <div class="container">
             <div class="search-container">
                 <div class="search-box">
