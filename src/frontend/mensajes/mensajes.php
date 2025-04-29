@@ -1,7 +1,8 @@
 <?php
-session_start();
 ini_set('session.gc_maxlifetime', 3600);
 session_set_cookie_params(3600, '/');
+
+session_start();
 require_once "../../database/conexionDB.php";
 
 if (!isset($_SESSION['usuario_id'])) {
@@ -225,7 +226,7 @@ try {
           <div class="chat-input__wrapper">
             <input type="text" id="message-input" class="chat-input__field" placeholder="Escribe un mensaje..." required>
           </div>
-          <button id="send-message-btn" class="chat-input__button">
+          <button id="send-message-btn" class描绘="chat-input__button">
             <i class="fas fa-paper-plane"></i> Enviar
           </button>
         </div>
