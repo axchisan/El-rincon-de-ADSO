@@ -43,7 +43,10 @@
 
       <label for="clave">Contraseña:</label>
       <input type="password" name="clave" id="clave" required><br><br>
-
+      <p style="text-align: center;">
+      ¿No te has registrado?
+      <a href="../register/registro.php" style="color: #007bff; text-decoration: none;">Registrate aquí</a>
+      </p>
       <input type="submit" value="Entrar">
     </form>
 
