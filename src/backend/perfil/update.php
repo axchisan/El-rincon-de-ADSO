@@ -1,16 +1,15 @@
 <?php
 session_start();
+
+// Evitar caché para que la imagen actualizada se muestre correctamente
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 require_once "../../database/conexionDB.php";
 
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../inicio/index.php");
-    exit();
-}
-
-// Verificar si el formulario fue enviado
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: ../../frontend/panel/panel-usuario.php");
+    header("Location: ../../frontend/login/login.php");
     exit();
 }
 
@@ -18,109 +17,152 @@ try {
     $db = conexionDB::getConexion();
     $user_id = $_SESSION['usuario_id'];
 
-    // Obtener los datos del formulario
-    $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING);
-    $correo = filter_input(INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);
-    $telefono = filter_input(INPUT_POST, 'telefono', FILTER_SANITIZE_STRING);
-    $profesion = filter_input(INPUT_POST, 'profesion', FILTER_SANITIZE_STRING);
-    $bio = filter_input(INPUT_POST, 'bio', FILTER_SANITIZE_STRING);
+    // Verificar qué acción se está realizando
+    $action = isset($_POST['action']) ? $_POST['action'] : '';
 
-    // Validar los datos requeridos
-    if (empty($nombre) || empty($correo)) {
-        $_SESSION['error_message'] = "El nombre y el correo son obligatorios.";
-        header("Location: ../../frontend/panel/panel-usuario.php");
+    if ($action === 'change_password') {
+        // Cambio de contraseña
+        $current_password = $_POST['current_password'] ?? '';
+        $new_password = $_POST['new_password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+
+        // Obtener la contraseña actual del usuario desde la base de datos
+        $query = "SELECT contrasena FROM usuarios WHERE id = :id";
+        $stmt = $db->prepare($query);
+        $stmt->execute([':id' => $user_id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            $_SESSION['error_message'] = "Usuario no encontrado.";
+            header("Location: ../../frontend/panel/panel-usuario.php");
+            exit();
+        }
+
+        // Verificar si la contraseña actual es correcta
+        if (!password_verify($current_password, $user['contrasena'])) {
+            $_SESSION['error_message'] = "La contraseña actual es incorrecta.";
+            header("Location: ../../frontend/panel/panel-usuario.php");
+            exit();
+        }
+
+        // Verificar si las nuevas contraseñas coinciden
+        if ($new_password !== $confirm_password) {
+            $_SESSION['error_message'] = "Las nuevas contraseñas no coinciden.";
+            header("Location: ../../frontend/panel/panel-usuario.php");
+            exit();
+        }
+
+        // Validar los requisitos de la nueva contraseña
+        if (!preg_match('/[A-Z]/', $new_password)) {
+            $_SESSION['error_message'] = "La nueva contraseña debe contener al menos una letra mayúscula.";
+            header("Location: ../../frontend/panel/panel-usuario.php");
+            exit();
+        }
+        if (preg_match_all('/\d/', $new_password) < 3) {
+            $_SESSION['error_message'] = "La nueva contraseña debe contener al menos 3 números.";
+            header("Location: ../../frontend/panel/panel-usuario.php");
+            exit();
+        }
+        if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $new_password)) {
+            $_SESSION['error_message'] = "La nueva contraseña debe contener al menos un carácter especial.";
+            header("Location: ../../frontend/panel/panel-usuario.php");
+            exit();
+        }
+
+        // Cifrar la nueva contraseña
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+        // Actualizar la contraseña en la base de datos
+        $query = "UPDATE usuarios SET contrasena = :contrasena WHERE id = :id";
+        $stmt = $db->prepare($query);
+        $stmt->execute([
+            ':contrasena' => $hashed_password,
+            ':id' => $user_id
+        ]);
+
+        // Mostrar mensaje de éxito y redirigir
+        echo "<script>alert('Contraseña actualizada correctamente'); window.location.href='../../frontend/panel/panel-usuario.php';</script>";
+        exit();
+    } else {
+        // Actualización de datos personales
+        $nombre = $_POST['nombre'] ?? '';
+        $correo = $_POST['correo'] ?? '';
+        $telefono = $_POST['telefono'] ?? '';
+        $profesion = $_POST['profesion'] ?? '';
+        $bio = $_POST['bio'] ?? '';
+        $imagen = $_FILES['imagen'] ?? null;
+
+        // Validar correo
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error_message'] = "El correo electrónico no es válido.";
+            header("Location: ../../frontend/panel/panel-usuario.php");
+            exit();
+        }
+
+        // Manejo de la imagen
+        $imagen_nombre = null;
+        if ($imagen && $imagen['error'] === UPLOAD_ERR_OK) {
+            $imagen_tmp = $imagen['tmp_name'];
+            $imagen_nombre = uniqid() . '-' . basename($imagen['name']);
+            $imagen_ruta = "uploads/" . $imagen_nombre;
+
+            $extension = strtolower(pathinfo($imagen_nombre, PATHINFO_EXTENSION));
+            $extensiones_permitidas = ['jpg', 'jpeg', 'png', 'gif'];
+
+            if (!in_array($extension, $extensiones_permitidas)) {
+                $_SESSION['error_message'] = "El formato de la imagen no es válido. Usa JPG, PNG o GIF.";
+                header("Location: ../../frontend/panel/panel-usuario.php");
+                exit();
+            }
+
+            if ($imagen['size'] > 5 * 1024 * 1024) { // 5MB
+                $_SESSION['error_message'] = "La imagen es demasiado grande. El tamaño máximo es 5MB.";
+                header("Location: ../../frontend/panel/panel-usuario.php");
+                exit();
+            }
+
+            if (!move_uploaded_file($imagen_tmp, $imagen_ruta)) {
+                $_SESSION['error_message'] = "Error al subir la imagen.";
+                header("Location: ../../frontend/panel/panel-usuario.php");
+                exit();
+            }
+
+            // Eliminar la imagen anterior si existe
+            $query = "SELECT imagen FROM usuarios WHERE id = :id";
+            $stmt = $db->prepare($query);
+            $stmt->execute([':id' => $user_id]);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($usuario['imagen'] && file_exists("uploads/" . $usuario['imagen'])) {
+                unlink("uploads/" . $usuario['imagen']);
+            }
+        }
+
+        // Actualizar datos en la base de datos
+        $query = "UPDATE usuarios SET nombre_usuario = :nombre, correo = :correo, telefono = :telefono, profesion = :profesion, bio = :bio";
+        $params = [
+            ':nombre' => $nombre,
+            ':correo' => $correo,
+            ':telefono' => $telefono ?: null,
+            ':profesion' => $profesion ?: null,
+            ':bio' => $bio ?: null,
+            ':id' => $user_id
+        ];
+
+        if ($imagen_nombre) {
+            $query .= ", imagen = :imagen";
+            $params[':imagen'] = $imagen_nombre;
+        }
+
+        $query .= " WHERE id = :id";
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
+
+        // Mostrar mensaje de éxito y redirigir
+        echo "<script>alert('Datos guardados correctamente'); window.location.href='../../frontend/panel/panel-usuario.php';</script>";
         exit();
     }
-
-    // Manejo de la imagen de perfil
-    $imagen_path = null;
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-        $file_tmp = $_FILES['imagen']['tmp_name'];
-        $file_name = $_FILES['imagen']['name'];
-        $file_size = $_FILES['imagen']['size'];
-        $file_type = $_FILES['imagen']['type'];
-
-        // Validar tipo de archivo (solo imágenes)
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array($file_type, $allowed_types)) {
-            $_SESSION['error_message'] = "Solo se permiten imágenes en formato JPEG, PNG o GIF.";
-            header("Location: ../../frontend/panel/panel-usuario.php");
-            exit();
-        }
-
-        // Validar tamaño del archivo (máximo 5MB)
-        $max_size = 5 * 1024 * 1024; // 5MB en bytes
-        if ($file_size > $max_size) {
-            $_SESSION['error_message'] = "La imagen no debe superar los 5MB.";
-            header("Location: ../../frontend/panel/panel-usuario.php");
-            exit();
-        }
-
-        // Crear directorio uploads si no existe
-        $upload_dir = __DIR__ . '/uploads/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
-        }
-
-        // Generar un nombre único para la imagen
-        $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
-        $new_file_name = uniqid('profile_', true) . '.' . $file_extension;
-        $destination = $upload_dir . $new_file_name;
-
-        // Mover el archivo al directorio uploads
-        if (move_uploaded_file($file_tmp, $destination)) {
-            $imagen_path = 'uploads/' . $new_file_name;
-            error_log("Imagen guardada en: " . $destination); // Depuración
-        } else {
-            $_SESSION['error_message'] = "Error al subir la imagen. Intenta de nuevo.";
-            error_log("Error al mover la imagen: " . $file_tmp . " a " . $destination); // Depuración
-            header("Location: ../../frontend/panel/panel-usuario.php");
-            exit();
-        }
-    }
-
-    // Preparar la consulta de actualización
-    $query = "UPDATE usuarios SET nombre_usuario = :nombre, correo = :correo, telefono = :telefono, profesion = :profesion, bio = :bio";
-    $params = [
-        ':nombre' => $nombre,
-        ':correo' => $correo,
-        ':telefono' => $telefono ?: null,
-        ':profesion' => $profesion ?: null,
-        ':bio' => $bio ?: null,
-        ':id' => $user_id
-    ];
-
-    // Si se subió una imagen, incluirla en la consulta
-    if ($imagen_path) {
-        $query .= ", imagen = :imagen";
-        $params[':imagen'] = $imagen_path;
-    }
-
-    $query .= " WHERE id = :id";
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
-    error_log("Consulta ejecutada. Imagen path: " . ($imagen_path ?? 'No se subió imagen')); // Depuración
-    
-    // Mostrar ventana emergente y redirigir
-    echo '<!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="refresh" content="0;url=../../frontend/panel/panel-usuario.php">
-        <title>Redirigiendo...</title>
-        <script>
-            alert("Datos guardados correctamente.");
-            window.location.href = "../../frontend/panel/panel-usuario.php";
-        </script>
-    </head>
-    <body>
-        <p>Redirigiendo...</p>
-    </body>
-    </html>';
-    exit();
-    
 } catch (PDOException $e) {
-    // Manejo de errores
     $_SESSION['error_message'] = "Error al actualizar los datos: " . $e->getMessage();
     header("Location: ../../frontend/panel/panel-usuario.php");
     exit();
