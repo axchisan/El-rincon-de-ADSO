@@ -1650,6 +1650,7 @@ p {
 }
 
 /* Cambiar el estilo del footer */
+/* Estilos para la sección de filosofía mejorada */
 .footer__quote {
   font-style: italic;
   margin-bottom: 1rem;
@@ -1680,7 +1681,7 @@ p {
   left: 0;
   width: 40px;
   height: 2px;
-  background-color: rgba(178, 80, 0, 0.806);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .footer {
