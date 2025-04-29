@@ -1073,6 +1073,46 @@ if ($usuario_id) {
             }
         });
     </script>
+    <!-- Contenedor para las alertas centradas -->
+<div id="mensaje-alerta" style="
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    text-align: center;
+"></div>
+
+<script>
+// Estilos rápidos para alerta centrada
+const estiloAlerta = `
+    background: #e3f2fd;
+    color: #0277bd;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    display: inline-block;
+    border-left: 6px solid #0277bd;
+`;
+
+// Sobrescribe alert() para mostrar en el centro
+window.alert = function(mensaje) {
+    const contenedor = document.getElementById('mensaje-alerta');
+    contenedor.innerHTML = ''; // limpia alertas anteriores
+    const alerta = document.createElement('div');
+    alerta.style = estiloAlerta;
+    alerta.innerHTML = `ℹ️ ${mensaje}`;
+    contenedor.appendChild(alerta);
+
+    // Elimina la alerta después de 4 segundos
+    setTimeout(() => {
+        alerta.remove();
+    }, 4000);
+};
+</script>
+
 </body>
 
 </html>
