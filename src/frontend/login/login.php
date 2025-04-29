@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8">
   <title>Inicio de sesión</title>
   <link rel="icon" href="./img/icono.png" type="image/png">
   <link rel="stylesheet" href="./css/estudiantes.css">
   <link href="../lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+
+  <!-- Carrusel de fondo -->
   <div id="carouselFondo" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
     <div class="carousel-inner">
       <div class="carousel-item active">
@@ -21,27 +24,34 @@
     </div>
   </div>
 
+  <!-- Formulario de inicio de sesión -->
   <div class="login-container">
-    <img src="img/logo.png" alt="Logo institucional" class="logo-login"> 
+    <img src="img/logo.png" alt="Logo institucional" class="logo-login">
     <h4>Iniciar Sesión</h4>
+
     <?php
     session_start();
     if (isset($_SESSION['error'])) {
-        echo '<p style="color: red;">' . htmlspecialchars($_SESSION['error']) . '</p>';
-        unset($_SESSION['error']); 
+        echo '<div style="color: red; text-align: center; margin-bottom: 10px;">' . htmlspecialchars($_SESSION['error']) . '</div>';
+        unset($_SESSION['error']);
     }
     ?>
-    <form action="../../backend/loginValidation/validar_login.php" method="POST">
-      <label>Usuario o Correo:</label>
-      <input type="text" name="usuario" required><br><br>
-      <label>Contraseña:</label>
-      <input type="password" name="clave" required><br><br>
+
+    <form action="../../backend/loginValidation/validar_login.php" method="POST" autocomplete="off">
+      <label for="usuario">Usuario o Correo:</label>
+      <input type="text" name="usuario" id="usuario" required><br><br>
+
+      <label for="clave">Contraseña:</label>
+      <input type="password" name="clave" id="clave" required><br><br>
+
       <input type="submit" value="Entrar">
     </form>
-    <button onclick="window.location.href='../inicio/index.php'">
+
+    <button onclick="window.location.href='../inicio/index.php'" class="btn btn-secondary mt-3">
       Volver a la página principal
     </button>
   </div>
+
   <script src="../lib/Bootstrap/js/bootstrap.bundle.min.js" defer></script>
 </body>
 </html>
