@@ -812,6 +812,26 @@ if ($usuario_id) {
             filterLanguage.addEventListener('change', () => loadResources(1, 1, 1));
         });
     </script>
+    <footer class="footer">
+    <div class="container">
+        <div class="footer__grid">
+            <div>
+                <h3 class="footer__logo">El Rincón de ADSO</h3>
+                <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
+            </div>
+            <div>
+                <h4 class="footer__heading">Nuestra Filosofía</h4>
+                <p class="footer__quote">El aprendizaje continuo es el camino hacia la excelencia personal y profesional.</p>
+                <p class="footer__philosophy-text">Nos dedicamos a cultivar mentes curiosas y a fomentar el pensamiento crítico a través del acceso a recursos educativos de calidad.</p>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <div class="footer__copyright">
+                © <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
+            </div>
+        </div>
+    </div>
+</footer>
 </body>
 
 </html>

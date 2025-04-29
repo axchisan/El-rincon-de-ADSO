@@ -1650,6 +1650,39 @@ p {
 }
 
 /* Cambiar el estilo del footer */
+.footer__quote {
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: dark var(--color-coffee);
+  font-size: 1.05rem;
+  border-left: 3px solid rgba(148, 79, 0, 0.803);
+  padding-left: 1rem;
+}
+
+.footer__philosophy-text {
+  line-height: 1.5;
+  color: var(--color-coffee);
+  margin-bottom: 1.5rem;
+}
+
+/* Aseguramos que el footer tenga un buen espaciado */
+.footer__heading {
+  margin-bottom: 1.2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.footer__heading:after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: rgba(178, 80, 0, 0.806);
+}
+
 .footer {
   background-color: var(--color-mocha-light);
   color: var(--color-gray-800);
