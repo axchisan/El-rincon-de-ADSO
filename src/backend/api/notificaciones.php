@@ -1,98 +1,79 @@
 <?php
 header('Content-Type: application/json');
+
+ini_set('session.gc_maxlifetime', 3600);
+session_set_cookie_params(3600, '/');
+
+
+session_start();
 require_once "../../database/conexionDB.php";
 
-$response = ['success' => false, 'message' => ''];
+$response = ['status' => 'error', 'message' => '', 'data' => []];
 
 try {
+    if (!isset($_SESSION['usuario_id'])) {
+        $response['message'] = 'Sesión no encontrada';
+        echo json_encode($response);
+        exit();
+    }
+
     $db = conexionDB::getConexion();
+    $user_id = $_SESSION['usuario_id'];
 
-    // Verificar el método de la solicitud
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        throw new Exception('Método no permitido');
-    }
+    // Manejar solicitudes POST (acciones como marcar como leída)
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $action = $input['action'] ?? '';
 
-    // Obtener datos del cuerpo de la solicitud
-    $data = json_decode(file_get_contents('php://input'), true);
-    if (!$data || !isset($data['tipo']) || !isset($data['usuario_id']) || !isset($data['relacionado_id']) || !isset($data['mensaje'])) {
-        throw new Exception('Datos incompletos');
-    }
-
-    $tipo = $data['tipo'];
-    $usuario_id = $data['usuario_id'];
-    $relacionado_id = $data['relacionado_id'];
-    $mensaje = $data['mensaje'];
-
-    // Validar tipo de notificación
-    if (!in_array($tipo, ['friend_request', 'message_received'])) {
-        throw new Exception('Tipo de notificación inválido');
-    }
-
-    // Guardar la notificación en la base de datos
-    $query = "INSERT INTO notificaciones (usuario_id, tipo, relacionado_id, mensaje, leida, fecha_creacion) 
-              VALUES (:usuario_id, :tipo, :relacionado_id, :mensaje, FALSE, NOW())";
-    $stmt = $db->prepare($query);
-    $stmt->execute([
-        ':usuario_id' => $usuario_id,
-        ':tipo' => $tipo,
-        ':relacionado_id' => $relacionado_id,
-        ':mensaje' => $mensaje
-    ]);
-
-    // Obtener el token FCM del usuario
-    $query = "SELECT fcm_token FROM usuarios WHERE id = :usuario_id";
-    $stmt = $db->prepare($query);
-    $stmt->execute([':usuario_id' => $usuario_id]);
-    $fcm_token = $stmt->fetchColumn();
-
-    if ($fcm_token) {
-        // Enviar notificación push a través de FCM
-        $url = 'https://fcm.googleapis.com/fcm/send';
-        $server_key = 'tu-server-key'; // Reemplaza con tu clave de servidor de FCM
-
-        $headers = [
-            'Authorization: key=' . $server_key,
-            'Content-Type: application/json'
-        ];
-
-        $payload = [
-            'to' => $fcm_token,
-            'notification' => [
-                'title' => 'Nueva Notificación - El Rincón de ADSO',
-                'body' => $mensaje,
-                'icon' => '/inicio/img/icono.png'
-            ],
-            'data' => [
-                'tipo' => $tipo,
-                'relacionado_id' => $relacionado_id
-            ]
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        $result = json_decode($result, true);
-        if (isset($result['success']) && $result['success'] == 1) {
-            $response['success'] = true;
-            $response['message'] = 'Notificación enviada correctamente';
+        if ($action === 'mark_as_read') {
+            $notification_id = $input['notification_id'] ?? 0;
+            $query = "UPDATE notificaciones SET leida = TRUE WHERE id = :notification_id AND usuario_id = :user_id";
+            $stmt = $db->prepare($query);
+            $stmt->execute([
+                ':notification_id' => $notification_id,
+                ':user_id' => $user_id
+            ]);
+            $response['status'] = 'success';
+            $response['message'] = 'Notificación marcada como leída';
+        } elseif ($action === 'mark_all_as_read') {
+            $query = "UPDATE notificaciones SET leida = TRUE WHERE usuario_id = :user_id AND leida = FALSE";
+            $stmt = $db->prepare($query);
+            $stmt->execute([':user_id' => $user_id]);
+            $response['status'] = 'success';
+            $response['message'] = 'Todas las notificaciones marcadas como leídas';
         } else {
-            $response['message'] = 'Error al enviar la notificación push: ' . json_encode($result);
+            $response['message'] = 'Acción no válida';
         }
-    } else {
-        $response['success'] = true;
-        $response['message'] = 'Notificación guardada, pero el usuario no tiene un token FCM';
+
+        echo json_encode($response);
+        exit();
     }
 
-} catch (Exception $e) {
-    $response['message'] = $e->getMessage();
-    http_response_code(400);
+    // Manejar solicitudes GET (obtener notificaciones)
+    // Contar notificaciones no leídas
+    $query = "SELECT COUNT(*) FROM notificaciones WHERE usuario_id = :user_id AND leida = FALSE";
+    $stmt = $db->prepare($query);
+    $stmt->execute([':user_id' => $user_id]);
+    $unread_count = $stmt->fetchColumn();
+
+    // Obtener todas las notificaciones del usuario
+    $query = "SELECT n.id, n.tipo, n.relacionado_id, n.mensaje, n.leida, n.fecha_creacion, u.nombre_usuario AS relacionado_nombre 
+              FROM notificaciones n 
+              LEFT JOIN usuarios u ON n.relacionado_id = u.id 
+              WHERE n.usuario_id = :user_id 
+              ORDER BY n.fecha_creacion DESC";
+    $stmt = $db->prepare($query);
+    $stmt->execute([':user_id' => $user_id]);
+    $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $response['status'] = 'success';
+    $response['data'] = [
+        'notifications' => $notifications,
+        'unread_count' => $unread_count
+    ];
+} catch (PDOException $e) {
+    $response['message'] = 'Error de base de datos: ' . $e->getMessage();
 }
 
 echo json_encode($response);
-?>
+exit();
