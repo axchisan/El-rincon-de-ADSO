@@ -1,14 +1,21 @@
 :root {
   /* Esquema de colores café */
-  --color-coffee: #654321; /* Color café específico para botones */
-  --color-coffee-dark: #4a3219; /* Café más oscuro para hover */
-  --color-coffee-light: #8b7355; /* Café más claro para elementos secundarios */
+  --color-coffee: #654321;
+  /* Color café específico para botones */
+  --color-coffee-dark: #4a3219;
+  /* Café más oscuro para hover */
+  --color-coffee-light: #8b7355;
+  /* Café más claro para elementos secundarios */
 
   /* Tonos de café claro para fondos */
-  --color-latte: #e6d9cc; /* Café con leche claro */
-  --color-cappuccino: #d8ccc0; /* Cappuccino suave */
-  --color-mocha-light: #c8b6a6; /* Mocha claro */
-  --color-almond: #efe5dc; /* Almendra suave */
+  --color-latte: #e6d9cc;
+  /* Café con leche claro */
+  --color-cappuccino: #d8ccc0;
+  /* Cappuccino suave */
+  --color-mocha-light: #c8b6a6;
+  /* Mocha claro */
+  --color-almond: #efe5dc;
+  /* Almendra suave */
 
   --color-gradient-start: #8b7355;
   --color-gradient-end: #654321;
@@ -421,6 +428,7 @@ p {
     display: none !important;
   }
 }
+
 .btn-volver {
   background-color: #5e3c0d;
   color: #fff;
@@ -605,8 +613,10 @@ p {
   max-width: 800px;
   margin: 0 auto 2rem;
 }
+
 .search__title::after {
-  display: none; /* Oculta todas las líneas similares */
+  display: none;
+  /* Oculta todas las líneas similares */
   content: "";
   position: absolute;
   bottom: -10px;
@@ -671,7 +681,7 @@ p {
   transition: color 0.3s ease;
 }
 
-.search__input:focus + .search__icon {
+.search__input:focus+.search__icon {
   color: var(--color-coffee);
 }
 
@@ -972,7 +982,8 @@ p {
 }
 
 .features__title::after {
-  display: none; /* Oculta la línea */
+  display: none;
+  /* Oculta la línea */
   content: "";
   position: absolute;
   bottom: -10px;
@@ -1102,7 +1113,8 @@ p {
 }
 
 .books__title::after {
-  display: none; /* Oculta la línea */
+  display: none;
+  /* Oculta la línea */
   content: "";
   position: absolute;
   bottom: -10px;
@@ -1135,7 +1147,8 @@ p {
 .books__link:hover {
   color: var(--color-coffee);
   border-color: var(--color-coffee);
-  background-color: var(--color-cream); /* opcional */
+  background-color: var(--color-cream);
+  /* opcional */
   transform: translateX(2px);
 }
 
@@ -1436,7 +1449,7 @@ p {
   padding-top: 1rem;
 }
 
-.comment-card__like, 
+.comment-card__like,
 .comment-card__reply {
   display: flex;
   align-items: center;
@@ -1449,7 +1462,7 @@ p {
   background-color: transparent;
 }
 
-.comment-card__like:hover, 
+.comment-card__like:hover,
 .comment-card__reply:hover {
   background-color: var(--color-latte);
   color: var(--color-coffee);
@@ -1600,7 +1613,8 @@ p {
 }
 
 .cta__title::after {
-  display: none; /* Oculta todas las líneas similares */
+  display: none;
+  /* Oculta todas las líneas similares */
   content: "";
   position: absolute;
   bottom: -10px;
@@ -1678,7 +1692,8 @@ p {
 }
 
 .footer__logo::after {
-  display: none; /* Oculta todas las líneas similares */
+  display: none;
+  /* Oculta todas las líneas similares */
   content: "";
   position: absolute;
   bottom: -5px;
@@ -1702,7 +1717,8 @@ p {
 }
 
 .footer__heading::after {
-  display: none; /* Oculta todas las líneas similares */
+  display: none;
+  /* Oculta todas las líneas similares */
   content: "";
   position: absolute;
   bottom: -8px;
@@ -2071,15 +2087,15 @@ p {
   color: var(--color-coffee);
   border: 2px solid var(--color-coffee);
   display: inline-block;
-    padding: 0.75rem 1.5rem;
-    font-weight: 500;
-    text-align: center;
-    border-radius: var(--border-radius-md);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  text-align: center;
+  border-radius: var(--border-radius-md);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden
 }
 
 .books__link:hover {
@@ -2122,6 +2138,7 @@ p {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -2132,8 +2149,8 @@ p {
   margin-top: 2rem;
 }
 
- /* Estilos para el menú de perfil */
- .navbar__profile {
+/* Estilos para el menú de perfil */
+.navbar__profile {
   position: relative;
   display: inline-block;
 }
@@ -2173,4 +2190,232 @@ p {
 .navbar__profile-menu a:hover,
 .navbar__profile-menu form button:hover {
   background-color: #f0f0f0;
+}
+
+/* Estilo para la imagen del perfil */
+.navbar__profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.navbar__profile {
+  position: relative;
+  display: inline-block;
+}
+
+.navbar__profile-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.navbar__profile-menu.active {
+  display: block;
+}
+
+.navbar__profile-menu a,
+.navbar__profile-menu button {
+  display: block;
+  padding: 10px 20px;
+  color: #333;
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.navbar__profile-menu a:hover,
+.navbar__profile-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Estilo para el círculo de notificaciones */
+.navbar__profile {
+  position: relative;
+}
+
+.navbar__notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Asegurar que el círculo esté oculto si no hay notificaciones */
+.navbar__notification-badge.hidden {
+  display: none;
+}
+
+/* Estilos para el formulario de agregar comentario */
+.community__add-comment {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.community__add-comment-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #4a3c31;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #4a3c31;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-group textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.form-group select {
+  appearance: none;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%234a3c31"><path d="M10 12l-5-5h10l-5 5z"/></svg>') no-repeat right 10px center;
+  background-size: 12px;
+}
+
+/* Ajuste para el botón de "Me gusta" cuando está activo */
+.comment-card__like--active {
+  color: #e74c3c;
+}
+
+/* Estilos para las estrellas interactivas */
+.star-rating {
+  display: flex;
+  gap: 5px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.star-rating .star {
+  color: #ddd;
+}
+
+.star-rating .star:hover,
+.star-rating .star:hover~.star,
+.star-rating .star.selected,
+.star-rating .star.selected~.star {
+  color: #f1c40f;
+}
+
+.star-rating .star.selected i,
+.star-rating .star:hover i {
+  font-style: normal;
+}
+
+.star-rating .star i.fas {
+  color: #f1c40f;
+}
+
+/* Estilos para las respuestas */
+.comment-card__replies {
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 2px solid #ddd;
+}
+
+.reply-card {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.reply-card__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.reply-card__content {
+  flex: 1;
+}
+
+.reply-card__username {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a3c31;
+  margin: 0;
+}
+
+.reply-card__date {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.reply-card__text {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 5px 0 0;
+}
+
+/* Estilos para el formulario de respuesta */
+.reply-form {
+  display: none;
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+.reply-form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  resize: vertical;
+  height: 60px;
+}
+
+.reply-form button {
+  margin-top: 5px;
+  padding: 5px 10px;
+  background-color: #4a3c31;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.reply-form button:hover {
+  background-color: #3a2c21;
 }
