@@ -253,7 +253,7 @@ if ($usuario_id) {
                 <p class="community__description">Descubre lo que nuestra comunidad está comentando sobre sus lecturas favoritas</p>
             </div>
 
-            <!-- Formulario para agregar un comentario (solo si hay sesión activa) -->
+            <!-- Form. agregar un comentario solo si hay sesión activa.. -->
             <?php if ($usuario_id): ?>
                 <div class="community__add-comment">
                     <h3 class="community__add-comment-title">Comparte tu opinión</h3>
@@ -287,7 +287,6 @@ if ($usuario_id) {
                 <?php
                 try {
                     $db = conexionDB::getConexion();
-                    // Consulta para obtener los comentarios de la comunidad
                     $query = "
             SELECT cc.id, cc.libro, cc.comentario, cc.valoracion, cc.likes, cc.fecha_creacion, 
                    u.nombre_usuario, u.imagen,
@@ -335,7 +334,7 @@ if ($usuario_id) {
                             echo '<p class="comment-card__text">"' . htmlspecialchars($comentario['comentario']) . '"</p>';
                             echo '</div>';
                             echo '<div class="comment-card__footer">';
-                            // Botón de "Me gusta"
+                            // Botón de "like xd"
                             $liked_class = $comentario['user_liked'] > 0 ? 'comment-card__like--active' : '';
                             $icon_class = $comentario['user_liked'] > 0 ? 'fas liked' : 'far';
                             if ($usuario_id) {
@@ -350,7 +349,7 @@ if ($usuario_id) {
                             echo '<button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>';
                             echo '</div>';
 
-                            // Formulario para responder (oculto inicialmente)
+                            // Formulario para responde
                             if ($usuario_id) {
                                 echo '<div class="reply-form" id="reply-form-' . $comentario['id'] . '">';
                                 echo '<form class="add-reply-form" data-comment-id="' . $comentario['id'] . '">';
@@ -360,7 +359,6 @@ if ($usuario_id) {
                                 echo '</div>';
                             }
 
-                            // Obtener y mostrar las respuestas
                             $query_replies = "
                     SELECT r.id, r.respuesta, r.fecha_creacion, u.nombre_usuario, u.imagen
                     FROM respuestas_comentarios_comunidad r
@@ -403,12 +401,12 @@ if ($usuario_id) {
                 ?>
             </div>
 
-            <!-- Llamado a la acción (mostrar solo si NO hay sesión activa) -->
+            <!-- mostrar solo si NO hay sesión activa -->
             <?php if (!$usuario_id): ?>
                 <div class="community__cta">
                     <h3 class="community__cta-title">¿Quieres compartir tu opinión?</h3>
                     <p class="community__cta-text">Únete a nuestra comunidad y comparte tus pensamientos sobre tus lecturas favoritas</p>
-                    <a href="../login/registro.php" class="btn btn--primary community__cta-button">Crear una cuenta</a>
+                    <a href="../register/registro.php" class="btn btn--primary community__cta-button">Crear una cuenta</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -480,7 +478,7 @@ if ($usuario_id) {
                 console.error('No se encontraron los elementos profile-img o profile-menu');
             }
 
-            // Manejar las estrellas interactivas
+            // estrellas interactivas
             const starRating = document.getElementById('star-rating');
             const valoracionInput = document.getElementById('valoracion');
             if (starRating) {
@@ -528,7 +526,7 @@ if ($usuario_id) {
                 });
             }
 
-            // Manejar el formulario de agregar comentario
+            //logica formulario de agregar comentario
             const addCommentForm = document.getElementById('add-comment-form');
             if (addCommentForm) {
                 addCommentForm.addEventListener('submit', function(e) {
@@ -551,7 +549,6 @@ if ($usuario_id) {
                                 alert(data.message);
                                 loadCommunityComments();
                                 addCommentForm.reset();
-                                // Resetear las estrellas
                                 starRating.querySelectorAll('.star').forEach(star => {
                                     star.classList.remove('selected');
                                     const icon = star.querySelector('i');
@@ -570,7 +567,7 @@ if ($usuario_id) {
                 });
             }
 
-            // Manejar los botones de "Me gusta"
+            // botones like
             function attachLikeButtonListeners() {
                 document.querySelectorAll('.comment-card__like').forEach(button => {
                     button.addEventListener('click', function(e) {
@@ -611,7 +608,7 @@ if ($usuario_id) {
                 });
             }
 
-            // Manejar los botones de "Responder"
+            // botones de Responder
             function attachReplyButtonListeners() {
                 document.querySelectorAll('.comment-card__reply').forEach(button => {
                     button.addEventListener('click', function() {
@@ -624,7 +621,7 @@ if ($usuario_id) {
                 });
             }
 
-            // Manejar el envío de respuestas
+            // logica envío de respuestas
             function attachReplyFormListeners() {
                 document.querySelectorAll('.add-reply-form').forEach(form => {
                     form.addEventListener('submit', function(e) {
@@ -658,7 +655,7 @@ if ($usuario_id) {
                 });
             }
 
-            // Función para cargar comentarios dinámicamente
+            // cargar comentarios dinámicamente
             function loadCommunityComments() {
                 fetch('../../backend/comunidad/get_comments.php')
                     .then(response => response.json())
@@ -767,10 +764,7 @@ if ($usuario_id) {
                     });
             }
 
-            // Cargar comentarios al iniciar
             loadCommunityComments();
-
-            // Resto del código existente (Recursos Recientes, etc.)
             const resourcesGrid = document.getElementById('recent-resources-grid');
             const isLoggedIn = <?php echo json_encode($usuario_id !== null); ?>;
             const searchInput = document.getElementById('recent-search-input');
