@@ -1,7 +1,9 @@
 <?php
-session_start();
 ini_set('session.gc_maxlifetime', 3600);
 session_set_cookie_params(3600, '/');
+
+
+session_start();
 require_once "../../database/conexionDB.php";
 
 if (!isset($_SESSION['usuario_id'])) {
@@ -189,4 +191,3 @@ try {
   </script>
 </body>
 </html>
-

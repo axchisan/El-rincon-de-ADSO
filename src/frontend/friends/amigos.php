@@ -1,7 +1,7 @@
 <?php
-session_start();
 ini_set('session.gc_maxlifetime', 3600);
 session_set_cookie_params(3600, '/');
+session_start();
 require_once "../../database/conexionDB.php";
 
 if (!isset($_SESSION['usuario_id'])) {
@@ -14,7 +14,7 @@ try {
   $db = conexionDB::getConexion();
   $user_id = $_SESSION['usuario_id'];
 
-  // Obtener datos del usuario actual
+ 
   $query = "SELECT nombre_usuario, correo FROM usuarios WHERE id = :id";
   $stmt = $db->prepare($query);
   $stmt->execute([':id' => $user_id]);
@@ -29,13 +29,12 @@ try {
   $nombre_usuario = htmlspecialchars($usuario['nombre_usuario']);
   $correo = htmlspecialchars($usuario['correo']);
 
-  // Contar notificaciones no leídas
+ 
   $query = "SELECT COUNT(*) FROM notificaciones WHERE usuario_id = :user_id AND leida = FALSE";
   $stmt = $db->prepare($query);
   $stmt->execute([':user_id' => $user_id]);
   $unread_count = $stmt->fetchColumn();
 
-  // Buscar usuarios por nombre_usuario
   $search_results = [];
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_user'])) {
     $search_term = trim($_POST['search_term']);
