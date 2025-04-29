@@ -736,39 +736,43 @@ try {
                         </div>
                     </div>
                     <div id="seguridad" class="sub-panel">
-                        <div class="panel-header-secondary">
-                            <h2>Seguridad</h2>
-                            <p>Gestiona la seguridad de tu cuenta</p>
-                        </div>
-                        <div class="security-container">
-                            <div class="form-section">
-                                <h3>Cambiar contraseña</h3>
-                                <form class="security-form">
-                                    <div class="form-group">
-                                        <label for="current-password">Contraseña actual</label>
-                                        <input type="password" id="current-password" name="current-password">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="new-password">Nueva contraseña</label>
-                                        <input type="password" id="new-password" name="new-password">
-                                        <div class="password-strength">
-                                            <div class="strength-meter">
-                                                <div class="strength-meter-fill" style="width: 70%;"></div>
-                                            </div>
-                                            <span>Seguridad: Buena</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="confirm-password">Confirmar nueva contraseña</label>
-                                        <input type="password" id="confirm-password" name="confirm-password">
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn--primary">Cambiar contraseña</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+    <div class="panel-header-secondary">
+        <h2>Seguridad</h2>
+        <p>Gestiona la seguridad de tu cuenta</p>
+    </div>
+    <div class="security-container">
+        <div class="form-section">
+            <h3>Cambiar contraseña</h3>
+            <form class="security-form" action="../../backend/perfil/update.php" method="POST" onsubmit="return validatePasswordForm()">
+                <input type="hidden" name="action" value="change_password">
+                <div class="form-group">
+                    <label for="current-password">Contraseña actual</label>
+                    <input type="password" id="current-password" name="current_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Nueva contraseña</label>
+                    <input type="password" id="new-password" name="new_password" required>
+                    <div class="password-requirements">
+                        La contraseña debe tener al menos: 1 mayúscula, 3 números y 1 carácter especial (ej. @, #, $).
                     </div>
+                    <div class="password-strength">
+                        <div class="strength-meter">
+                            <div class="strength-meter-fill" id="strength-meter-fill" style="width: 0%;"></div>
+                        </div>
+                        <span id="strength-text">Seguridad: Débil</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirmar nueva contraseña</label>
+                    <input type="password" id="confirm-password" name="confirm_password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn--primary">Cambiar contraseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
                     <div id="notificaciones" class="sub-panel">
                         <div class="panel-header-secondary">
                             <h2>Notificaciones</h2>
@@ -865,6 +869,24 @@ try {
     </a>
 
     <script>
+
+function validatePasswordForm() {
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    if (newPassword !== confirmPassword) {
+        alert('Las nuevas contraseñas no coinciden. Por favor, verifica.');
+        return false;
+    }
+
+    // Validación adicional en el frontend para los requisitos (opcional, ya que el backend lo maneja)
+    if (!/[A-Z]/.test(newPassword) || (newPassword.match(/\d/g) || []).length < 3 || !/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+        alert('La nueva contraseña debe contener al menos 1 mayúscula, 3 números y 1 carácter especial.');
+        return false;
+    }
+
+    return true;
+}
         function previewProfileImage(event) {
             const reader = new FileReader();
             reader.onload = function() {
