@@ -215,15 +215,8 @@ try {
                         <span class="main-tab__description">Tus recursos y aportes</span>
                     </div>
                 </button>
-                <button class="main-tab" data-tab="comunidad">
-                    <div class="main-tab__icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="main-tab__content">
-                        <span class="main-tab__title">Comunidad</span>
-                        <span class="main-tab__description">Foros y grupos</span>
-                    </div>
-                </button>
+               
+                
                 <button class="main-tab" data-tab="perfil">
                     <div class="main-tab__icon">
                         <i class="fas fa-user"></i>
