@@ -12,7 +12,6 @@ class Registro
 
     public function registrarUsuario($nombre, $nombre_usuario, $documento, $edad, $correo, $ficha, $contrasena)
     {
-
         if (empty($nombre) || empty($nombre_usuario) || empty($documento) || empty($edad) || empty($correo) || empty($ficha) || empty($contrasena)) {
             return ["success" => false, "message" => "Todos los campos son obligatorios"];
         }
@@ -27,6 +26,14 @@ class Registro
 
         if (!preg_match('/^[a-zA-Z0-9_]+$/', $nombre_usuario)) {
             return ["success" => false, "message" => "El nombre de usuario solo puede contener letras, números y guiones bajos"];
+        }
+
+        // Validar contraseña segura
+        $regex = '/^(?=(?:.*\d){3,})(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{6,}$/';
+        if (!preg_match($regex, $contrasena)) {
+            return ["success" => false, "message" =>
+                "La contraseña debe tener al menos una letra mayúscula, tres números y un carácter especial. Mínimo 6 caracteres."
+            ];
         }
 
         $contrasenaHash = password_hash($contrasena, PASSWORD_DEFAULT);
@@ -71,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $edad = trim($_POST["edad"] ?? "");
     $correo = trim($_POST["correo"] ?? "");
     $ficha = trim($_POST["ficha"] ?? "");
-    $contrasena = trim($_POST["contrasena"] ?? "");
+    $contrasena = trim($_POST["clave"] ?? ""); // Este campo es "clave" según tu formulario
 
     $registro = new Registro();
     $resultado = $registro->registrarUsuario($nombre, $nombre_usuario, $documento, $edad, $correo, $ficha, $contrasena);

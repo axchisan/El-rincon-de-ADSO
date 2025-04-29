@@ -1,6 +1,4 @@
-<?php
-require_once "../../database/configuracion.php";
-?>
+<?php require_once "../../database/configuracion.php"; ?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -9,10 +7,10 @@ require_once "../../database/configuracion.php";
     <title>Registro | El Rincón ADSO</title>
     <link rel="icon" href="./img/icono.png" type="image/png">
     <link rel="stylesheet" href="./css/registro.css">
-    
 </head>
 <body>
     <a href="../inicio/index.php" class="btn-inicio" title="Volver al inicio">🏠</a>
+    
     <div class="contenedor-registro">
         <div class="registro-form">
             <img src="../login/img/logo.png" alt="Logo institucional" class="logo-login">
@@ -23,10 +21,20 @@ require_once "../../database/configuracion.php";
                 <input type="number" name="edad" placeholder="Edad" min="0" required>
                 <input type="email" name="correo" placeholder="Correo electrónico" required>
                 <input type="text" name="ficha" placeholder="Número de ficha" required>
-                <input type="password" name="contrasena" placeholder="Contraseña" required>
-                <input type="submit" value="Registrarse">
+
+                <input type="password" name="clave" placeholder="Contraseña" required
+                    pattern="^(?=(?:.*\d){3,})(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{6,}$"
+                    title="Debe tener al menos una letra mayúscula, tres números y un carácter especial. Mínimo 6 caracteres.">
+
+                <input type="submit" value="Registrarse"><br><br>
+
+                <p style="text-align: center;">
+                    ¿Ya tienes una cuenta?
+                    <a href="../login/login.php" style="color: #007bff; text-decoration: none;">Inicia sesión aquí</a>
+                </p>
             </form>
         </div>
+
         <div class="frase-lateral">
             <div class="overlay"></div>
             <h3>Un lector vive mil vidas antes de morir...</h3>
@@ -36,7 +44,7 @@ require_once "../../database/configuracion.php";
 
     <script>
         document.getElementById('registro-form').addEventListener('submit', async function(event) {
-            event.preventDefault(); 
+            event.preventDefault();
 
             const formData = new FormData(this);
             try {
