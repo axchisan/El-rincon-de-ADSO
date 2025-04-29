@@ -27,7 +27,6 @@ if ($usuario_id) {
         $stmt = $db->prepare($query);
         $stmt->execute([':user_id' => $usuario_id]);
         $unread_count = $stmt->fetchColumn();
-
     } catch (PDOException $e) {
         error_log("Error al obtener datos del usuario o notificaciones: " . $e->getMessage());
     }
@@ -36,6 +35,7 @@ if ($usuario_id) {
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="./img/icono.png">
@@ -55,10 +55,12 @@ if ($usuario_id) {
             object-fit: cover;
             cursor: pointer;
         }
+
         .navbar__profile {
             position: relative;
             display: inline-block;
         }
+
         .navbar__profile-menu {
             display: none;
             position: absolute;
@@ -69,10 +71,13 @@ if ($usuario_id) {
             border-radius: 5px;
             z-index: 1000;
         }
+
         .navbar__profile-menu.active {
             display: block;
         }
-        .navbar__profile-menu a, .navbar__profile-menu button {
+
+        .navbar__profile-menu a,
+        .navbar__profile-menu button {
             display: block;
             padding: 10px 20px;
             color: #333;
@@ -82,13 +87,17 @@ if ($usuario_id) {
             width: 100%;
             text-align: left;
         }
-        .navbar__profile-menu a:hover, .navbar__profile-menu button:hover {
+
+        .navbar__profile-menu a:hover,
+        .navbar__profile-menu button:hover {
             background-color: #f0f0f0;
         }
+
         /* Estilo para el círculo de notificaciones */
         .navbar__profile {
             position: relative;
         }
+
         .navbar__notification-badge {
             position: absolute;
             top: -5px;
@@ -104,12 +113,14 @@ if ($usuario_id) {
             font-size: 12px;
             font-weight: bold;
         }
+
         /* Asegurar que el círculo esté oculto si no hay notificaciones */
         .navbar__notification-badge.hidden {
             display: none;
         }
     </style>
 </head>
+
 <body>
     <!-- Navegación -->
     <nav class="navbar">
@@ -245,7 +256,7 @@ if ($usuario_id) {
 
     <!-- Recursos Recientes -->
     <section id="recientes" class="resources-section">
-        <div class="container">
+        <div class="container" id="buscar">
             <div class="section-header">
                 <h2 class="section-title">Recursos Recientes</h2>
                 <p class="section-description">Explora los recursos más recientes añadidos a nuestra colección.</p>
@@ -444,7 +455,7 @@ if ($usuario_id) {
             // Mostrar/ocultar menú de perfil
             const profileImg = document.getElementById('profile-img');
             const profileMenu = document.getElementById('profile-menu');
-            
+
             if (profileImg && profileMenu) {
                 profileImg.addEventListener('click', function(event) {
                     event.stopPropagation(); // Evitar que el clic se propague y cierre el menú inmediatamente
@@ -487,13 +498,13 @@ if ($usuario_id) {
             const filterRelevance = document.getElementById('recent-filter-relevance');
             const filterLanguage = document.getElementById('recent-filter-language');
             const filterToggle = document.getElementById('recent-filter-toggle');
-            const filterContainer = filterToggle.parentElement.parentElement; 
+            const filterContainer = filterToggle.parentElement.parentElement;
 
             function loadCategories() {
                 fetch('../../backend/gestionRecursos/get_categories.php')
                     .then(response => response.json())
                     .then(data => {
-                        filterCategory.innerHTML = '<option value="">Todas</option>'; 
+                        filterCategory.innerHTML = '<option value="">Todas</option>';
                         if (data.error) {
                             console.error('Error al cargar categorías:', data.error);
                             filterCategory.innerHTML += '<option value="">Error al cargar categorías</option>';
@@ -560,143 +571,152 @@ if ($usuario_id) {
                         } else {
                             data.forEach(resource => {
                                 const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ?
-                                    resource.categorias :
-                                    ['Sin categoría'];
+                                    resource.categorias : ['Sin categoría'];
                                 const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
 
                                 const defaultImage = './img/default-cover.jpg';
                                 const coverImage = resource.portada && resource.portada !== '' ? resource.portada : defaultImage;
 
                                 let resourceCard;
+                                let viewUrl;
+
+                                // Determinar la URL según el tipo de recurso
+                                if (resource.tipo === 'video') {
+                                    viewUrl = `../repositorio/ver_video.php?id=${resource.id}`;
+                                } else if (resource.tipo === 'libro') {
+                                    viewUrl = `../repositorio/ver_libro.php?id=${resource.id}`;
+                                } else {
+                                    viewUrl = `../repositorio/ver_documento.php?id=${resource.id}`; // Para documentos, imágenes u otros
+                                }
 
                                 if (resource.tipo === 'libro') {
                                     resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card book-card';
                                     resourceCard.innerHTML = `
-                                    <div class="resource-card__image-container">
-                                        <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                        <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                    </div>
-                                    <div class="resource-card__content">
-                                        <div class="resource-card__category">${categorias.join(', ')}</div>
-                                        <h3 class="resource-card__title">${resource.titulo}</h3>
-                                        <p class="resource-card__author">Por ${resource.autor}</p>
-                                        <div class="resource-card__meta">
-                                            <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                            <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                        </div>
-                                        <div class="resource-card__tags">
-                                            ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                        </div>
-                                        <div class="resource-card__actions">
-                                            <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                <i class="fas fa-book-reader"></i> Leer ahora
-                                            </a>
-                                            ${isLoggedIn ? `
-                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            ` : `
-                                                <a href="../login/login.php" class="btn btn--outline">
-                                                    <i class="fas fa-heart"></i> Añadir a favoritos
-                                                </a>
-                                                <a href="../login/login.php" class="btn btn--outline">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            `}
-                                        </div>
-                                    </div>
-                                `;
+                            <div class="resource-card__image-container">
+                                <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                            </div>
+                            <div class="resource-card__content">
+                                <div class="resource-card__category">${categorias.join(', ')}</div>
+                                <h3 class="resource-card__title">${resource.titulo}</h3>
+                                <p class="resource-card__author">Por ${resource.autor}</p>
+                                <div class="resource-card__meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                    <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                </div>
+                                <div class="resource-card__tags">
+                                    ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                </div>
+                                <div class="resource-card__actions">
+                                    <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <i class="fas fa-book-reader"></i> Leer ahora
+                                    </a>
+                                    ${isLoggedIn ? `
+                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    ` : `
+                                        <a href="../login/login.php" class="btn btn--outline">
+                                            <i class="fas fa-heart"></i> Añadir a favoritos
+                                        </a>
+                                        <a href="../login/login.php" class="btn btn--outline">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    `}
+                                </div>
+                            </div>
+                        `;
                                 } else if (resource.tipo === 'video') {
                                     resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card video-card';
                                     resourceCard.innerHTML = `
-                                    <div class="resource-card__image-container">
-                                        <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                        <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                        <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
-                                        <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
-                                    </div>
-                                    <div class="resource-card__content">
-                                        <div class="resource-card__category">${categorias.join(', ')}</div>
-                                        <h3 class="resource-card__title">${resource.titulo}</h3>
-                                        <p class="resource-card__author">Por ${resource.autor}</p>
-                                        <div class="resource-card__meta">
-                                            <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                            <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                        </div>
-                                        <div class="resource-card__tags">
-                                            ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                        </div>
-                                        <div class="resource-card__actions">
-                                            <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                <i class="fas fa-play-circle"></i> Ver video
-                                            </a>
-                                            ${isLoggedIn ? `
-                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            ` : `
-                                                <a href="../login/login.php" class="btn btn--outline">
-                                                    <i class="fas fa-heart"></i> Añadir a favoritos
-                                                </a>
-                                                <a href="../login/login.php" class="btn btn--outline">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            `}
-                                        </div>
-                                    </div>
-                                `;
+                            <div class="resource-card__image-container">
+                                <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
+                                <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
+                            </div>
+                            <div class="resource-card__content">
+                                <div class="resource-card__category">${categorias.join(', ')}</div>
+                                <h3 class="resource-card__title">${resource.titulo}</h3>
+                                <p class="resource-card__author">Por ${resource.autor}</p>
+                                <div class="resource-card__meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                    <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                </div>
+                                <div class="resource-card__tags">
+                                    ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                </div>
+                                <div class="resource-card__actions">
+                                    <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <i class="fas fa-play-circle"></i> Ver video
+                                    </a>
+                                    ${isLoggedIn ? `
+                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    ` : `
+                                        <a href="../login/login.php" class="btn btn--outline">
+                                            <i class="fas fa-heart"></i> Añadir a favoritos
+                                        </a>
+                                        <a href="../login/login.php" class="btn btn--outline">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    `}
+                                </div>
+                            </div>
+                        `;
                                 } else {
                                     resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card document-card';
                                     resourceCard.innerHTML = `
-                                    <div class="resource-card__image-container">
-                                        <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                        <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                    </div>
-                                    <div class="resource-card__content">
-                                        <div class="resource-card__category">${categorias.join(', ')}</div>
-                                        <h3 class="resource-card__title">${resource.titulo}</h3>
-                                        <p class="resource-card__author">Por ${resource.autor}</p>
-                                        <div class="resource-card__meta">
-                                            <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                            <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                        </div>
-                                        <div class="resource-card__tags">
-                                            ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                        </div>
-                                        <div class="resource-card__actions">
-                                            <a href="#" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                <i class="fas fa-eye"></i> Ver documento
-                                            </a>
-                                            ${isLoggedIn ? `
-                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            ` : `
-                                                <a href="../login/login.php" class="btn btn--outline">
-                                                    <i class="fas fa-heart"></i> Añadir a favoritos
-                                                </a>
-                                                <a href="../login/login.php" class="btn btn--outline">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            `}
-                                        </div>
-                                    </div>
-                                `;
+                            <div class="resource-card__image-container">
+                                <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                            </div>
+                            <div class="resource-card__content">
+                                <div class="resource-card__category">${categorias.join(', ')}</div>
+                                <h3 class="resource-card__title">${resource.titulo}</h3>
+                                <p class="resource-card__author">Por ${resource.autor}</p>
+                                <div class="resource-card__meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                    <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                </div>
+                                <div class="resource-card__tags">
+                                    ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                </div>
+                                <div class="resource-card__actions">
+                                    <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                        <i class="fas fa-eye"></i> Ver documento
+                                    </a>
+                                    ${isLoggedIn ? `
+                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    ` : `
+                                        <a href="../login/login.php" class="btn btn--outline">
+                                            <i class="fas fa-heart"></i> Añadir a favoritos
+                                        </a>
+                                        <a href="../login/login.php" class="btn btn--outline">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    `}
+                                </div>
+                            </div>
+                        `;
                                 }
 
                                 resourcesGrid.appendChild(resourceCard);
@@ -705,7 +725,6 @@ if ($usuario_id) {
 
                         resourcesGrid.querySelectorAll('.view-resource').forEach(button => {
                             button.addEventListener('click', (e) => {
-                                e.preventDefault();
                                 const documentoId = button.getAttribute('data-id');
                                 fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
                                         method: 'POST',
@@ -718,7 +737,7 @@ if ($usuario_id) {
                                     .then(data => {
                                         if (data.success) {
                                             console.log(data.message);
-                                            alert('Vista registrada. Aquí iría la lógica para ver el recurso.');
+                                            // No usamos e.preventDefault() aquí para permitir que el enlace <a> redirija a la página correspondiente
                                         } else {
                                             alert(data.message);
                                         }
@@ -785,4 +804,5 @@ if ($usuario_id) {
         });
     </script>
 </body>
+
 </html>
