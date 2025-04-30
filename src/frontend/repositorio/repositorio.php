@@ -31,7 +31,6 @@ if ($usuario_id) {
         $stmt = $db->prepare($query);
         $stmt->execute([':user_id' => $usuario_id]);
         $unread_count = $stmt->fetchColumn();
-
     } catch (PDOException $e) {
         error_log("Error al obtener datos del usuario o notificaciones: " . $e->getMessage());
     }
@@ -58,10 +57,12 @@ if ($usuario_id) {
             object-fit: cover;
             cursor: pointer;
         }
+
         .navbar__profile {
             position: relative;
             display: inline-block;
         }
+
         .navbar__profile-menu {
             display: none;
             position: absolute;
@@ -72,10 +73,13 @@ if ($usuario_id) {
             border-radius: 5px;
             z-index: 1000;
         }
+
         .navbar__profile-menu.active {
             display: block;
         }
-        .navbar__profile-menu a, .navbar__profile-menu button {
+
+        .navbar__profile-menu a,
+        .navbar__profile-menu button {
             display: block;
             padding: 10px 20px;
             color: #333;
@@ -85,9 +89,12 @@ if ($usuario_id) {
             width: 100%;
             text-align: left;
         }
-        .navbar__profile-menu a:hover, .navbar__profile-menu button:hover {
+
+        .navbar__profile-menu a:hover,
+        .navbar__profile-menu button:hover {
             background-color: #f0f0f0;
         }
+
         /* Estilo para el círculo de notificaciones */
         .navbar__notification-badge {
             position: absolute;
@@ -104,6 +111,7 @@ if ($usuario_id) {
             font-size: 12px;
             font-weight: bold;
         }
+
         /* Asegurar que el círculo esté oculto si no hay notificaciones */
         .navbar__notification-badge.hidden {
             display: none;
@@ -127,21 +135,21 @@ if ($usuario_id) {
                 <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
                 <?php if ($usuario_id): ?>
-                <li class="navbar__profile">
-                    <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" id="profile-img">
-                    <span class="navbar__notification-badge <?php echo $unread_count == 0 ? 'hidden' : ''; ?>">
-                        <?php echo $unread_count; ?>
-                    </span>
-                    <div class="navbar__profile-menu" id="profile-menu">
-                        <a href="../panel/panel-usuario.php">Ver Perfil</a>
-                        <a href="../notificaciones/notificaciones.php">Notificaciones</a>
-                        <form action="../../backend/logout.php" method="POST">
-                            <button type="submit">Cerrar Sesión</button>
-                        </form>
-                    </div>
-                </li>
+                    <li class="navbar__profile">
+                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" id="profile-img">
+                        <span class="navbar__notification-badge <?php echo $unread_count == 0 ? 'hidden' : ''; ?>">
+                            <?php echo $unread_count; ?>
+                        </span>
+                        <div class="navbar__profile-menu" id="profile-menu">
+                            <a href="../panel/panel-usuario.php">Ver Perfil</a>
+                            <a href="../notificaciones/notificaciones.php">Notificaciones</a>
+                            <form action="../../backend/logout.php" method="POST">
+                                <button type="submit">Cerrar Sesión</button>
+                            </form>
+                        </div>
+                    </li>
                 <?php else: ?>
-                <li class="navbar__menu-item"><a href="../login/login.php">Iniciar Sesión</a></li>
+                    <li class="navbar__menu-item"><a href="../login/login.php">Iniciar Sesión</a></li>
                 <?php endif; ?>
             </ul>
             <button id="mobile-menu-button" class="navbar__toggle">
@@ -157,24 +165,24 @@ if ($usuario_id) {
                 <li class="navbar__menu-item"><a href="../inicio/index.php#recientes">Recientes</a></li>
                 <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
                 <?php if ($usuario_id): ?>
-                <li class="navbar__mobile-item">
-                    <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" style="vertical-align: middle; margin-right: 10px;">
-                    <span><?php echo $nombre_usuario; ?></span>
-                    <?php if ($unread_count > 0): ?>
-                        <span class="navbar__notification-badge" style="margin-left: 10px; vertical-align: middle;">
-                            <?php echo $unread_count; ?>
-                        </span>
-                    <?php endif; ?>
-                </li>
-                <li class="navbar__mobile-item"><a href="../panel/panel-usuario.php">Ver Perfil</a></li>
-                <li class="navbar__mobile-item"><a href="../notificaciones/notificaciones.php">Notificaciones</a></li>
-                <li class="navbar__mobile-item">
-                    <form action="../../backend/logout.php" method="POST">
-                        <button type="submit" class="navbar__menu-item--button">Cerrar Sesión</button>
-                    </form>
-                </li>
+                    <li class="navbar__mobile-item">
+                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" style="vertical-align: middle; margin-right: 10px;">
+                        <span><?php echo $nombre_usuario; ?></span>
+                        <?php if ($unread_count > 0): ?>
+                            <span class="navbar__notification-badge" style="margin-left: 10px; vertical-align: middle;">
+                                <?php echo $unread_count; ?>
+                            </span>
+                        <?php endif; ?>
+                    </li>
+                    <li class="navbar__mobile-item"><a href="../panel/panel-usuario.php">Ver Perfil</a></li>
+                    <li class="navbar__mobile-item"><a href="../notificaciones/notificaciones.php">Notificaciones</a></li>
+                    <li class="navbar__mobile-item">
+                        <form action="../../backend/logout.php" method="POST">
+                            <button type="submit" class="navbar__menu-item--button">Cerrar Sesión</button>
+                        </form>
+                    </li>
                 <?php else: ?>
-                <li class="navbar__menu-item"><a href="../login/login.php">Iniciar Sesión</a></li>
+                    <li class="navbar__menu-item"><a href="../login/login.php">Iniciar Sesión</a></li>
                 <?php endif; ?>
             </ul>
         </div>
@@ -203,7 +211,7 @@ if ($usuario_id) {
     </section>
 
     <!-- Buscador y Filtros -->
-    <section class="search-section"  id="buscar">
+    <section class="search-section" id="buscar">
         <div class="container">
             <div class="search-container">
                 <div class="search-box">
@@ -304,6 +312,26 @@ if ($usuario_id) {
             <div class="pagination" id="documents-pagination"></div>
         </div>
     </section>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grid">
+                <div>
+                    <h3 class="footer__logo">El Rincón de ADSO</h3>
+                    <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
+                </div>
+                <div>
+                    <h4 class="footer__heading">Nuestra Filosofía</h4>
+                    <p class="footer__quote">El aprendizaje continuo es el camino hacia la excelencia personal y profesional.</p>
+                    <p class="footer__philosophy-text">Nos dedicamos a cultivar mentes curiosas y a fomentar el pensamiento crítico a través del acceso a recursos educativos de calidad.</p>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">
+                    © <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -318,14 +346,13 @@ if ($usuario_id) {
             // Mostrar/ocultar menú de perfil
             const profileImg = document.getElementById('profile-img');
             const profileMenu = document.getElementById('profile-menu');
-            
+
             if (profileImg && profileMenu) {
                 profileImg.addEventListener('click', function(event) {
-                    event.stopPropagation(); // Evitar que el clic se propague y cierre el menú inmediatamente
+                    event.stopPropagation();
                     profileMenu.classList.toggle('active');
                 });
 
-                // Cerrar el menú al hacer clic fuera de él
                 document.addEventListener('click', function(event) {
                     if (!profileImg.contains(event.target) && !profileMenu.contains(event.target)) {
                         profileMenu.classList.remove('active');
@@ -488,6 +515,88 @@ if ($usuario_id) {
                     paginationContainer.appendChild(nextLink);
                 }
 
+                // Función para asignar eventos a botones
+                function assignButtonEvents(grid) {
+                    // Ver recurso
+                    grid.querySelectorAll('.view-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const documentoId = button.getAttribute('data-id');
+                            fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        console.log(data.message);
+                                    }
+                                })
+                                .catch(error => console.error('Error al registrar vista:', error));
+                        });
+                    });
+
+                    // Agregar/Quitar favoritos
+                    grid.querySelectorAll('.add-favorite, .remove-favorite').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const documentoId = button.getAttribute('data-id');
+                            const action = button.classList.contains('add-favorite') ? 'add' : 'remove';
+                            const endpoint = action === 'add' ? '../../backend/gestionRecursos/add_to_favorites.php' : '../../backend/gestionRecursos/remove_from_favorites.php';
+
+                            fetch(endpoint, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert(data.message);
+                                        loadResources(pageBooks, pageVideos, pageDocuments); // Recargar con páginas actuales
+                                    } else {
+                                        alert(data.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error(`Error al ${action === 'add' ? 'añadir a' : 'quitar de'} favoritos:`, error);
+                                    alert('Ocurrió un error al procesar tu solicitud.');
+                                });
+                        });
+                    });
+
+                    // Guardar para después
+                    grid.querySelectorAll('.save-resource').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const documentoId = button.getAttribute('data-id');
+                            fetch('../../backend/gestionRecursos/add_to_saved.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `documento_id=${documentoId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert(data.message);
+                                    } else {
+                                        alert(data.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error al guardar recurso:', error);
+                                    alert('Ocurrió un error al guardar el recurso.');
+                                });
+                        });
+                    });
+                }
+
                 // Cargar libros
                 if (!type || type === 'libro') {
                     params.set('type', 'libro');
@@ -501,48 +610,49 @@ if ($usuario_id) {
 
                             if (data.resources.length === 0) {
                                 booksGrid.innerHTML = '<p>No se encontraron libros.</p>';
-                                booksSection.style.display = 'none'; // Ocultar la sección si no hay resultados
+                                booksSection.style.display = 'none';
                                 booksPagination.innerHTML = '';
                             } else {
-                                booksSection.style.display = 'block'; // Mostrar la sección si hay resultados
+                                booksSection.style.display = 'block';
                                 data.resources.forEach(resource => {
                                     const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
                                     const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
                                     const resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card book-card';
                                     resourceCard.innerHTML = `
-                                        <div class="resource-card__image-container">
-                                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                        </div>
-                                        <div class="resource-card__content">
-                                            <div class="resource-card__category">${categorias.join(', ')}</div>
-                                            <h3 class="resource-card__title">${resource.titulo}</h3>
-                                            <p class="resource-card__author">Por ${resource.autor}</p>
-                                            <div class="resource-card__meta">
-                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                            </div>
-                                            <div class="resource-card__tags">
-                                                ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                            </div>
-                                            <div class="resource-card__actions">
-                                                <a href="ver_libro.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-book-reader"></i> Leer ahora
-                                                </a>
-                                                <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                    <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                    ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                </a>
-                                                <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-bookmark"></i> Guardar para después
-                                                </a>
-                                            </div>
-                                        </div>
-                                    `;
+                                <div class="resource-card__image-container">
+                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                </div>
+                                <div class="resource-card__content">
+                                    <div class="resource-card__category">${categorias.join(', ')}</div>
+                                    <h3 class="resource-card__title">${resource.titulo}</h3>
+                                    <p class="resource-card__author">Por ${resource.autor}</p>
+                                    <div class="resource-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                    </div>
+                                    <div class="resource-card__tags">
+                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                    </div>
+                                    <div class="resource-card__actions">
+                                        <a href="ver_libro.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                            <i class="fas fa-book-reader"></i> Leer ahora
+                                        </a>
+                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
                                     booksGrid.appendChild(resourceCard);
                                 });
 
+                                assignButtonEvents(booksGrid); // Asignar eventos a los botones de libros
                                 generatePagination(data.total, pageBooks, 'books', (newPage) => {
                                     loadResources(newPage, pageVideos, pageDocuments);
                                 });
@@ -551,7 +661,7 @@ if ($usuario_id) {
                         .catch(error => {
                             console.error('Error al cargar libros:', error);
                             document.getElementById('books-grid').innerHTML = '<p>Error al cargar los libros.</p>';
-                            booksSection.style.display = 'none'; // Ocultar la sección en caso de error
+                            booksSection.style.display = 'none';
                             booksPagination.innerHTML = '';
                         });
                 } else {
@@ -572,20 +682,107 @@ if ($usuario_id) {
 
                             if (data.resources.length === 0) {
                                 videosGrid.innerHTML = '<p>No se encontraron videos.</p>';
-                                videosSection.style.display = 'none'; // Ocultar la sección si no hay resultados
+                                videosSection.style.display = 'none';
                                 videosPagination.innerHTML = '';
                             } else {
-                                videosSection.style.display = 'block'; // Mostrar la sección si hay resultados
+                                videosSection.style.display = 'block';
                                 data.resources.forEach(resource => {
                                     const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
                                     const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
                                     const resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card video-card';
                                     resourceCard.innerHTML = `
+                                <div class="resource-card__image-container">
+                                    <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
+                                    <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
+                                    <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
+                                </div>
+                                <div class="resource-card__content">
+                                    <div class="resource-card__category">${categorias.join(', ')}</div>
+                                    <h3 class="resource-card__title">${resource.titulo}</h3>
+                                    <p class="resource-card__author">Por ${resource.autor}</p>
+                                    <div class="resource-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                    </div>
+                                    <div class="resource-card__tags">
+                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                    </div>
+                                    <div class="resource-card__actions">
+                                        <a href="ver_video.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                            <i class="fas fa-play-circle"></i> Ver video
+                                        </a>
+                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                        </a>
+                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                            <i class="fas fa-bookmark"></i> Guardar para después
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                                    videosGrid.appendChild(resourceCard);
+                                });
+
+                                assignButtonEvents(videosGrid); // Asignar eventos a los botones de videos
+                                generatePagination(data.total, pageVideos, 'videos', (newPage) => {
+                                    loadResources(pageBooks, newPage, pageDocuments);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al cargar videos:', error);
+                            document.getElementById('videos-grid').innerHTML = '<p>Error al cargar los videos.</p>';
+                            videosSection.style.display = 'none';
+                            videosPagination.innerHTML = '';
+                        });
+                } else {
+                    videosSection.style.display = 'none';
+                    videosPagination.innerHTML = '';
+                }
+
+                // Cargar documentos e imágenes
+                if (!type || type === 'documento' || type === 'imagen') {
+                    params.set('type', 'documento');
+                    params.set('page', pageDocuments);
+                    fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
+                        .then(response => response.json())
+                        .then(dataDocs => {
+                            console.log('Datos documentos:', dataDocs);
+
+                            params.set('type', 'imagen');
+                            fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
+                                .then(response => response.json())
+                                .then(dataImages => {
+                                    console.log('Datos imágenes:', dataImages);
+
+                                    const documentsGrid = document.getElementById('documents-grid');
+                                    documentsGrid.innerHTML = '';
+
+                                    const documents = [
+                                        ...(dataDocs.resources || []),
+                                        ...(dataImages.resources || [])
+                                    ];
+
+                                    if (documents.length === 0) {
+                                        documentsGrid.innerHTML = '<p>No se encontraron documentos.</p>';
+                                        documentsSection.style.display = 'none';
+                                        documentsPagination.innerHTML = '';
+                                    } else {
+                                        documentsSection.style.display = 'block';
+                                        documents.forEach(resource => {
+                                            const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
+                                            const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
+                                            const defaultImage = '../inicio/img/default-cover.jpg';
+                                            const coverImage = resource.portada && resource.portada !== '' ? resource.portada : defaultImage;
+
+                                            const resourceCard = document.createElement('div');
+                                            resourceCard.className = 'resource-card document-card';
+                                            resourceCard.innerHTML = `
                                         <div class="resource-card__image-container">
-                                            <img src="${resource.portada}" alt="${resource.titulo}" class="resource-card__image" loading="lazy">
-                                            <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
-                                            <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
+                                            <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
                                         </div>
                                         <div class="resource-card__content">
                                             <div class="resource-card__category">${categorias.join(', ')}</div>
@@ -599,8 +796,8 @@ if ($usuario_id) {
                                                 ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
                                             </div>
                                             <div class="resource-card__actions">
-                                                <a href="ver_video.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                    <i class="fas fa-play-circle"></i> Ver video
+                                                <a href="ver_documento.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                                    <i class="fas fa-eye"></i> Ver documento
                                                 </a>
                                                 <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
                                                     <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
@@ -612,98 +809,10 @@ if ($usuario_id) {
                                             </div>
                                         </div>
                                     `;
-                                    videosGrid.appendChild(resourceCard);
-                                });
-
-                                generatePagination(data.total, pageVideos, 'videos', (newPage) => {
-                                    loadResources(pageBooks, newPage, pageDocuments);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error al cargar videos:', error);
-                            document.getElementById('videos-grid').innerHTML = '<p>Error al cargar los videos.</p>';
-                            videosSection.style.display = 'none'; // Ocultar la sección en caso de error
-                            videosPagination.innerHTML = '';
-                        });
-                } else {
-                    videosSection.style.display = 'none';
-                    videosPagination.innerHTML = '';
-                }
-
-                // Cargar documentos e imágenes
-                if (!type || type === 'documento' || type === 'imagen') {
-                    // Hacer una solicitud específica para documentos
-                    params.set('type', 'documento');
-                    params.set('page', pageDocuments);
-                    fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
-                        .then(response => response.json())
-                        .then(dataDocs => {
-                            console.log('Datos documentos:', dataDocs);
-
-                            // Hacer una solicitud específica para imágenes
-                            params.set('type', 'imagen');
-                            fetch(`../../backend/gestionRecursos/search_resources.php?${params.toString()}`)
-                                .then(response => response.json())
-                                .then(dataImages => {
-                                    console.log('Datos imágenes:', dataImages);
-
-                                    const documentsGrid = document.getElementById('documents-grid');
-                                    documentsGrid.innerHTML = '';
-
-                                    // Combinar documentos e imágenes
-                                    const documents = [
-                                        ...(dataDocs.resources || []),
-                                        ...(dataImages.resources || [])
-                                    ];
-
-                                    if (documents.length === 0) {
-                                        documentsGrid.innerHTML = '<p>No se encontraron documentos.</p>';
-                                        documentsSection.style.display = 'none'; // Ocultar la sección si no hay resultados
-                                        documentsPagination.innerHTML = '';
-                                    } else {
-                                        documentsSection.style.display = 'block'; // Mostrar la sección si hay resultados
-                                        documents.forEach(resource => {
-                                            const categorias = Array.isArray(resource.categorias) && resource.categorias.length > 0 ? resource.categorias : ['Sin categoría'];
-                                            const etiquetas = Array.isArray(resource.etiquetas) && resource.etiquetas.length > 0 ? resource.etiquetas : [];
-                                            const defaultImage = '../inicio/img/default-cover.jpg';
-                                            const coverImage = resource.portada && resource.portada !== '' ? resource.portada : defaultImage;
-
-                                            const resourceCard = document.createElement('div');
-                                            resourceCard.className = 'resource-card document-card';
-                                            resourceCard.innerHTML = `
-                                                <div class="resource-card__image-container">
-                                                    <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                                </div>
-                                                <div class="resource-card__content">
-                                                    <div class="resource-card__category">${categorias.join(', ')}</div>
-                                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                                    <div class="resource-card__meta">
-                                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                                    </div>
-                                                    <div class="resource-card__tags">
-                                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                                    </div>
-                                                    <div class="resource-card__actions">
-                                                        <a href="ver_documento.php?id=${resource.id}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                                            <i class="fas fa-eye"></i> Ver documento
-                                                        </a>
-                                                        <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                            <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                            ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                                        </a>
-                                                        <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                            <i class="fas fa-bookmark"></i> Guardar para después
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            `;
                                             documentsGrid.appendChild(resourceCard);
                                         });
 
+                                        assignButtonEvents(documentsGrid); // Asignar eventos a los botones de documentos
                                         const totalDocuments = (dataDocs.total || 0) + (dataImages.total || 0);
                                         generatePagination(totalDocuments, pageDocuments, 'documents', (newPage) => {
                                             loadResources(pageBooks, pageVideos, newPage);
@@ -713,91 +822,20 @@ if ($usuario_id) {
                                 .catch(error => {
                                     console.error('Error al cargar imágenes:', error);
                                     document.getElementById('documents-grid').innerHTML = '<p>Error al cargar los documentos.</p>';
-                                    documentsSection.style.display = 'none'; // Ocultar la sección en caso de error
+                                    documentsSection.style.display = 'none';
                                     documentsPagination.innerHTML = '';
                                 });
                         })
                         .catch(error => {
                             console.error('Error al cargar documentos:', error);
                             document.getElementById('documents-grid').innerHTML = '<p>Error al cargar los documentos.</p>';
-                            documentsSection.style.display = 'none'; // Ocultar la sección en caso de error
+                            documentsSection.style.display = 'none';
                             documentsPagination.innerHTML = '';
                         });
                 } else {
                     documentsSection.style.display = 'none';
                     documentsPagination.innerHTML = '';
                 }
-
-                // Agregar eventos para acciones
-                document.querySelectorAll('.view-resource').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const documentoId = button.getAttribute('data-id');
-                        fetch('../../backend/gestionRecursos/add_to_recently_viewed.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `documento_id=${documentoId}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                console.log(data.message);
-                            }
-                        })
-                        .catch(error => console.error('Error al registrar vista:', error));
-                    });
-                });
-
-                document.querySelectorAll('.add-favorite, .remove-favorite').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const documentoId = button.getAttribute('data-id');
-                        const action = button.classList.contains('add-favorite') ? 'add' : 'remove';
-                        const endpoint = action === 'add' ? '../../backend/gestionRecursos/add_to_favorites.php' : '../../backend/gestionRecursos/remove_from_favorites.php';
-
-                        fetch(endpoint, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `documento_id=${documentoId}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert(data.message);
-                                loadResources(pageBooks, pageVideos, pageDocuments);
-                            } else {
-                                alert(data.message);
-                            }
-                        })
-                        .catch(error => console.error(`Error al ${action === 'add' ? 'añadir a' : 'quitar de'} favoritos:`, error));
-                    });
-                });
-
-                document.querySelectorAll('.save-resource').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const documentoId = button.getAttribute('data-id');
-                        fetch('../../backend/gestionRecursos/add_to_saved.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `documento_id=${documentoId}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert(data.message);
-                            } else {
-                                alert(data.message);
-                            }
-                        })
-                        .catch(error => console.error('Error al guardar recurso:', error));
-                    });
-                });
             }
 
             searchButton.addEventListener('click', () => loadResources(1, 1, 1));
@@ -812,26 +850,7 @@ if ($usuario_id) {
             filterLanguage.addEventListener('change', () => loadResources(1, 1, 1));
         });
     </script>
-    <footer class="footer">
-    <div class="container">
-        <div class="footer__grid">
-            <div>
-                <h3 class="footer__logo">El Rincón de ADSO</h3>
-                <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
-            </div>
-            <div>
-                <h4 class="footer__heading">Nuestra Filosofía</h4>
-                <p class="footer__quote">El aprendizaje continuo es el camino hacia la excelencia personal y profesional.</p>
-                <p class="footer__philosophy-text">Nos dedicamos a cultivar mentes curiosas y a fomentar el pensamiento crítico a través del acceso a recursos educativos de calidad.</p>
-            </div>
-        </div>
-        <div class="footer__bottom">
-            <div class="footer__copyright">
-                © <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
-            </div>
-        </div>
-    </div>
-</footer>
+
 </body>
 
 </html>
