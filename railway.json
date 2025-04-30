@@ -9,12 +9,12 @@
         }
       },
       "start": {
-        "cmd": "php -S 0.0.0.0:$PORT -t src/frontend/inicio"
+        "cmd": "php -S 0.0.0.0:$PORT"
       }
     }
   },
   "deploy": {
-    "startCommand": "php -S 0.0.0.0:$PORT -t src/frontend/inicio",
+    "startCommand": "php -S 0.0.0.0:$PORT",
     "restartPolicy": "ON_FAILURE"
   }
 }
