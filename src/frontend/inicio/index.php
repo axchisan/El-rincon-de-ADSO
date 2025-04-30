@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "../../database/conexionDB.php";
+require_once __DIR__ . "/../../database/conexionDB.php";
 $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
 $nombre_usuario = '';
 $usuario_imagen = '';
