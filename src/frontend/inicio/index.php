@@ -37,6 +37,8 @@ if ($usuario_id) {
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="./img/icono.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tu biblioteca digital al alcance de todos
+Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrarás todo lo necesario para fortalecer tus habilidades, expandir tus conocimientos y avanzar con confianza en tu camino como programador. Todo, reunido en un solo lugar.">
     <title>Repositorio de Libros</title>
     <link rel="stylesheet" href="../repositorio/css/repositorio.css">
     <link rel="stylesheet" href="./css/styles.css">
@@ -248,55 +250,55 @@ if ($usuario_id) {
 
 
 
-  <!-- Sección de Comunidad -->
-<section id="comunidad" class="section section--community">
-    <div class="container">
-        <div class="community__header">
-            <h2 class="community__title">Comunidad</h2>
-            <p class="community__description">Descubre lo que nuestra comunidad está comentando sobre sus lecturas favoritas</p>
-            <!-- Add buttons here -->
-            <div class="community__buttons">
-                <a href="../eventos/eventos.php" class="btn btn--secondary">Eventos</a>
-                <a href="../foro/foro.php" class="btn btn--secondary">Foros</a>
+    <!-- Sección de Comunidad -->
+    <section id="comunidad" class="section section--community">
+        <div class="container">
+            <div class="community__header">
+                <h2 class="community__title">Comunidad</h2>
+                <p class="community__description">Descubre lo que nuestra comunidad está comentando sobre sus lecturas favoritas</p>
+                <!-- Add buttons here -->
+                <div class="community__buttons">
+                    <a href="../eventos/eventos.php" class="btn btn--secondary">Eventos</a>
+                    <a href="../foro/foro.php" class="btn btn--secondary">Foros</a>
+                </div>
             </div>
-        </div>
 
-        <!-- Rest of your code remains unchanged -->
-        <!-- Form. agregar un comentario solo si hay sesión activa.. -->
-        <?php if ($usuario_id): ?>
-            <div class="community__add-comment">
-                <h3 class="community__add-comment-title">Comparte tu opinión</h3>
-                <form id="add-comment-form" action="../../backend/comunidad/add_comment.php" method="POST">
-                    <div class="form-group">
-                        <label for="libro">Sobre:</label>
-                        <input type="text" id="libro" name="libro" placeholder="Nombre del libro" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="comentario">Comentario:</label>
-                        <textarea id="comentario" name="comentario" placeholder="Escribe tu comentario..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Calificación:</label>
-                        <div class="star-rating" id="star-rating">
-                            <input type="hidden" name="valoracion" id="valoracion" value="0">
-                            <span class="star" data-value="1"><i class="far fa-star"></i></span>
-                            <span class="star" data-value="2"><i class="far fa-star"></i></span>
-                            <span class="star" data-value="3"><i class="far fa-star"></i></span>
-                            <span class="star" data-value="4"><i class="far fa-star"></i></span>
-                            <span class="star" data-value="5"><i class="far fa-star"></i></span>
+            <!-- Rest of your code remains unchanged -->
+            <!-- Form. agregar un comentario solo si hay sesión activa.. -->
+            <?php if ($usuario_id): ?>
+                <div class="community__add-comment">
+                    <h3 class="community__add-comment-title">Comparte tu opinión</h3>
+                    <form id="add-comment-form" action="../../backend/comunidad/add_comment.php" method="POST">
+                        <div class="form-group">
+                            <label for="libro">Sobre:</label>
+                            <input type="text" id="libro" name="libro" placeholder="Nombre del libro" required>
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn--primary">Publicar Comentario</button>
-                </form>
-            </div>
-        <?php endif; ?>
+                        <div class="form-group">
+                            <label for="comentario">Comentario:</label>
+                            <textarea id="comentario" name="comentario" placeholder="Escribe tu comentario..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Calificación:</label>
+                            <div class="star-rating" id="star-rating">
+                                <input type="hidden" name="valoracion" id="valoracion" value="0">
+                                <span class="star" data-value="1"><i class="far fa-star"></i></span>
+                                <span class="star" data-value="2"><i class="far fa-star"></i></span>
+                                <span class="star" data-value="3"><i class="far fa-star"></i></span>
+                                <span class="star" data-value="4"><i class="far fa-star"></i></span>
+                                <span class="star" data-value="5"><i class="far fa-star"></i></span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn--primary">Publicar Comentario</button>
+                    </form>
+                </div>
+            <?php endif; ?>
 
-        <!-- Lista de comentarios -->
-        <div class="community__grid" id="community-grid">
-            <?php
-            try {
-                $db = conexionDB::getConexion();
-                $query = "
+            <!-- Lista de comentarios -->
+            <div class="community__grid" id="community-grid">
+                <?php
+                try {
+                    $db = conexionDB::getConexion();
+                    $query = "
             SELECT cc.id, cc.libro, cc.comentario, cc.valoracion, cc.likes, cc.fecha_creacion, 
                    u.nombre_usuario, u.imagen,
                    (SELECT COUNT(*) FROM likes_comentarios_comunidad lcc WHERE lcc.comentario_id = cc.id AND lcc.usuario_id = :usuario_id) as user_liked
@@ -305,143 +307,143 @@ if ($usuario_id) {
             ORDER BY cc.fecha_creacion DESC
             LIMIT 4
         ";
-                $stmt = $db->prepare($query);
-                $stmt->execute([':usuario_id' => $usuario_id ?: 0]);
-                $comentarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $stmt = $db->prepare($query);
+                    $stmt->execute([':usuario_id' => $usuario_id ?: 0]);
+                    $comentarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                if (empty($comentarios)) {
-                    echo '<p>No hay comentarios en la comunidad todavía. ¡Sé el primero en compartir tu opinión!</p>';
-                } else {
-                    foreach ($comentarios as $comentario) {
-                        $avatar = $comentario['imagen'] ? "../../backend/perfil/" . htmlspecialchars($comentario['imagen']) : "https://i.pravatar.cc/150?img=" . $comentario['usuario_id'];
-                        $fecha = (new DateTime($comentario['fecha_creacion']))->diff(new DateTime())->format('%a días atrás');
-                        if ($fecha === '0 días atrás') {
-                            $fecha = 'Hoy';
-                        }
-
-                        echo '<div class="comment-card" data-comment-id="' . $comentario['id'] . '">';
-                        echo '<div class="comment-card__header">';
-                        echo '<div class="comment-card__user">';
-                        echo '<img src="' . $avatar . '" alt="' . htmlspecialchars($comentario['nombre_usuario']) . '" class="comment-card__avatar" loading="lazy">';
-                        echo '<div class="comment-card__user-info">';
-                        echo '<h4 class="comment-card__username">' . htmlspecialchars($comentario['nombre_usuario']) . '</h4>';
-                        echo '<span class="comment-card__date">' . $fecha . '</span>';
-                        echo '</div>';
-                        echo '</div>';
-                        echo '<div class="comment-card__rating">';
-                        for ($i = 1; $i <= 5; $i++) {
-                            if ($i <= $comentario['valoracion']) {
-                                echo '<i class="fas fa-star"></i>';
-                            } else {
-                                echo '<i class="far fa-star"></i>';
+                    if (empty($comentarios)) {
+                        echo '<p>No hay comentarios en la comunidad todavía. ¡Sé el primero en compartir tu opinión!</p>';
+                    } else {
+                        foreach ($comentarios as $comentario) {
+                            $avatar = $comentario['imagen'] ? "../../backend/perfil/" . htmlspecialchars($comentario['imagen']) : "https://i.pravatar.cc/150?img=" . $comentario['usuario_id'];
+                            $fecha = (new DateTime($comentario['fecha_creacion']))->diff(new DateTime())->format('%a días atrás');
+                            if ($fecha === '0 días atrás') {
+                                $fecha = 'Hoy';
                             }
-                        }
-                        echo '</div>';
-                        echo '</div>';
-                        echo '<div class="comment-card__content">';
-                        echo '<h5 class="comment-card__book">Sobre: ' . htmlspecialchars($comentario['libro']) . '</h5>';
-                        echo '<p class="comment-card__text">"' . htmlspecialchars($comentario['comentario']) . '"</p>';
-                        echo '</div>';
-                        echo '<div class="comment-card__footer">';
-                        // Botón de "like xd"
-                        $liked_class = $comentario['user_liked'] > 0 ? 'comment-card__like--active' : '';
-                        $icon_class = $comentario['user_liked'] > 0 ? 'fas liked' : 'far';
-                        if ($usuario_id) {
-                            echo '<button class="comment-card__like ' . $liked_class . '" data-comment-id="' . $comentario['id'] . '">';
-                            echo '<i class="' . $icon_class . ' fa-heart"></i> Me gusta (' . $comentario['likes'] . ')';
-                            echo '</button>';
-                        } else {
-                            echo '<a href="../login/login.php" class="comment-card__like">';
-                            echo '<i class="far fa-heart"></i> Me gusta (' . $comentario['likes'] . ')';
-                            echo '</a>';
-                        }
-                        echo '<button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>';
-                        echo '</div>';
 
-                        // Formulario para responde
-                        if ($usuario_id) {
-                            echo '<div class="reply-form" id="reply-form-' . $comentario['id'] . '">';
-                            echo '<form class="add-reply-form" data-comment-id="' . $comentario['id'] . '">';
-                            echo '<textarea name="respuesta" placeholder="Escribe tu respuesta..." required></textarea>';
-                            echo '<button type="submit">Enviar Respuesta</button>';
-                            echo '</form>';
+                            echo '<div class="comment-card" data-comment-id="' . $comentario['id'] . '">';
+                            echo '<div class="comment-card__header">';
+                            echo '<div class="comment-card__user">';
+                            echo '<img src="' . $avatar . '" alt="' . htmlspecialchars($comentario['nombre_usuario']) . '" class="comment-card__avatar" loading="lazy">';
+                            echo '<div class="comment-card__user-info">';
+                            echo '<h4 class="comment-card__username">' . htmlspecialchars($comentario['nombre_usuario']) . '</h4>';
+                            echo '<span class="comment-card__date">' . $fecha . '</span>';
                             echo '</div>';
-                        }
+                            echo '</div>';
+                            echo '<div class="comment-card__rating">';
+                            for ($i = 1; $i <= 5; $i++) {
+                                if ($i <= $comentario['valoracion']) {
+                                    echo '<i class="fas fa-star"></i>';
+                                } else {
+                                    echo '<i class="far fa-star"></i>';
+                                }
+                            }
+                            echo '</div>';
+                            echo '</div>';
+                            echo '<div class="comment-card__content">';
+                            echo '<h5 class="comment-card__book">Sobre: ' . htmlspecialchars($comentario['libro']) . '</h5>';
+                            echo '<p class="comment-card__text">"' . htmlspecialchars($comentario['comentario']) . '"</p>';
+                            echo '</div>';
+                            echo '<div class="comment-card__footer">';
+                            // Botón de "like xd"
+                            $liked_class = $comentario['user_liked'] > 0 ? 'comment-card__like--active' : '';
+                            $icon_class = $comentario['user_liked'] > 0 ? 'fas liked' : 'far';
+                            if ($usuario_id) {
+                                echo '<button class="comment-card__like ' . $liked_class . '" data-comment-id="' . $comentario['id'] . '">';
+                                echo '<i class="' . $icon_class . ' fa-heart"></i> Me gusta (' . $comentario['likes'] . ')';
+                                echo '</button>';
+                            } else {
+                                echo '<a href="../login/login.php" class="comment-card__like">';
+                                echo '<i class="far fa-heart"></i> Me gusta (' . $comentario['likes'] . ')';
+                                echo '</a>';
+                            }
+                            echo '<button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>';
+                            echo '</div>';
 
-                        $query_replies = "
+                            // Formulario para responde
+                            if ($usuario_id) {
+                                echo '<div class="reply-form" id="reply-form-' . $comentario['id'] . '">';
+                                echo '<form class="add-reply-form" data-comment-id="' . $comentario['id'] . '">';
+                                echo '<textarea name="respuesta" placeholder="Escribe tu respuesta..." required></textarea>';
+                                echo '<button type="submit">Enviar Respuesta</button>';
+                                echo '</form>';
+                                echo '</div>';
+                            }
+
+                            $query_replies = "
                     SELECT r.id, r.respuesta, r.fecha_creacion, u.nombre_usuario, u.imagen
                     FROM respuestas_comentarios_comunidad r
                     JOIN usuarios u ON r.usuario_id = u.id
                     WHERE r.comentario_id = :comentario_id
                     ORDER BY r.fecha_creacion ASC
                 ";
-                        $stmt_replies = $db->prepare($query_replies);
-                        $stmt_replies->execute([':comentario_id' => $comentario['id']]);
-                        $respuestas = $stmt_replies->fetchAll(PDO::FETCH_ASSOC);
+                            $stmt_replies = $db->prepare($query_replies);
+                            $stmt_replies->execute([':comentario_id' => $comentario['id']]);
+                            $respuestas = $stmt_replies->fetchAll(PDO::FETCH_ASSOC);
 
-                        if (!empty($respuestas)) {
-                            echo '<div class="comment-card__replies">';
-                            foreach ($respuestas as $respuesta) {
-                                $reply_avatar = $respuesta['imagen'] ? "../../backend/perfil/" . htmlspecialchars($respuesta['imagen']) : "https://i.pravatar.cc/150?img=" . $respuesta['id'];
-                                $reply_fecha = (new DateTime($respuesta['fecha_creacion']))->diff(new DateTime())->format('%a días atrás');
-                                if ($reply_fecha === '0 días atrás') {
-                                    $reply_fecha = 'Hoy';
+                            if (!empty($respuestas)) {
+                                echo '<div class="comment-card__replies">';
+                                foreach ($respuestas as $respuesta) {
+                                    $reply_avatar = $respuesta['imagen'] ? "../../backend/perfil/" . htmlspecialchars($respuesta['imagen']) : "https://i.pravatar.cc/150?img=" . $respuesta['id'];
+                                    $reply_fecha = (new DateTime($respuesta['fecha_creacion']))->diff(new DateTime())->format('%a días atrás');
+                                    if ($reply_fecha === '0 días atrás') {
+                                        $reply_fecha = 'Hoy';
+                                    }
+
+                                    echo '<div class="reply-card">';
+                                    echo '<img src="' . $reply_avatar . '" alt="' . htmlspecialchars($respuesta['nombre_usuario']) . '" class="reply-card__avatar" loading="lazy">';
+                                    echo '<div class="reply-card__content">';
+                                    echo '<h5 class="reply-card__username">' . htmlspecialchars($respuesta['nombre_usuario']) . '</h5>';
+                                    echo '<span class="reply-card__date">' . $reply_fecha . '</span>';
+                                    echo '<p class="reply-card__text">' . htmlspecialchars($respuesta['respuesta']) . '</p>';
+                                    echo '</div>';
+                                    echo '</div>';
                                 }
-
-                                echo '<div class="reply-card">';
-                                echo '<img src="' . $reply_avatar . '" alt="' . htmlspecialchars($respuesta['nombre_usuario']) . '" class="reply-card__avatar" loading="lazy">';
-                                echo '<div class="reply-card__content">';
-                                echo '<h5 class="reply-card__username">' . htmlspecialchars($respuesta['nombre_usuario']) . '</h5>';
-                                echo '<span class="reply-card__date">' . $reply_fecha . '</span>';
-                                echo '<p class="reply-card__text">' . htmlspecialchars($respuesta['respuesta']) . '</p>';
-                                echo '</div>';
                                 echo '</div>';
                             }
+
                             echo '</div>';
                         }
-
-                        echo '</div>';
                     }
+                } catch (PDOException $e) {
+                    error_log("Error al obtener comentarios de la comunidad: " . $e->getMessage());
+                    echo '<p>Error al cargar los comentarios. Por favor, intenta de nuevo más tarde.</p>';
                 }
-            } catch (PDOException $e) {
-                error_log("Error al obtener comentarios de la comunidad: " . $e->getMessage());
-                echo '<p>Error al cargar los comentarios. Por favor, intenta de nuevo más tarde.</p>';
-            }
-            ?>
-        </div>
+                ?>
+            </div>
 
-        <!-- mostrar solo si NO hay sesión activa -->
-        <?php if (!$usuario_id): ?>
-            <div class="community__cta">
-                <h3 class="community__cta-title">¿Quieres compartir tu opinión?</h3>
-                <p class="community__cta-text">Únete a nuestra comunidad y comparte tus pensamientos sobre tus lecturas favoritas</p>
-                <a href="../register/registro.php" class="btn btn--primary community__cta-button">Crear una cuenta</a>
-            </div>
-        <?php endif; ?>
-    </div>
-</section>
+            <!-- mostrar solo si NO hay sesión activa -->
+            <?php if (!$usuario_id): ?>
+                <div class="community__cta">
+                    <h3 class="community__cta-title">¿Quieres compartir tu opinión?</h3>
+                    <p class="community__cta-text">Únete a nuestra comunidad y comparte tus pensamientos sobre tus lecturas favoritas</p>
+                    <a href="../register/registro.php" class="btn btn--primary community__cta-button">Crear una cuenta</a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
 
-   <!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer__grid">
-            <div>
-                <h3 class="footer__logo">El Rincón de ADSO</h3>
-                <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grid">
+                <div>
+                    <h3 class="footer__logo">El Rincón de ADSO</h3>
+                    <p class="footer__description">Tu repositorio digital de confianza para el acceso al conocimiento académico y literario.</p>
+                </div>
+                <div>
+                    <h4 class="footer__heading">Nuestra Filosofía</h4>
+                    <p class="footer__quote">El aprendizaje continuo es el camino hacia la excelencia personal y profesional.</p>
+                    <p class="footer__philosophy-text">Nos dedicamos a cultivar mentes curiosas y a fomentar el pensamiento crítico a través del acceso a recursos educativos de calidad.</p>
+                </div>
             </div>
-            <div>
-                <h4 class="footer__heading">Nuestra Filosofía</h4>
-                <p class="footer__quote">El aprendizaje continuo es el camino hacia la excelencia personal y profesional.</p>
-                <p class="footer__philosophy-text">Nos dedicamos a cultivar mentes curiosas y a fomentar el pensamiento crítico a través del acceso a recursos educativos de calidad.</p>
+            <div class="footer__bottom">
+                <div class="footer__copyright">
+                    © <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
+                </div>
             </div>
         </div>
-        <div class="footer__bottom">
-            <div class="footer__copyright">
-                © <?php echo date('Y'); ?> El Rincón de ADSO. Todos los derechos reservados.
-            </div>
-        </div>
-    </div>
-</footer>
+    </footer>
 
 
     <!-- Scripts -->
@@ -1083,7 +1085,7 @@ if ($usuario_id) {
         });
     </script>
     <!-- Contenedor para las alertas centradas -->
-<div id="mensaje-alerta" style="
+    <div id="mensaje-alerta" style="
     position: fixed;
     top: 50%;
     left: 50%;
@@ -1092,9 +1094,9 @@ if ($usuario_id) {
     text-align: center;
 "></div>
 
-<script>
-// Estilos rápidos para alerta centrada
-const estiloAlerta = `
+    <script>
+        // Estilos rápidos para alerta centrada
+        const estiloAlerta = `
     background: #e3f2fd;
     color: #0277bd;
     padding: 20px 30px;
@@ -1106,21 +1108,21 @@ const estiloAlerta = `
     border-left: 6px solid #0277bd;
 `;
 
-// Sobrescribe alert() para mostrar en el centro
-window.alert = function(mensaje) {
-    const contenedor = document.getElementById('mensaje-alerta');
-    contenedor.innerHTML = ''; // limpia alertas anteriores
-    const alerta = document.createElement('div');
-    alerta.style = estiloAlerta;
-    alerta.innerHTML = `ℹ️ ${mensaje}`;
-    contenedor.appendChild(alerta);
+        // Sobrescribe alert() para mostrar en el centro
+        window.alert = function(mensaje) {
+            const contenedor = document.getElementById('mensaje-alerta');
+            contenedor.innerHTML = ''; // limpia alertas anteriores
+            const alerta = document.createElement('div');
+            alerta.style = estiloAlerta;
+            alerta.innerHTML = `ℹ️ ${mensaje}`;
+            contenedor.appendChild(alerta);
 
-    // Elimina la alerta después de 4 segundos
-    setTimeout(() => {
-        alerta.remove();
-    }, 4000);
-};
-</script>
+            // Elimina la alerta después de 4 segundos
+            setTimeout(() => {
+                alerta.remove();
+            }, 4000);
+        };
+    </script>
 
 </body>
 
