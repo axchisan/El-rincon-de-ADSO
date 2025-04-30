@@ -9,9 +9,12 @@ class conexionDB {
             try {
                 $dsn = "pgsql:host=" . DB_HOST .
                        ";port=" . DB_PORT .
-                       ";dbname=" . DB_NAME .
-                       ";sslmode=" . DB_SSLMODE .
-                       ";sslrootcert=" . DB_SSLROOTCERT;
+                       ";dbname=" . DB_NAME;
+
+                // Solo añadir sslmode si es necesario
+                if (DB_SSLMODE && DB_SSLMODE !== "disable") {
+                    $dsn .= ";sslmode=" . DB_SSLMODE;
+                }
 
                 self::$conexion = new PDO($dsn, DB_USER, DB_PASSWORD);
                 self::$conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
