@@ -1,0 +1,20 @@
+{
+    "$schema": "https://railway.app/railway.schema.json",
+    "build": {
+      "builder": "NIXPACKS",
+      "nixpacksPlan": {
+        "phases": {
+          "setup": {
+            "nixPkgs": ["php", "php83Extensions.pgsql"]
+          }
+        },
+        "start": {
+          "cmd": "php -S 0.0.0.0:$PORT -t src/frontend/inicio"
+        }
+      }
+    },
+    "deploy": {
+      "startCommand": "php -S 0.0.0.0:$PORT -t src/frontend/inicio",
+      "restartPolicy": "ON_FAILURE"
+    }
+  }
