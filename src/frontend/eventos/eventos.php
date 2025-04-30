@@ -53,7 +53,7 @@ try {
   <title>Eventos - El Rincón de ADSO</title>
   <link rel="icon" type="image/png" href="../inicio/img/icono.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="../friends/css/style.css">
+  <link rel="stylesheet" href="../foro/css/style.css">
 </head>
 <body>
   <!-- Navegación -->
