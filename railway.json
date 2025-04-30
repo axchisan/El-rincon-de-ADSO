@@ -1,20 +1,23 @@
 {
-    "$schema": "https://railway.app/railway.schema.json",
-    "build": {
-      "builder": "NIXPACKS",
-      "nixpacksPlan": {
-        "phases": {
-          "setup": {
-            "nixPkgs": ["php", "php83Extensions.pgsql"]
-          }
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["php", "php83Extensions.pgsql", "nginx"]
+        },
+        "build": {
+          "cmd": "mkdir -p /var/log/nginx /var/cache/nginx /run/nginx && echo 'server { listen 0.0.0.0:$PORT; root /app/frontend/inicio; index index.php; access_log /var/log/nginx/access.log; error_log /var/log/nginx/error.log; location / { try_files $uri $uri/ /index.php?$args; } location ~ \\.php$ { include fastcgi_params; fastcgi_pass 127.0.0.1:9000; fastcgi_index index.php; fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; } }' > /etc/nginx/nginx.conf && echo '[global] daemonize = no [www] listen = 127.0.0.1:9000' > /etc/php-fpm.d/www.conf"
         },
         "start": {
-          "cmd": "php -S 0.0.0.0:$PORT -t src/frontend/inicio"
+          "cmd": "php-fpm -D && nginx -g 'daemon off;'"
         }
       }
     },
     "deploy": {
-      "startCommand": "php -S 0.0.0.0:$PORT -t src/frontend/inicio",
+      "rootDirectory": "src",
+      "startCommand": "php-fpm -D && nginx -g 'daemon off;'",
       "restartPolicy": "ON_FAILURE"
     }
   }
