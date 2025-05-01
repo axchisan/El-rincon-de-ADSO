@@ -28,15 +28,6 @@
   <div class="login-container">
     <img src="img/logo.png" alt="Logo institucional" class="logo-login">
     <h4>Iniciar Sesión</h4>
-
-    <?php
-    session_start();
-    if (isset($_SESSION['error'])) {
-        echo '<div style="color: red; text-align: center; margin-bottom: 10px;">' . htmlspecialchars($_SESSION['error']) . '</div>';
-        unset($_SESSION['error']);
-    }
-    ?>
-
     <form action="../../backend/loginValidation/validar_login.php" method="POST" autocomplete="off">
       <label for="usuario">Usuario o Correo:</label>
       <input type="text" name="usuario" id="usuario" required><br><br>
