@@ -1685,10 +1685,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="resource-card__category">${resource.categorias.join(', ')}</div>
                                 <h3 class="resource-card__title">${resource.titulo}</h3>
                                 <p class="resource-card__author">Por ${resource.autor}</p>
-                                <div class="resource-card__meta">
-                                    <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                    <span><i class="fas fa-eye"></i> Visitas: ${resource.visitas || 0}</span>
-                                </div>
+                               <div class="resource-card__meta">
+                               <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                               </div>
                                 <div class="resource-card__actions">
                                     <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
                                         <i class="fas fa-${resource.tipo === 'video' ? 'play-circle' : 'book-reader'}"></i>
@@ -1708,20 +1707,27 @@ document.addEventListener('DOMContentLoaded', function() {
                             editResource(resourceId);
                         });
                     });
-
                     resourcesGrid.querySelectorAll('.delete-resource').forEach(button => {
-                        button.addEventListener('click', (e) => {
-                            const resourceId = button.getAttribute('data-id');
+                        button.addEventListener('click', function() {
+                            const resourceId = this.dataset.id;
+                            console.log('Intentando eliminar recurso con ID:', resourceId); // Depuración
+                            // Validar que resourceId sea un número válido
+                            if (!resourceId || isNaN(resourceId) || parseInt(resourceId) <= 0) {
+                                alert('Error: ID de recurso no válido.');
+                                return;
+                            }
+
                             if (confirm('¿Estás seguro de que deseas eliminar este recurso?')) {
                                 fetch('../../backend/gestionRecursos/delete_resource.php', {
                                     method: 'POST',
                                     headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                        'Content-Type': 'application/json'
                                     },
-                                    body: `resource_id=${resourceId}`
+                                    body: JSON.stringify({ documento_id: parseInt(resourceId) }) // Cambiar a documento_id
                                 })
                                 .then(response => response.json())
                                 .then(data => {
+                                    console.log('Respuesta del servidor:', data); // Depuración
                                     if (data.success) {
                                         alert(data.message);
                                         loadUserResources();
@@ -1730,8 +1736,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                     }
                                 })
                                 .catch(error => {
-                                    console.error('Error al eliminar recurso:', error);
+                                    console.error('Error al eliminar:', error);
+
                                     alert('Error al eliminar el recurso.');
+
                                 });
                             }
                         });
