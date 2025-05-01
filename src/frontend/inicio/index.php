@@ -16,7 +16,7 @@ if ($usuario_id) {
         if ($usuario) {
             $nombre_usuario = htmlspecialchars($usuario['nombre_usuario']);
             // Constructor de la ruta de la imagen del usuario
-            $usuario_imagen = $usuario['imagen'] ? "../../backend/perfil/" . htmlspecialchars($usuario['imagen']) . "?v=" . time() : "https://i.pravatar.cc/150?img=$usuario_id";
+            $usuario_imagen = $usuario['imagen'] ? "../../backend/perfil/" . htmlspecialchars($usuario['imagen']) . "?v=" . time() : "./img/default-avatar.png";
         }
 
         // Contar notificaciones no leídas
