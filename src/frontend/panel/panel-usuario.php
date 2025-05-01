@@ -32,7 +32,7 @@ try {
     $ultima_conexion = $usuario['ultima_conexion']
         ? date('d \d\e F, Y', strtotime($usuario['ultima_conexion']))
         : 'Sin registro';
-    $imagen_perfil = $usuario['imagen'] ? "../../backend/perfil/" . $usuario['imagen'] . "?v=" . time() : 'https://i.pravatar.cc/150?img=12';
+    $imagen_perfil = $usuario['imagen'] ? "../../backend/perfil/" . $usuario['imagen'] . "?v=" . time() : './img/default-avatar.png';
 
     // Contar notificaciones no leídas
     $query = "SELECT COUNT(*) FROM notificaciones WHERE usuario_id = :user_id AND leida = FALSE";
@@ -136,19 +136,6 @@ try {
 .password-requirements-checklist .not-fulfilled {
     color: #ff4d4d; /* Rojo para requisitos no cumplidos */
 }
-/* Estilo para el botón Añadir en etiquetas */
-#add-tag-button {
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-#add-tag-button:hover {
-    background-color: #0056b3;
-}
     </style>
 </head>
 
@@ -228,6 +215,8 @@ try {
                         <span class="main-tab__description">Tus recursos y aportes</span>
                     </div>
                 </button>
+               
+                
                 <button class="main-tab" data-tab="perfil">
                     <div class="main-tab__icon">
                         <i class="fas fa-user"></i>
@@ -291,20 +280,20 @@ try {
                             <button class="btn btn--primary" id="open-upload-modal"><i class="fas fa-plus"></i> Nuevo aporte</button>
                         </div>
                         <div id="upload-modal" class="modal">
-                        <div class="modal-content">
-                        <span class="close" id="close-upload-modal">×</span>
-                        <h3 id="modal-title">Subir Nuevo Recurso</h3>
-                        <form id="upload-resource-form" enctype="multipart/form-data">
-                        <input type="hidden" id="resource-id" name="resource_id"> <!-- Agregar este campo para almacenar el ID del recurso al editar -->
-                        <div class="form-group">
-                        <label for="resource-title">Título *</label>
-                        <input type="text" id="resource-title" name="title" required>
-                    </div>
-                    <div class="form-group">
-                    <label for="resource-description">Descripción</label>
-                    <textarea id="resource-description" name="description" rows="3"></textarea>
-                </div>
-                <div class="form-group">
+    <div class="modal-content">
+        <span class="close" id="close-upload-modal">×</span>
+        <h3 id="modal-title">Subir Nuevo Recurso</h3>
+        <form id="upload-resource-form" enctype="multipart/form-data">
+            <input type="hidden" id="resource-id" name="resource_id"> <!-- Agregar este campo para almacenar el ID del recurso al editar -->
+            <div class="form-group">
+                <label for="resource-title">Título *</label>
+                <input type="text" id="resource-title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="resource-description">Descripción</label>
+                <textarea id="resource-description" name="description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
                 <label for="resource-author">Autor *</label>
                 <input type="text" id="resource-author" name="author" required>
             </div>
@@ -344,14 +333,14 @@ try {
                 <input type="hidden" id="selected-categories" name="categories">
             </div>
             <div class="form-group">
-            <label for="tag-input">Etiquetas Personalizadas (opcional):</label>
-            <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="text" id="tag-input" placeholder="Escribe una etiqueta y presiona Enter, coma o Añadir">
-            <button type="button" id="add-tag-button">Añadir</button>
-        </div>
-        <div id="custom-tags" style="margin-top: 10px;"></div>
-        <input type="hidden" id="selected-tags" name="tags">
-    </div>
+                <label>Etiquetas Personalizadas (opcional)</label>
+                <div class="custom-tag-input">
+                    <input type="text" id="custom-tag-input" placeholder="Escribe una etiqueta y presiona Enter">
+                    <button type="button" id="add-custom-tag">Añadir</button>
+                </div>
+                <div id="custom-tags" class="custom-tags"></div>
+                <input type="hidden" id="selected-tags" name="tags">
+            </div>
             <div class="form-group">
                 <label for="resource-publication-date">Fecha de Publicación</label>
                 <input type="date" id="resource-publication-date" name="publication_date">
@@ -432,7 +421,265 @@ try {
                     </div>
                 </div>
             </section>
-            
+
+            <section id="comunidad" class="tab-section">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="foro">Foro</button>
+                    <button class="sub-tab" data-subtab="grupos">Mis Grupos</button>
+                    <button class="sub-tab" data-subtab="eventos">Eventos</button>
+                    <button class="sub-tab" data-subtab="mensajes">Mensajes</button>
+                </div>
+                <div class="sub-content">
+                    <div id="foro" class="sub-panel active">
+                        <div class="panel-header-secondary">
+                            <h2>Foro de Discusión</h2>
+                            <p>Participa en conversaciones sobre temas de interés</p>
+                        </div>
+                        <div class="action-bar">
+                            <a href="#" class="btn btn--primary"><i class="fas fa-plus"></i> Nuevo tema</a>
+                            <div class="search-mini">
+                                <input type="text" placeholder="Buscar en el foro...">
+                                <button><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                        <div class="forum-topics">
+                            <div class="forum-topic">
+                                <div class="forum-topic__icon">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="forum-topic__content">
+                                    <h3 class="forum-topic__title">¿Cuál es el mejor framework para desarrollo web en 2025?</h3>
+                                    <div class="forum-topic__meta">
+                                        <span><i class="fas fa-user"></i> Iniciado por: Laura Pérez</span>
+                                        <span><i class="fas fa-calendar-alt"></i> 15/04/2025</span>
+                                        <span><i class="fas fa-comments"></i> 24 respuestas</span>
+                                    </div>
+                                    <div class="forum-topic__tags">
+                                        <span class="tag">Desarrollo web</span>
+                                        <span class="tag">Frameworks</span>
+                                        <span class="tag">Debate</span>
+                                    </div>
+                                </div>
+                                <div class="forum-topic__activity">
+                                    <div class="activity-indicator high"></div>
+                                    <span>Activo</span>
+                                </div>
+                            </div>
+                            <div class="forum-topic">
+                                <div class="forum-topic__icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="forum-topic__content">
+                                    <h3 class="forum-topic__title">Recursos recomendados para aprender Inteligencia Artificial</h3>
+                                    <div class="forum-topic__meta">
+                                        <span><i class="fas fa-user"></i> Iniciado por: Javier López</span>
+                                        <span><i class="fas fa-calendar-alt"></i> 10/04/2025</span>
+                                        <span><i class="fas fa-comments"></i> 18 respuestas</span>
+                                    </div>
+                                    <div class="forum-topic__tags">
+                                        <span class="tag">IA</span>
+                                        <span class="tag">Aprendizaje</span>
+                                        <span class="tag">Recursos</span>
+                                    </div>
+                                </div>
+                                <div class="forum-topic__activity">
+                                    <div class="activity-indicator medium"></div>
+                                    <span>Moderado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="grupos" class="sub-panel">
+                        <div class="panel-header-secondary">
+                            <h2>Mis Grupos</h2>
+                            <p>Grupos de estudio y colaboración a los que perteneces</p>
+                        </div>
+                        <div class="action-bar">
+                            <a href="#" class="btn btn--primary"><i class="fas fa-plus"></i> Crear grupo</a>
+                            <a href="#" class="btn btn--outline"><i class="fas fa-search"></i> Explorar grupos</a>
+                        </div>
+                        <div class="groups-grid">
+                            <div class="group-card">
+                                <div class="group-card__header">
+                                    <img src="https://img.freepik.com/free-vector/gradient-network-connection-background_23-2148865392.jpg" alt="Desarrolladores Full Stack" class="group-card__image">
+                                </div>
+                                <div class="group-card__content">
+                                    <h3 class="group-card__title">Desarrolladores Full Stack</h3>
+                                    <p class="group-card__description">Grupo para compartir conocimientos y resolver dudas sobre desarrollo web full stack.</p>
+                                    <div class="group-card__meta">
+                                        <span><i class="fas fa-users"></i> 28 miembros</span>
+                                        <span><i class="fas fa-calendar-alt"></i> Creado: 01/03/2025</span>
+                                    </div>
+                                    <div class="group-card__actions">
+                                        <a href="#" class="btn btn--primary"><i class="fas fa-sign-in-alt"></i> Entrar</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <div class="group-card__header">
+                                    <img src="https://img.freepik.com/free-vector/gradient-technology-background_23-2149171134.jpg" alt="Ciencia de Datos" class="group-card__image">
+                                </div>
+                                <div class="group-card__content">
+                                    <h3 class="group-card__title">Ciencia de Datos</h3>
+                                    <p class="group-card__description">Comunidad enfocada en análisis de datos, machine learning y visualización.</p>
+                                    <div class="group-card__meta">
+                                        <span><i class="fas fa-users"></i> 42 miembros</span>
+                                        <span><i class="fas fa-calendar-alt"></i> Creado: 15/02/2025</span>
+                                    </div>
+                                    <div class="group-card__actions">
+                                        <a href="#" class="btn btn--primary"><i class="fas fa-sign-in-alt"></i> Entrar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="eventos" class="sub-panel">
+                        <div class="panel-header-secondary">
+                            <h2>Eventos</h2>
+                            <p>Próximos eventos y webinars de la comunidad</p>
+                        </div>
+                        <div class="events-list">
+                            <div class="event-card">
+                                <div class="event-card__date">
+                                    <div class="event-date">
+                                        <span class="event-date__day">25</span>
+                                        <span class="event-date__month">ABR</span>
+                                    </div>
+                                </div>
+                                <div class="event-card__content">
+                                    <h3 class="event-card__title">Webinar: Tendencias en Desarrollo Web 2025</h3>
+                                    <p class="event-card__description">Descubre las últimas tendencias y tecnologías que están definiendo el desarrollo web este año.</p>
+                                    <div class="event-card__meta">
+                                        <span><i class="fas fa-clock"></i> 18:00 - 19:30</span>
+                                        <span><i class="fas fa-video"></i> Online</span>
+                                        <span><i class="fas fa-user"></i> Ponente: María Rodríguez</span>
+                                    </div>
+                                    <div class="event-card__actions">
+                                        <a href="#" class="btn btn--primary"><i class="fas fa-calendar-plus"></i> Inscribirme</a>
+                                        <a href="#" class="btn btn--outline"><i class="fas fa-info-circle"></i> Más información</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="event-card">
+                                <div class="event-card__date">
+                                    <div class="event-date">
+                                        <span class="event-date__day">03</span>
+                                        <span class="event-date__month">MAY</span>
+                                    </div>
+                                </div>
+                                <div class="event-card__content">
+                                    <h3 class="event-card__title">Taller: Introducción a Docker y Kubernetes</h3>
+                                    <p class="event-card__description">Taller práctico para aprender a utilizar contenedores y orquestarlos con Kubernetes.</p>
+                                    <div class="event-card__meta">
+                                        <span><i class="fas fa-clock"></i> 10:00 - 14:00</span>
+                                        <span><i class="fas fa-map-marker-alt"></i> Campus Central</span>
+                                        <span><i class="fas fa-user"></i> Instructor: Carlos Vega</span>
+                                    </div>
+                                    <div class="event-card__actions">
+                                        <a href="#" class="btn btn--primary"><i class="fas fa-calendar-plus"></i> Inscribirme</a>
+                                        <a href="#" class="btn btn--outline"><i class="fas fa-info-circle"></i> Más información</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mensajes" class="sub-panel">
+                        <div class="panel-header-secondary">
+                            <h2>Mensajes</h2>
+                            <p>Tus conversaciones con otros miembros de la comunidad</p>
+                        </div>
+                        <div class="messages-container">
+                            <div class="messages-sidebar">
+                                <div class="messages-search">
+                                    <input type="text" placeholder="Buscar conversaciones...">
+                                </div>
+                                <div class="conversation-list">
+                                    <div class="conversation-item active">
+                                        <div class="conversation-item__avatar">
+                                            <img src="https://i.pravatar.cc/150?img=32" alt="Laura Pérez">
+                                            <span class="status-indicator online"></span>
+                                        </div>
+                                        <div class="conversation-item__content">
+                                            <h4>Laura Pérez</h4>
+                                            <p>Gracias por compartir ese recurso...</p>
+                                        </div>
+                                        <div class="conversation-item__meta">
+                                            <span class="time">12:45</span>
+                                            <span class="unread">2</span>
+                                        </div>
+                                    </div>
+                                    <div class="conversation-item">
+                                        <div class="conversation-item__avatar">
+                                            <img src="https://i.pravatar.cc/150?img=68" alt="Miguel Torres">
+                                            <span class="status-indicator offline"></span>
+                                        </div>
+                                        <div class="conversation-item__content">
+                                            <h4>Miguel Torres</h4>
+                                            <p>¿Viste el nuevo curso de React?</p>
+                                        </div>
+                                        <div class="conversation-item__meta">
+                                            <span class="time">Ayer</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="messages-main">
+                                <div class="messages-header">
+                                    <div class="contact-info">
+                                        <img src="https://i.pravatar.cc/150?img=32" alt="Laura Pérez" class="contact-avatar">
+                                        <div>
+                                            <h3>Laura Pérez</h3>
+                                            <span class="status">En línea</span>
+                                        </div>
+                                    </div>
+                                    <div class="messages-actions">
+                                        <button class="icon-button"><i class="fas fa-phone"></i></button>
+                                        <button class="icon-button"><i class="fas fa-video"></i></button>
+                                        <button class="icon-button"><i class="fas fa-info-circle"></i></button>
+                                    </div>
+                                </div>
+                                <div class="messages-body">
+                                    <div class="message-date">
+                                        <span>Hoy</span>
+                                    </div>
+                                    <div class="message received">
+                                        <div class="message__avatar">
+                                            <img src="https://i.pravatar.cc/150?img=32" alt="Laura Pérez">
+                                        </div>
+                                        <div class="message__content">
+                                            <p>Hola Carlos, ¿cómo estás? Vi que compartiste un recurso sobre SQL avanzado.</p>
+                                            <span class="message__time">11:30</span>
+                                        </div>
+                                    </div>
+                                    <div class="message sent">
+                                        <div class="message__content">
+                                            <p>¡Hola Laura! Sí, es un material que preparé para el grupo de bases de datos.</p>
+                                            <span class="message__time">11:45</span>
+                                        </div>
+                                    </div>
+                                    <div class="message received">
+                                        <div class="message__avatar">
+                                            <img src="https://i.pravatar.cc/150?img=32" alt="Laura Pérez">
+                                        </div>
+                                        <div class="message__content">
+                                            <p>Está muy completo, gracias por compartir ese recurso. Me ha ayudado mucho con mi proyecto.</p>
+                                            <span class="message__time">12:45</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="messages-footer">
+                                    <button class="icon-button"><i class="fas fa-paperclip"></i></button>
+                                    <input type="text" placeholder="Escribe un mensaje...">
+                                    <button class="send-button"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="perfil" class="tab-section">
                 <div class="sub-tabs">
                     <button class="sub-tab active" data-subtab="datos-personales">Datos Personales</button>
@@ -795,7 +1042,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadUserFavorites();
 
     // Definir variables del modal
-
     const modal = document.getElementById('upload-modal');
     const modalTitle = document.getElementById('modal-title');
     const openModalBtn = document.getElementById('open-upload-modal');
@@ -825,40 +1071,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedCategoriesInput = document.getElementById('selected-categories');
     const selectedTagsInput = document.getElementById('selected-tags');
 
-    const tagInput = document.getElementById('tag-input');
-    const addTagButton = document.getElementById('add-tag-button');
-
-    // Verificar existencia de elementos
-
-    if (!tagInput || !customTagsContainer || !selectedTagsInput || !addTagButton) {
-        console.error('Error: No se encontraron los elementos de etiquetas (tag-input, custom-tags, selected-tags, add-tag-button).');
-    }
-
-    // Manejar etiquetas personalizadas con Enter o coma
-
-    tagInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' || e.key === ',') {
-            e.preventDefault();
-            const tagName = this.value.trim();
-            if (tagName) {
-                addTagToContainer(tagName);
-                this.value = '';
-            }
-        }
-    });
-      // Manejar clic en el botón "Añadir"
-
-      addTagButton.addEventListener('click', function() {
-        const tagName = tagInput.value.trim();
-        if (tagName) {
-            addTagToContainer(tagName);
-            tagInput.value = '';
-        }
-    });
     let selectedCategories = [];
     let customTags = [];
     let isEditing = false;
 
+    // Verificar que los elementos existan
+    if (!modal || !modalTitle || !submitButton) {
+        console.error('Uno o más elementos del modal no se encontraron en el DOM');
+        return;
+    }
 
     openModalBtn.addEventListener('click', function() {
         isEditing = false;
@@ -1027,47 +1248,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 }
 
-    // Función para agregar etiquetas personalizadas
-        function addTagToContainer(tagName) {
-            try {
-                tagName = tagName.trim();
-                if (!tagName) {
-                    console.warn('Intento de agregar una etiqueta vacía.');
-                    return;
-                }
-                if (customTags.includes(tagName)) {
-                    console.warn(`La etiqueta "${tagName}" ya existe.`);
-                    return;
-                }
-    
-                if (tagName.length > 50) {
-                    alert('Las etiquetas no pueden tener más de 50 caracteres.');
-                    return;
-                }
-                if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s-]+$/.test(tagName)) {
-                    alert('Las etiquetas solo pueden contener letras, números, espacios o guiones.');
-                    return;
-                }
-                customTags.push(tagName);
-                const tagElement = document.createElement('span');
-                tagElement.className = 'tag';
-                tagElement.textContent = tagName;
-                tagElement.addEventListener('click', function() {
-                    const index = customTags.indexOf(tagName);
-                    if (index !== -1) {
-                        customTags.splice(index, 1);
-                        tagElement.remove();
-                        selectedTagsInput.value = JSON.stringify(customTags);
-                    }
-                });
-                customTagsContainer.appendChild(tagElement);
+    function addCustomTag() {
+        const input = document.getElementById('custom-tag-input');
+        const tagName = input.value.trim();
+        if (tagName && !customTags.includes(tagName)) {
+            customTags.push(tagName);
+            const tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.textContent = tagName;
+            tag.addEventListener('click', function() {
+                const index = customTags.indexOf(tagName);
+                customTags.splice(index, 1);
+                this.remove();
                 selectedTagsInput.value = JSON.stringify(customTags);
-                console.log(`Etiqueta "${tagName}" añadida. customTags:`, customTags);
-            } catch (error) {
-                console.error('Error al agregar la etiqueta:', error);
-                alert('Error al agregar la etiqueta. Revisa la consola para más detalles.');
-            }
+            });
+            customTagsContainer.appendChild(tag);
+            selectedTagsInput.value = JSON.stringify(customTags);
+            input.value = '';
         }
+    }
 
     function loadGroups() {
         fetch('../../backend/gestionRecursos/get_user_groups.php')
