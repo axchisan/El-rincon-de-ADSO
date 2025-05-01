@@ -228,6 +228,20 @@ try {
         .resource-document__download {
             text-align: center;
         }
+
+        /* Estilo para el botón Añadir en etiquetas */
+        #add-tag-button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #add-tag-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -592,9 +606,12 @@ try {
                 </div>
                 
                 <div class="form-group">
-                    <label for="tag-input">Etiquetas (separadas por comas):</label>
-                    <input type="text" id="tag-input" placeholder="Escribe etiquetas y presiona Enter">
-                    <div id="custom-tags"></div>
+                    <label for="tag-input">Etiquetas Personalizadas (opcional):</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" id="tag-input" placeholder="Escribe una etiqueta y presiona Enter, coma o Añadir">
+                        <button type="button" id="add-tag-button">Añadir</button>
+                    </div>
+                    <div id="custom-tags" style="margin-top: 10px;"></div>
                     <input type="hidden" id="selected-tags" name="tags">
                 </div>
                 
@@ -731,9 +748,15 @@ try {
             const tagInput = document.getElementById('tag-input');
             const customTagsContainer = document.getElementById('custom-tags');
             const selectedTagsInput = document.getElementById('selected-tags');
-            
+            const addTagButton = document.getElementById('add-tag-button');
+
             let selectedCategories = [];
             let customTags = [];
+
+            // Verificar existencia de elementos
+            if (!tagInput || !customTagsContainer || !selectedTagsInput || !addTagButton) {
+                console.error('Error: No se encontraron los elementos de etiquetas (tag-input, custom-tags, selected-tags, add-tag-button).');
+            }
             
             // Cerrar modal
             closeModal.addEventListener('click', closeModalFunction);
@@ -808,26 +831,65 @@ try {
                 }
             });
             
-            // Manejar etiquetas personalizadas
+            // Función para agregar una etiqueta al contenedor
+            function addTagToContainer(tagName) {
+                try {
+                    tagName = tagName.trim();
+                    if (!tagName) {
+                        console.warn('Intento de agregar una etiqueta vacía.');
+                        return;
+                    }
+                    if (customTags.includes(tagName)) {
+                        console.warn(`La etiqueta "${tagName}" ya existe.`);
+                        return;
+                    }
+                    if (tagName.length > 50) {
+                        alert('Las etiquetas no pueden tener más de 50 caracteres.');
+                        return;
+                    }
+                    if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s-]+$/.test(tagName)) {
+                        alert('Las etiquetas solo pueden contener letras, números, espacios o guiones.');
+                        return;
+                    }
+                    customTags.push(tagName);
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'tag';
+                    tagElement.textContent = tagName;
+                    tagElement.addEventListener('click', function() {
+                        const index = customTags.indexOf(tagName);
+                        if (index !== -1) {
+                            customTags.splice(index, 1);
+                            tagElement.remove();
+                            selectedTagsInput.value = JSON.stringify(customTags);
+                        }
+                    });
+                    customTagsContainer.appendChild(tagElement);
+                    selectedTagsInput.value = JSON.stringify(customTags);
+                    console.log(`Etiqueta "${tagName}" añadida. customTags:`, customTags);
+                } catch (error) {
+                    console.error('Error al agregar la etiqueta:', error);
+                    alert('Error al agregar la etiqueta. Revisa la consola para más detalles.');
+                }
+            }
+
+            // Manejar etiquetas personalizadas con Enter o coma
             tagInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' || e.key === ',') {
                     e.preventDefault();
                     const tagName = this.value.trim();
-                    if (tagName && !customTags.includes(tagName)) {
-                        customTags.push(tagName);
-                        const tagElement = document.createElement('span');
-                        tagElement.className = 'tag';
-                        tagElement.textContent = tagName;
-                        tagElement.addEventListener('click', function() {
-                            const index = customTags.indexOf(tagName);
-                            customTags.splice(index, 1);
-                            this.remove();
-                            selectedTagsInput.value = JSON.stringify(customTags);
-                        });
-                        customTagsContainer.appendChild(tagElement);
+                    if (tagName) {
+                        addTagToContainer(tagName);
                         this.value = '';
-                        selectedTagsInput.value = JSON.stringify(customTags);
                     }
+                }
+            });
+
+            // Manejar clic en el botón "Añadir"
+            addTagButton.addEventListener('click', function() {
+                const tagName = tagInput.value.trim();
+                if (tagName) {
+                    addTagToContainer(tagName);
+                    tagInput.value = '';
                 }
             });
             
@@ -921,9 +983,11 @@ try {
                                     tagElement.textContent = tagName;
                                     tagElement.addEventListener('click', function() {
                                         const index = customTags.indexOf(tagName);
-                                        customTags.splice(index, 1);
-                                        this.remove();
-                                        selectedTagsInput.value = JSON.stringify(customTags);
+                                        if (index !== -1) {
+                                            customTags.splice(index, 1);
+                                            this.remove();
+                                            selectedTagsInput.value = JSON.stringify(customTags);
+                                        }
                                     });
                                     customTagsContainer.appendChild(tagElement);
                                 }
