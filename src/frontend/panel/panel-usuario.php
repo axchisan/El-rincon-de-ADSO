@@ -32,7 +32,7 @@ try {
     $ultima_conexion = $usuario['ultima_conexion']
         ? date('d \d\e F, Y', strtotime($usuario['ultima_conexion']))
         : 'Sin registro';
-    $imagen_perfil = $usuario['imagen'] ? "../../backend/perfil/" . $usuario['imagen'] . "?v=" . time() : 'https://i.pravatar.cc/150?img=12';
+    $imagen_perfil = $usuario['imagen'] ? "../../backend/perfil/" . $usuario['imagen'] . "?v=" . time() : './img/default-avatar.png';
 
     // Contar notificaciones no leídas
     $query = "SELECT COUNT(*) FROM notificaciones WHERE usuario_id = :user_id AND leida = FALSE";
