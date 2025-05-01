@@ -215,6 +215,19 @@ try {
             margin-top: 10px;
             display: none;
         }
+
+        /* Estilos para el visor de PDF */
+        .resource-document__viewer {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .resource-document__download {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -327,8 +340,11 @@ try {
                             <?php endif; ?>
                             
                             <?php if (!empty($documento['url_archivo'])): ?>
+                            <div class="resource-document__viewer">
+                                <embed src="<?php echo htmlspecialchars($documento['url_archivo']); ?>" type="application/pdf" width="100%" height="100%">
+                            </div>
                             <div class="resource-document__download">
-                                <a href="<?php echo htmlspecialchars($documento['url_archivo']); ?>" target="_blank" class="btn btn--primary">
+                                <a href="<?php echo htmlspecialchars($documento['url_archivo']); ?>" download class="btn btn--primary">
                                     <i class="fas fa-download"></i> Descargar Libro
                                 </a>
                             </div>
