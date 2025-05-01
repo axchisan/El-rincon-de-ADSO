@@ -32,6 +32,12 @@ try {
         exit();
     }
     
+    // Validar que el tipo proporcionado en la URL coincide con el tipo del documento
+    if ($tipo !== $documento['tipo']) {
+        header("Location: ../repositorio/repositorio.php");
+        exit();
+    }
+    
     // Verificar permisos de acceso
     if ($documento['visibilidad'] === 'Private' && $documento['autor_id'] != $usuario_id) {
         header("Location: ../repositorio/repositorio.php");
@@ -205,20 +211,24 @@ if ($tipo === 'libro') {
     </style>
 </head>
 <body>
-    <div class="file-viewer">
-        <div class="file-viewer__toolbar">
-            <h1 class="file-viewer__title"><?php echo htmlspecialchars($documento['titulo']); ?></h1>
-            <div class="file-viewer__actions">
-                <?php if (!empty($documento['url_archivo']) && pathinfo($documento['url_archivo'], PATHINFO_EXTENSION) === 'pdf'): ?>
-                <a href="<?php echo htmlspecialchars($documento['url_archivo']); ?>" class="file-viewer__btn" download>
-                    <i class="fas fa-download"></i> Descargar
-                </a>
-                <?php endif; ?>
-                <a href="<?php echo $return_page; ?>?id=<?php echo $documento_id; ?>" class="file-viewer__btn">
-                    <i class="fas fa-arrow-left"></i> Volver
-                </a>
-            </div>
-        </div>
+<div class="file-viewer__toolbar">
+    <h1 class="file-viewer__title"><?php echo htmlspecialchars($documento['titulo']); ?></h1>
+    <div class="file-viewer__actions">
+        <?php if (!empty($documento['url_archivo']) && pathinfo($documento['url_archivo'], PATHINFO_EXTENSION) === 'pdf'): ?>
+            <a href="<?php echo htmlspecialchars($documento['url_archivo']); ?>" class="file-viewer__btn" download>
+                <i class="fas fa-download"></i> Descargar
+            </a>
+        <?php endif; ?>
+        <?php if ($usuario_id == $documento['autor_id']): ?>
+            <a href="<?php echo $return_page; ?>?id=<?php echo $documento_id; ?>&tipo=<?php echo htmlspecialchars($tipo); ?>" class="file-viewer__btn edit-resource">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+        <?php endif; ?>
+        <a href="<?php echo $return_page; ?>?id=<?php echo $documento_id; ?>&tipo=<?php echo htmlspecialchars($tipo); ?>" class="file-viewer__btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
         
         <div class="file-viewer__content">
             <?php 

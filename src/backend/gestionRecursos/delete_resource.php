@@ -14,8 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Leer el cuerpo JSON de la solicitud
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
+
 $usuario_id = $_SESSION['usuario_id'];
-$documento_id = isset($_POST['documento_id']) ? (int)$_POST['documento_id'] : 0;
+$documento_id = isset($data['documento_id']) ? (int)$data['documento_id'] : 0;
+
+error_log("Intentando eliminar recurso con ID: $documento_id"); // Depuración
 
 if ($documento_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'ID de recurso inválido.']);
@@ -42,19 +48,31 @@ try {
     }
 
     // Eliminar archivos asociados
-    if (file_exists($resource['portada'])) {
+    if ($resource['portada'] && file_exists($resource['portada'])) {
         unlink($resource['portada']);
     }
     if ($resource['url_archivo'] && file_exists(__DIR__ . '/../../' . $resource['url_archivo'])) {
         unlink(__DIR__ . '/../../' . $resource['url_archivo']);
     }
 
+    // Eliminar asociaciones con categorías
+    $query = "DELETE FROM documento_categorias WHERE documento_id = :documento_id";
+    $stmt = $db->prepare($query);
+    $stmt->execute([':documento_id' => $documento_id]);
+
+    // Eliminar asociaciones con etiquetas
+    $query = "DELETE FROM documento_etiqueta WHERE documento_id = :documento_id";
+    $stmt = $db->prepare($query);
+    $stmt->execute([':documento_id' => $documento_id]);
+
+    // Eliminar el recurso
     $query = "DELETE FROM documentos WHERE id = :documento_id";
     $stmt = $db->prepare($query);
     $stmt->execute([':documento_id' => $documento_id]);
 
     echo json_encode(['success' => true, 'message' => 'Recurso eliminado exitosamente.']);
 } catch (PDOException $e) {
+    error_log("Error al eliminar recurso: " . $e->getMessage()); // Depuración
     echo json_encode(['success' => false, 'message' => 'Error al eliminar el recurso: ' . $e->getMessage()]);
 }
 ?>
