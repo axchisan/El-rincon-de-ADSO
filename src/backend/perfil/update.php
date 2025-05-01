@@ -103,7 +103,7 @@ try {
         $imagen_nombre = null;
         if ($imagen && $imagen['error'] === UPLOAD_ERR_OK) {
             $imagen_tmp = $imagen['tmp_name'];
-            $imagen_nombre = uniqid() . '-' . basename($imagen['name']);
+            $imagen_nombre = 'profile_' . uniqid() . '-' . basename($imagen['name']);
             $imagen_ruta = "uploads/" . $imagen_nombre;
 
             $extension = strtolower(pathinfo($imagen_nombre, PATHINFO_EXTENSION));
@@ -133,9 +133,12 @@ try {
             $stmt->execute([':id' => $user_id]);
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($usuario['imagen'] && file_exists("uploads/" . $usuario['imagen'])) {
-                unlink("uploads/" . $usuario['imagen']);
+            // Usar la ruta completa almacenada en la base de datos
+            if ($usuario['imagen'] && file_exists($usuario['imagen'])) {
+                unlink($usuario['imagen']);
             }
+
+            $imagen_nombre = "uploads/" . $imagen_nombre;
         }
 
         // Actualizar datos en la base de datos
