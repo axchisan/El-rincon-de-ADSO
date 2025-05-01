@@ -4,6 +4,7 @@ require_once "../../database/conexionDB.php";
 
 // Verificar si se proporcionó un ID de documento
 if (!isset($_GET['id']) || empty($_GET['id'])) {
+    echo "Redirigiendo porque no se proporcionó un ID válido.<br>";
     header("Location: ../repositorio/repositorio.php");
     exit();
 }
@@ -33,17 +34,20 @@ try {
     $stmt->execute([':documento_id' => $documento_id]);
     $documento = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if (!$documento || $documento['tipo'] !== 'documento') {
+    if (!$documento) {
+        echo "Redirigiendo porque no se encontró el documento con ID $documento_id.<br>";
         header("Location: ../repositorio/repositorio.php");
         exit();
     }
     
-    // Verificar permisos de acceso
+    // Verificar permisos de acceso (visibilidad privada)
     if ($documento['visibilidad'] === 'Private' && $documento['autor_id'] != $usuario_id) {
+        echo "Redirigiendo porque el documento es privado y no eres el autor (usuario_id: $usuario_id, autor_id: {$documento['autor_id']}).<br>";
         header("Location: ../repositorio/repositorio.php");
         exit();
     }
     
+    // Verificar permisos de acceso (visibilidad de grupo)
     if ($documento['visibilidad'] === 'Group' && $usuario_id) {
         $query = "SELECT COUNT(*) FROM usuario_grupo WHERE usuario_id = :usuario_id AND grupo_id = :grupo_id";
         $stmt = $db->prepare($query);
@@ -51,6 +55,7 @@ try {
         $es_miembro = $stmt->fetchColumn();
         
         if (!$es_miembro) {
+            echo "Redirigiendo porque el documento es de grupo y no eres miembro del grupo (usuario_id: $usuario_id, grupo_id: {$documento['grupo_id']}).<br>";
             header("Location: ../repositorio/repositorio.php");
             exit();
         }
@@ -215,6 +220,29 @@ try {
             margin-top: 10px;
             display: none;
         }
+
+        /* Estilos para el visor de PDF */
+        .resource-document__viewer {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* Estilos para imágenes */
+        .resource-document__image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .resource-document__download {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -302,7 +330,7 @@ try {
                 
                 <div class="resource-header__meta">
                     <div class="resource-type">
-                        <span class="badge badge--primary">Documento</span>
+                        <span class="badge badge--primary"><?php echo htmlspecialchars(ucfirst($documento['tipo'])); ?></span>
                         <?php foreach ($documento['categorias'] as $categoria): ?>
                         <span class="badge"><?php echo htmlspecialchars($categoria); ?></span>
                         <?php endforeach; ?>
@@ -320,22 +348,39 @@ try {
             <div class="resource-content">
                 <div class="resource-document">
                     <div class="resource-section">
-                        <h2 class="resource-section__title">Documento</h2>
+                        <h2 class="resource-section__title"><?php echo htmlspecialchars(ucfirst($documento['tipo'])); ?></h2>
                         <div class="resource-document__container">
                             <?php if (!empty($documento['portada'])): ?>
                             <img src="<?php echo htmlspecialchars($documento['portada']); ?>" alt="<?php echo htmlspecialchars($documento['titulo']); ?>" class="resource-document__cover">
                             <?php endif; ?>
                             
                             <?php if (!empty($documento['url_archivo'])): ?>
-                            <div class="resource-document__download">
-                                <a href="<?php echo htmlspecialchars($documento['url_archivo']); ?>" target="_blank" class="btn btn--primary">
-                                    <i class="fas fa-download"></i> Descargar Documento
-                                </a>
-                            </div>
+                                <?php
+                                // Determinar el tipo de archivo según la extensión
+                                $extension = strtolower(pathinfo($documento['url_archivo'], PATHINFO_EXTENSION));
+                                $is_image = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                $is_pdf = $extension === 'pdf';
+                                ?>
+                                
+                                <?php if ($is_image): ?>
+                                <div class="resource-document__image-container">
+                                    <img src="<?php echo htmlspecialchars($documento['url_archivo']); ?>" alt="<?php echo htmlspecialchars($documento['titulo']); ?>" class="resource-document__image">
+                                </div>
+                                <?php elseif ($is_pdf): ?>
+                                <div class="resource-document__viewer">
+                                    <embed src="<?php echo htmlspecialchars($documento['url_archivo']); ?>" type="application/pdf" width="100%" height="100%">
+                                </div>
+                                <?php endif; ?>
+                                
+                                <div class="resource-document__download">
+                                    <a href="<?php echo htmlspecialchars($documento['url_archivo']); ?>" download class="btn btn--primary">
+                                        <i class="fas fa-download"></i> Descargar Archivo
+                                    </a>
+                                </div>
                             <?php else: ?>
                             <div class="resource-document__no-file">
                                 <i class="fas fa-exclamation-circle resource-document__no-file-icon"></i>
-                                <p>No hay documento disponible para este recurso.</p>
+                                <p>No hay archivo disponible para este recurso.</p>
                             </div>
                             <?php endif; ?>
                         </div>
@@ -484,6 +529,7 @@ try {
                     <label for="resource-type">Tipo:</label>
                     <select id="resource-type" name="type" required>
                         <option value="documento">Documento</option>
+                        <option value="imagen">Imagen</option>
                         <option value="libro">Libro</option>
                         <option value="video">Video</option>
                     </select>
