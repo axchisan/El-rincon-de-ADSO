@@ -2,16 +2,24 @@
 session_start();
 require_once "../../database/conexionDB.php";
 
-
 session_regenerate_id(true);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $input_usuario = trim($_POST['usuario'] ?? ''); // Puede ser correo o nombre de usuario
+    $input_usuario = trim($_POST['usuario'] ?? '');
     $contrasena = trim($_POST['clave'] ?? '');
+    $errors = [];
 
-    if (empty($input_usuario) || empty($contrasena)) {
-        $error = "Por favor, completa todos los campos.";
-    } else {
+    // Validate inputs
+    if (empty($input_usuario)) {
+        $errors[] = "El campo usuario o correo es obligatorio.";
+        $_SESSION['field_error'] = 'usuario';
+    }
+    if (empty($contrasena)) {
+        $errors[] = "El campo contraseña es obligatorio.";
+        $_SESSION['field_error'] = 'clave';
+    }
+
+    if (empty($errors)) {
         try {
             $db = conexionDB::getConexion();
 
@@ -21,27 +29,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Verificar si el usuario existe y la contraseña es correcta
-            if ($usuario && password_verify($contrasena, $usuario['contrasena'])) {
-                $_SESSION['usuario_id'] = $usuario['id'];
-                $_SESSION['nombre_usuario'] = $usuario['nombre_usuario'];
-                $_SESSION['rol'] = $usuario['rol'];
+            if ($usuario) {
+                if (password_verify($contrasena, $usuario['contrasena'])) {
+                    $_SESSION['usuario_id'] = $usuario['id'];
+                    $_SESSION['nombre_usuario'] = $usuario['nombre_usuario'];
+                    $_SESSION['rol'] = $usuario['rol'];
 
-                // Redirigir según el rol
-                if ($usuario['rol'] === "user") {
-                    header("Location: ../../frontend/inicio/index.php");
-                } else if ($usuario['rol'] === "admin") {
-                    header("Location: ../../frontend/inicio/panel-admin.php"); //por si implementamos admins
+                    // Clear any previous errors
+                    unset($_SESSION['errors']);
+                    unset($_SESSION['field_error']);
+
+                    // Redirigir según el rol
+                    if ($usuario['rol'] === "user") {
+                        header("Location: ../../frontend/inicio/index.php");
+                    } else if ($usuario['rol'] === "admin") {
+                        header("Location: ../../frontend/inicio/panel-admin.php");
+                    }
+                    exit();
+                } else {
+                    $errors[] = "Contraseña incorrecta.";
+                    $_SESSION['field_error'] = 'clave';
                 }
-                exit();
             } else {
-                $error = "Usuario, correo o contraseña incorrectos.";
+                $errors[] = "Usuario o correo no encontrado.";
+                $_SESSION['field_error'] = 'usuario';
             }
         } catch (PDOException $e) {
-            $error = "Error al iniciar sesión: " . $e->getMessage();
+            $errors[] = "Error al iniciar sesión: " . $e->getMessage();
         }
     }
 
-    $_SESSION['error'] = $error;
+    $_SESSION['errors'] = $errors;
     header("Location: ../../frontend/login/login.php");
     exit();
 }

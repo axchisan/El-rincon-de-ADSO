@@ -1,3 +1,7 @@
+<?php
+session_start(); // Move session_start to the top before any output
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -5,7 +9,7 @@
   <meta charset="UTF-8">
   <title>Inicio de sesión</title>
   <link rel="icon" href="./img/icono.png" type="image/png">
-  <link rel="stylesheet" href="./css/estudiantes.css">
+  <link rel="stylesheet" href="./css/login.css">
   <link href="../lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -31,18 +35,21 @@
     <img src="img/logo.png" alt="Logo institucional" class="logo-login">
     <h4>Iniciar Sesión</h4>
     <?php
-    session_start();
-    if (isset($_SESSION['error'])) {
-      echo '<div style="color: red; text-align: center; margin-bottom: 10px;">' . htmlspecialchars($_SESSION['error']) . '</div>';
-      unset($_SESSION['error']);
+    if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])) {
+      echo '<div class="error-message"><ul>';
+      foreach ($_SESSION['errors'] as $error) {
+        echo '<li>' . htmlspecialchars($error) . '</li>';
+      }
+      echo '</ul></div>';
+      unset($_SESSION['errors']);
     }
     ?>
     <form action="../../backend/loginValidation/validar_login.php" method="POST" autocomplete="off">
       <label for="usuario">Usuario o Correo:</label>
-      <input type="text" name="usuario" id="usuario" required><br><br>
+      <input type="text" name="usuario" id="usuario" required class="<?php echo (isset($_SESSION['field_error']) && $_SESSION['field_error'] === 'usuario') ? 'input-error' : ''; ?>"><br><br>
 
       <label for="clave">Contraseña:</label>
-      <input type="password" name="clave" id="clave" required><br><br>
+      <input type="password" name="clave" id="clave" required class="<?php echo (isset($_SESSION['field_error']) && $_SESSION['field_error'] === 'clave') ? 'input-error' : ''; ?>"><br><br>
       <p style="text-align: center;">
         ¿No te has registrado?
         <a href="../register/registro.php" style="color: #007bff; text-decoration: none;">Registrate aquí</a>
