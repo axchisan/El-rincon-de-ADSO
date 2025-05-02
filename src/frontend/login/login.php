@@ -1,5 +1,5 @@
 <?php
-session_start(); // Move session_start to the top before any output
+session_start(); 
 ?>
 
 <!DOCTYPE html>
@@ -11,6 +11,21 @@ session_start(); // Move session_start to the top before any output
   <link rel="icon" href="./img/icono.png" type="image/png">
   <link rel="stylesheet" href="./css/login.css">
   <link href="../lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    .password-container {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #6c757d;
+    }
+  </style>
 </head>
 
 <body>
@@ -49,7 +64,11 @@ session_start(); // Move session_start to the top before any output
       <input type="text" name="usuario" id="usuario" required class="<?php echo (isset($_SESSION['field_error']) && $_SESSION['field_error'] === 'usuario') ? 'input-error' : ''; ?>"><br><br>
 
       <label for="clave">Contraseña:</label>
-      <input type="password" name="clave" id="clave" required class="<?php echo (isset($_SESSION['field_error']) && $_SESSION['field_error'] === 'clave') ? 'input-error' : ''; ?>"><br><br>
+      <div class="password-container">
+        <input type="password" name="clave" id="clave" required class="<?php echo (isset($_SESSION['field_error']) && $_SESSION['field_error'] === 'clave') ? 'input-error' : ''; ?>">
+        <i class="bi bi-eye toggle-password" id="togglePassword"></i>
+      </div><br><br>
+
       <p style="text-align: center;">
         ¿No te has registrado?
         <a href="../register/registro.php" style="color: #007bff; text-decoration: none;">Registrate aquí</a>
@@ -63,6 +82,16 @@ session_start(); // Move session_start to the top before any output
   </div>
 
   <script src="../lib/Bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const passwordInput = document.getElementById('clave');
+      const icon = this;
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      icon.classList.toggle('bi-eye');
+      icon.classList.toggle('bi-eye-slash');
+    });
+  </script>
 </body>
 
 </html>
