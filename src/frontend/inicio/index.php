@@ -39,7 +39,7 @@ if ($usuario_id) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Tu biblioteca digital al alcance de todos
 Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrarás todo lo necesario para fortalecer tus habilidades, expandir tus conocimientos y avanzar con confianza en tu camino como programador. Todo, reunido en un solo lugar.">
-    <title>El incon de ADSO</title>
+    <title>El Rincon de ADSO</title>
     <link rel="stylesheet" href="../repositorio/css/repositorio.css">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
@@ -270,7 +270,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                     <form id="add-comment-form" action="../../backend/comunidad/add_comment.php" method="POST">
                         <div class="form-group">
                             <label for="libro">Sobre:</label>
-                            <input type="text" id="libro" name="libro" placeholder="Nombre del libro" required>
+                            <input type="text" id="libro" name="libro" placeholder="Lo que quieres opinar" required>
                         </div>
                         <div class="form-group">
                             <label for="comentario">Comentario:</label>
