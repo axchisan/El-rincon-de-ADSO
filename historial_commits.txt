@@ -1,0 +1,170 @@
+13cbaa8 - axchisan, 87 minutes ago : agregado de ruta de foto por defecto en el panel de usuario
+1a74cea - axchisan, 88 minutes ago : Merge pull request #74 from axchisan/feature/backendGerardo
+f4c010b - axchisan, 89 minutes ago : ahora si cambios de gerardo aplicados en el panel de usuario
+f56ecdb - axchisan, 2 hours ago : Merge pull request #73 from axchisan/feature/backendGerardo
+d178fb4 - axchisan, 2 hours ago : reset panel usuario por conflicto de ramas
+7199742 - GroveLive, 2 hours ago : correcion de los editar y etiquetas
+533a5ac - axchisan, 2 hours ago : Merge pull request #72 from axchisan/feature/backendDuvan
+1c89b8b - axchisan, 2 hours ago : corregi el fotos de perfil por defecto en los apartados donde se ve el perfil
+3630da4 - axchisan, 2 hours ago : Merge pull request #71 from axchisan/feature/backendDuvan
+e44a731 - axchisan, 2 hours ago : actualizado editar perfil para que la ruta de la imagen se guarde correctamente
+1288001 - axchisan, 8 hours ago : Merge pull request #70 from axchisan/feature/backendGerardo
+421cfd1 - GroveLive, 8 hours ago : prueba de editar ver libros error de eiquetas
+959710d - axchisan, 19 hours ago : Merge pull request #69 from axchisan/feature/backendGerardo
+73f73e3 - GroveLive, 19 hours ago : correciones sobre los recursos
+c9683d7 - axchisan, 21 hours ago : Merge pull request #68 from axchisan/feature/backendGerardo
+d5b9f48 - GroveLive, 21 hours ago : modifique los botones de editar y eliminar en los repositorios para que sean funcionales
+bbde24b - axchisan, 23 hours ago : Merge pull request #67 from axchisan/feature/recursosLenis
+1308011 - garciam1111, 23 hours ago : agregando nuevos recursos
+2feea2a - axchisan, 24 hours ago : Merge pull request #66 from axchisan/feature/backendDuvan
+aabd0ce - axchisan, 24 hours ago : eliminacion mensaje de depuracion en el login
+491d89f - axchisan, 24 hours ago : Merge pull request #65 from axchisan/feature/backendDuvan
+8ee5d6a - axchisan, 24 hours ago : ruta de la database en el index
+7999d15 - axchisan, 26 hours ago : Merge pull request #63 from axchisan/feature/backendJhony
+9653319 - axchisan, 27 hours ago : Merge pull request #64 from axchisan/feature/backendDuvan
+69eba24 - axchisan, 27 hours ago : recupere la importacion de la base de datos en el index
+aef3fc8 - axchisan, 27 hours ago : Merge pull request #62 from axchisan/feature/backendDuvan
+ee07ee3 - axchisan, 27 hours ago : agregado index de raiz y redireccionamiento a la carpeta inicio
+b5f3b14 - axchisan, 28 hours ago : Merge pull request #61 from axchisan/feature/backendDuvan
+e1b7413 - axchisan, 28 hours ago : reset archivo railway.json
+13e3d31 - axchisan, 28 hours ago : Merge pull request #60 from axchisan/feature/backendDuvan
+78bc3e4 - axchisan, 28 hours ago : Añadir php-fpm a nixPkgs y ajustar permisos
+3ba8cb4 - axchisan, 28 hours ago : Merge pull request #59 from axchisan/feature/backendDuvan
+97143cf - axchisan, 28 hours ago : Crear php-fpm.conf y ajustar inicio de PHP-FPM
+a169cb8 - axchisan, 29 hours ago : Merge pull request #58 from axchisan/feature/backendDuvan
+512fe22 - axchisan, 29 hours ago : Cambiar nuevamente el  Root Directory a la raíz del proyecto y ajustar Nginx
+cd3dacf - axchisan, 29 hours ago : Merge pull request #57 from axchisan/feature/backendDuvan
+cf78831 - axchisan, 29 hours ago : Actualizar railway.json para usar Nginx y cambiar Root Directory a src
+15f53f4 - axchisan, 29 hours ago : Merge pull request #56 from axchisan/feature/backendDuvan
+81b5e44 - axchisan, 29 hours ago : test index sin database
+fef9488 - axchisan, 29 hours ago : Merge pull request #55 from axchisan/feature/backendDuvan
+024c126 - axchisan, 29 hours ago : correcion ruta database index.php
+dc72045 - axchisan, 31 hours ago : Merge pull request #54 from axchisan/feature/backendDuvan
+4e3ef1d - axchisan, 32 hours ago : Agregar railway.json para configurar el despliegue con src/frontend/inicio
+c4f40dc - axchisan, 32 hours ago : Merge pull request #53 from axchisan/feature/backendDuvan
+32c7493 - axchisan, 32 hours ago : agregada descripcion principal de la pagina en el index
+2ab709b - axchisan, 32 hours ago : Merge pull request #52 from axchisan/feature/backendDuvan
+1e6b0c5 - axchisan, 32 hours ago : modifique la conexion a la base de datos para usar variables de entorno que nos permitan conectar a la base de datos del servidor de despliegue
+061d58f - axchisan, 33 hours ago : Merge pull request #51 from axchisan/feature/backendGerardo
+5b4a9c4 - GroveLive, 33 hours ago : agregue lo del editar de recursos
+995222a - axchisan, 34 hours ago : Merge pull request #50 from axchisan/feature/frontendAngie
+1f492c2 - Angie G, 34 hours ago : Nuevos estilos en la sección de notificaciones, eventos y foro
+d672f69 - axchisan, 2 days ago : Merge pull request #49 from axchisan/feature/backendDuvan
+a83bce5 - axchisan, 2 days ago : solucionada la logica de agregar a favoritos y ver mas tarde en la pestaña repositorio
+25d6480 - axchisan, 2 days ago : Merge pull request #48 from axchisan/feature/backendDuvan
+2479041 - axchisan, 2 days ago : arreglando las cagadas de celeny
+c91498a - JHONY2909, 2 days ago : borre la comunidad en el panel de usuario
+0b69914 - axchisan, 2 days ago : Merge pull request #47 from axchisan/feature/frontendCeleny
+5e7893b - Celeny1997, 2 days ago : Agregue un registrarse en iniciar sesion
+58d203d - axchisan, 2 days ago : Merge pull request #46 from axchisan/feature/frontendCeleny
+368c60f - axchisan, 2 days ago : Merge pull request #45 from axchisan/feature/recursosLenis
+9fd470d - garciam1111, 2 days ago : nuevos recursos y ruta de cargar recursos corregida
+54cebb0 - Celeny1997, 2 days ago : aaaa
+4c7920d - axchisan, 2 days ago : Merge pull request #44 from axchisan/feature/frontendAngie
+8b45632 - axchisan, 2 days ago : Merge pull request #43 from axchisan/feature/backendJhony
+eb25f87 - JHONY2909, 2 days ago : agregamos eventos y foros con su respectivo frontend y backend
+e372f5e - Angie G, 2 days ago : Nuevo estilo en la sección de Notificaciones
+7989307 - axchisan, 2 days ago : Merge pull request #42 from axchisan/feature/frontend
+d665ecf - axchisan, 2 days ago : Merge pull request #41 from axchisan/feature/backendValentina
+03ca10c - Danielaaa09, 2 days ago : Agregue en tiempo real el cambio de contraseña
+f8b2b2f - axchisan, 2 days ago : Merge pull request #40 from axchisan/feature/backendGerardo
+d19e405 - GroveLive, 2 days ago : añadi un Endpoint API que en teoria me dejaria que las notificaciones sean en tiempo real
+746caa5 - axchisan, 2 days ago : Merge pull request #39 from axchisan/feature/frontendAngie
+08296a0 - axchisan, 2 days ago : Merge pull request #38 from axchisan/feature/backendValentina
+d5a5b08 - Danielaaa09, 2 days ago : Agregue modificar contraseña
+c2f6f1c - Angie G, 2 days ago : Mejora en el estilo de los pies de página
+9db5414 - axchisan, 2 days ago : Merge pull request #37 from axchisan/feature/backendGerardo
+974694a - GroveLive, 2 days ago : Moví las líneas ini_set('session.gc_maxlifetime', 3600) y session_set_cookie_params(3600, '/') antes de session_start() para cumplir con los requisitos de PHP para evitar errores en las cookies
+9a4ab6d - axchisan, 2 days ago : Merge pull request #36 from axchisan/feature/backendDuvan
+579bf1e - axchisan, 2 days ago : correccion ruta subida de archivos
+a644844 - axchisan, 2 days ago : Merge pull request #35 from axchisan/feature/recursosLenis
+c2b416b - garciam1111, 2 days ago : agregando nuevos recursos y libros
+0426f71 - axchisan, 2 days ago : Merge pull request #34 from axchisan/feature/backendDuvan
+5fa4d0a - axchisan, 2 days ago : recupere los estilos del index xdd
+27a1e0d - axchisan, 2 days ago : Merge pull request #33 from axchisan/feature/backendDuvan
+cc5478d - axchisan, 2 days ago : limpieza del codigo en general y mejorado de logica
+05be9f3 - axchisan, 2 days ago : agregue el apartado de comunidad, con su respectiva modificacion en la base de datos, es funcional el dar like a las opiniones, responder a ellas y su calificacion en estrellas
+f3b762a - axchisan, 3 days ago : Merge pull request #32 from axchisan/feature/backendDuvan
+af55150 - axchisan, 3 days ago : agregadas funciones de ver libros videos y archivos en el index y en el panel de usuario
+b138580 - axchisan, 3 days ago : Merge pull request #31 from axchisan/feature/backendGerardo
+75fe5be - GroveLive, 3 days ago : añadi en mensajes los botones de borrar y editar mensaje tambien mejore los enlaces de las notificaciones
+a78fa38 - axchisan, 5 days ago : Merge pull request #30 from axchisan/feature/backendDuvan
+94f9362 - axchisan, 5 days ago : mejore el apartado de visualizacion de libros documentos y videos que hizo angie, ya que tuve que corregir la creacion y visualizacion de comentarios de varios usuarios en diferentes documentos, solucione ciertos errores en las rutas y corregi la base de datos para el formato de fecha y hora
+07778e2 - axchisan, 6 days ago : Merge pull request #29 from axchisan/feature/frontendAngie
+a9ed16b - Angie G, 6 days ago : Mejora en las vistas para los documentos, videos y archivos
+1fc0b7b - axchisan, 7 days ago : Merge pull request #28 from axchisan/feature/backendDuvan
+1857943 - axchisan, 7 days ago : solucionadas las rutas de fotos de perfil
+face6ab - axchisan, 8 days ago : Merge pull request #27 from axchisan/feature/backendGerardo
+baa4992 - GroveLive, 8 days ago : mejore la interfaz de ver perfil de amigo y coloque la opcion de tambien ver su foto de perfil eso ultimo esta en proceso
+3ca903a - axchisan, 8 days ago : Merge pull request #26 from axchisan/feature/backendDuvan
+52132a7 - axchisan, 8 days ago : correcion de las  rutas del back end al obtener recursos del usuario
+fa098c2 - axchisan, 8 days ago : Merge pull request #25 from axchisan/feature/backendGerardo
+aa311f8 - GroveLive, 8 days ago : se añadio el sistema de chat, notificaciones y amigos
+930a9ff - axchisan, 8 days ago : Merge pull request #24 from axchisan/feature/backendDuvan
+f9a8be3 - axchisan, 8 days ago : correcion de la ruta de guardado de archivos
+b3a79a4 - axchisan, 8 days ago : Merge pull request #23 from axchisan/feature/backendGerardo
+1f0e2a2 - GroveLive, 8 days ago : reseteo el panel de  usuario
+7cd5b40 - axchisan, 9 days ago : Merge pull request #21 from axchisan/feature/frontendAngie
+902db0a - Angie G, 9 days ago : reset del archivo de repositorio
+3bea280 - axchisan, 9 days ago : Merge pull request #22 from axchisan/feature/backendJhony
+32acc9c - JHONY2909, 9 days ago : cambios en el repositorio
+04a804e - Angie G, 9 days ago : reset repositorio.php
+6a59521 - axchisan, 9 days ago : Merge pull request #20 from axchisan/feature/backendValentina
+bf7daee - Angie G, 9 days ago : WIP: cambios locales en repositorio.php
+1fbf91d - Danielaaa09, 9 days ago : foto de Duvan arreglada xd
+54c6dd6 - axchisan, 9 days ago : Merge pull request #19 from axchisan/feature/backendValentina
+0fd7f86 - Danielaaa09, 9 days ago : panel de usuario arreglado xd
+8236b0e - axchisan, 9 days ago : Merge pull request #16 from axchisan/feature/backendValentina
+314d45b - Danielaaa09, 9 days ago : archivo original panel de usuario
+6b7a678 - axchisan, 9 days ago : Merge pull request #18 from axchisan/feature/recursosLenis
+3a4b41a - GroveLive, 9 days ago : agregue lo del chat y notificaciones
+303460b - garciam1111, 9 days ago : carga de nuevos recursos
+c7ca980 - axchisan, 9 days ago : Merge pull request #17 from axchisan/feature/backendJhony
+6a088e6 - Danielaaa09, 9 days ago : el boton de gaurdar cambios esta listo
+7f3c366 - JHONY2909, 9 days ago : cambios en la filtracion y logica de repositorio
+3b04f37 - garciam1111, 9 days ago : agregados recursos y documentos en general al repositorio
+04239dc - Danielaaa09, 9 days ago : El boton de guardar cambios funciona, agregue un update para el funcionamiento
+73b6075 - Danielaaa09, 9 days ago : Agregue cositas, uds se daran cuenta xd
+685590b - tommyXD777, 9 days ago : agregue las alertas
+7f429e7 - GroveLive, 10 days ago : Conflicto resuelto en panel-usuario.php
+16efd5b - GroveLive, 10 days ago : cambios del perfil de amistad
+b8ed48c - axchisan, 10 days ago : Merge pull request #15 from axchisan/feature/backendDuvan
+154b160 - axchisan, 10 days ago : mas correcciones en la carga de aportes en la pagina del repositorio y la pagina principal, pequeños ajustes de comentarios, y correcciones en el panel de usuario
+3757488 - axchisan, 10 days ago : Merge pull request #14 from axchisan/feature/backendDuvan
+fb6bf59 - axchisan, 10 days ago : solucion error en el formulario de agregar aporte,e implementacion de logica de back end en pagina principal
+be6d4e7 - axchisan, 10 days ago : Merge pull request #13 from axchisan/feature/backendDuvan
+56f0028 - axchisan, 10 days ago : mejora en el visualizador de repositorio
+f4756c0 - axchisan, 10 days ago : limpiando codigo
+727480f - axchisan, 10 days ago : Merge pull request #12 from axchisan/feature/backendDuvan
+ce75805 - axchisan, 10 days ago : quedo lista la carga de archivos por parte del usuario, ya obtienen los recursos en su panel de perfil correctamente
+41fe8a2 - axchisan, 11 days ago : Merge pull request #11 from axchisan/feature/backendDuvan
+5002f0b - axchisan, 11 days ago : Merge branch 'feature/backendDuvan' of https://github.com/axchisan/El-rincon-de-ADSO into feature/backendDuvan
+b43a4b6 - axchisan, 11 days ago : Actualización del perfil de usuario y gestión de recursos
+8eda771 - axchisan, 11 days ago : agregada libreria bootstrap de fora local y rutas corregidas
+76c4575 - axchisan, 11 days ago : Merge pull request #10 from axchisan/dev
+9e5dfe7 - axchisan, 12 days ago : cambios en mas rutas, y solucion de bugs en la actualizacion de botones
+b3a0495 - axchisan, 12 days ago : Merge pull request #9 from axchisan/feature/backendDuvan
+bfc3cd9 - axchisan, 12 days ago : corregi errores generales  de rutas, actualice la version del login de Daniela, corrigiendo errores, hize modificaciones en los paneles de navegacion de los diferentes apartados
+f78d298 - axchisan, 12 days ago : Merge pull request #8 from axchisan/feature/backendValentinacreacion de validacion del login
+f712849 - Danielaaa09, 12 days ago : login listo
+41801c7 - axchisan, 13 days ago : Merge pull request #7 from axchisan/feature/backendGerardoCasilla agregada crear nombre de usuario
+b6fe90b - GroveLive, 13 days ago : agregue la otra casilla de nombre_usuario
+5cbac08 - axchisan, 13 days ago : Merge pull request #6 from axchisan/feature/frontendAngie
+14145b1 - Angie G, 13 days ago : Ultimos Cambios en la vista: Explorar Repositorio
+5cc44a6 - axchisan, 13 days ago : Merge pull request #5 agregado de vistas angie, repositorio y panel
+42ff96a - axchisan, 13 days ago : Merge pull request #4 from axchisan/feature/backendGerardo cambios gerardo frontend y database
+8adb66c - Angie G, 13 days ago : Se agregaron nuevas vistas: Explorar Repositorio y panel
+c7b0866 - GroveLive, 13 days ago : se añadio la conexion y parte del backend en lo del registro
+be53f82 - axchisan, 2 weeks ago : Merge pull request #3 from axchisan/feature/frontendAngie
+9415eee - Angie G, 2 weeks ago : Nuevo espacio de comunidad en el home y ajuste en el css
+1708929 - Angie G, 2 weeks ago : Nuevo espacio de comunidad en el home y ajuste en el css
+afcb13e - axchisan, 2 weeks ago : Create CNAME
+942873f - axchisan, 2 weeks ago : Merge pull request #2 from axchisan/feauture/frontendN2
+9470f0c - tommyXD77, 2 weeks ago :  agregue el registro y mejore el inicio de sesion
+c285250 - Administrador, 2 weeks ago : Ajuste de los Colores
+f01ddf1 - axchisan, 3 weeks ago : Update README.md
+208c3c1 - axchisan, 3 weeks ago : Merge pull request #1 from axchisan/feature/frontend
+70e499d - tommyXD777, 3 weeks ago : añadiamos mejoras en el registro, y el de inisiar sesion
+d0d957d - unknown, 3 weeks ago :  me encargue de la parte del login y del registro
+d684e3e - axchisan, 3 weeks ago : Create README.md
+27ade65 - axchisan, 3 weeks ago : subida principal
