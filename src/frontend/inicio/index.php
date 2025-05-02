@@ -363,10 +363,6 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 profileImg.addEventListener('click', function(event) {
                     event.stopPropagation();
                     profileMenu.classList.toggle('active');
-                    // Cerrar el menú móvil si está abierto
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
                 });
 
                 document.addEventListener('click', function(event) {
