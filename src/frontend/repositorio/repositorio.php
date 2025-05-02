@@ -156,7 +156,7 @@ if ($usuario_id) {
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        <div id="mobile-menu" class="navbar__mobile container hidden">
+        <div id="mobile-menu" class="navbar__mobile container">
             <ul>
                 <li class="navbar__menu-item"><a href="../inicio/index.php">Inicio</a></li>
                 <li class="navbar__menu-item navbar__menu-item--active"><a href="../repositorio/repositorio.php">Repositorio</a></li>
@@ -166,10 +166,10 @@ if ($usuario_id) {
                 <li class="navbar__menu-item"><a href="../inicio/index.php#comunidad">Comunidad</a></li>
                 <?php if ($usuario_id): ?>
                     <li class="navbar__mobile-item">
-                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" style="vertical-align: middle; margin-right: 10px;">
+                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img">
                         <span><?php echo $nombre_usuario; ?></span>
                         <?php if ($unread_count > 0): ?>
-                            <span class="navbar__notification-badge" style="margin-left: 10px; vertical-align: middle;">
+                            <span class="navbar__notification-badge">
                                 <?php echo $unread_count; ?>
                             </span>
                         <?php endif; ?>
@@ -339,7 +339,14 @@ if ($usuario_id) {
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileMenuButton && mobileMenu) {
                 mobileMenuButton.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('active');
+                });
+
+                // Cerrar el menú móvil al hacer clic fuera
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                        mobileMenu.classList.remove('active');
+                    }
                 });
             }
 

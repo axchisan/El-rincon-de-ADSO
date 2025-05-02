@@ -68,12 +68,14 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                     <li class="navbar__menu-item"><a href="../register/registro.php">Registro</a></li>
                 <?php endif; ?>
                 <?php if ($usuario_id): ?>
-                    <!-- Si hay sesión activa, mostrar la imagen de perfil con el círculo de notificaciones -->
+                    <!-- Contenedor de perfil con notificaciones -->
                     <li class="navbar__profile">
-                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" id="profile-img">
-                        <span class="navbar__notification-badge <?php echo $unread_count == 0 ? 'hidden' : ''; ?>">
-                            <?php echo $unread_count; ?>
-                        </span>
+                        <div class="navbar__profile-wrapper">
+                            <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" id="profile-img">
+                            <span class="navbar__notification-badge <?php echo $unread_count == 0 ? 'hidden' : ''; ?>">
+                                <?php echo $unread_count; ?>
+                            </span>
+                        </div>
                         <div class="navbar__profile-menu" id="profile-menu">
                             <a href="../panel/panel-usuario.php">Ver Perfil</a>
                             <a href="../notificaciones/notificaciones.php">Notificaciones</a>
@@ -96,24 +98,26 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
         <!-- Menú móvil desplegable -->
         <div id="mobile-menu" class="navbar__mobile container hidden">
             <ul>
-                <li class="navbar__menu-item navbar__menu-item--active"><a href="#">Inicio</a></li>
-                <li class="navbar__menu-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
-                <li class="navbar__menu-item"><a href="#buscar">Búsquedas</a></li>
-                <li class="navbar__menu-item"><a href="#nosotros">Nosotros</a></li>
-                <li class="navbar__menu-item"><a href="#recientes">Recientes</a></li>
-                <li class="navbar__menu-item"><a href="#comunidad">Comunidad</a></li>
+                <li class="navbar__mobile-item navbar__menu-item--active"><a href="#">Inicio</a></li>
+                <li class="navbar__mobile-item"><a href="../repositorio/repositorio.php">Repositorio</a></li>
+                <li class="navbar__mobile-item"><a href="#buscar">Búsquedas</a></li>
+                <li class="navbar__mobile-item"><a href="#nosotros">Nosotros</a></li>
+                <li class="navbar__mobile-item"><a href="#recientes">Recientes</a></li>
+                <li class="navbar__mobile-item"><a href="#comunidad">Comunidad</a></li>
                 <?php if (!$usuario_id): ?>
                     <li class="navbar__mobile-item"><a href="../register/registro.php">Registro</a></li>
                 <?php endif; ?>
                 <?php if ($usuario_id): ?>
-                    <li class="navbar__mobile-item">
-                        <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img" style="vertical-align: middle; margin-right: 10px;">
-                        <span><?php echo $nombre_usuario; ?></span>
-                        <?php if ($unread_count > 0): ?>
-                            <span class="navbar__notification-badge" style="margin-left: 10px; vertical-align: middle;">
-                                <?php echo $unread_count; ?>
-                            </span>
-                        <?php endif; ?>
+                    <li class="navbar__mobile-item navbar__mobile-profile">
+                        <div class="navbar__profile-wrapper">
+                            <img src="<?php echo $usuario_imagen; ?>" alt="Perfil de <?php echo $nombre_usuario; ?>" class="navbar__profile-img">
+                            <span class="navbar__profile-name"><?php echo $nombre_usuario; ?></span>
+                            <?php if ($unread_count > 0): ?>
+                                <span class="navbar__notification-badge">
+                                    <?php echo $unread_count; ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
                     </li>
                     <li class="navbar__mobile-item"><a href="../panel/panel-usuario.php">Ver Perfil</a></li>
                     <li class="navbar__mobile-item"><a href="../notificaciones/notificaciones.php">Notificaciones</a></li>
@@ -123,7 +127,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                         </form>
                     </li>
                 <?php else: ?>
-                    <li class="navbar__menu-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
+                    <li class="navbar__mobile-item navbar__menu-item--button"><a href="../login/login.php">Iniciar sesión</a></li>
                 <?php endif; ?>
             </ul>
         </div>
@@ -359,6 +363,10 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 profileImg.addEventListener('click', function(event) {
                     event.stopPropagation();
                     profileMenu.classList.toggle('active');
+                    // Cerrar el menú móvil si está abierto
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
                 });
 
                 document.addEventListener('click', function(event) {
@@ -557,26 +565,26 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                         const comentarioId = this.getAttribute('data-comment-id');
                         if (confirm('¿Estás seguro de que quieres eliminar este comentario?')) {
                             fetch('../../backend/comunidad/delete_comment.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: `comentario_id=${comentarioId}`
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert(data.message);
-                                    currentPage = 1; // Reiniciar a la primera página
-                                    loadCommunityComments();
-                                } else {
-                                    alert(data.message);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error al eliminar comentario:', error);
-                                alert('Error al eliminar el comentario. Por favor, intenta de nuevo.');
-                            });
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: `comentario_id=${comentarioId}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert(data.message);
+                                        currentPage = 1; // Reiniciar a la primera página
+                                        loadCommunityComments();
+                                    } else {
+                                        alert(data.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error al eliminar comentario:', error);
+                                    alert('Error al eliminar el comentario. Por favor, intenta de nuevo.');
+                                });
                         }
                     });
                 });
@@ -654,23 +662,23 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                                 formData.append('comentario_id', comentarioId);
 
                                 fetch('../../backend/comunidad/edit_comment.php', {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        alert(data.message);
-                                        editForm.remove();
-                                        loadCommunityComments(currentPage);
-                                    } else {
-                                        alert(data.message);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error al editar comentario:', error);
-                                    alert('Error al editar el comentario. Por favor, intenta de nuevo.');
-                                });
+                                        method: 'POST',
+                                        body: formData
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            editForm.remove();
+                                            loadCommunityComments(currentPage);
+                                        } else {
+                                            alert(data.message);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error al editar comentario:', error);
+                                        alert('Error al editar el comentario. Por favor, intenta de nuevo.');
+                                    });
                             });
 
                             // Botón de cancelar
