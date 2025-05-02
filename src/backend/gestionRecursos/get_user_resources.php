@@ -13,7 +13,7 @@ try {
     $db = conexionDB::getConexion();
     $usuario_id = $_SESSION['usuario_id'];
 
-    // Consulta principal: eliminamos 'visitas' y usamos los campos de la versión original
+    // Consulta principal: eliminamos d.etiquetas y usamos los campos disponibles
     $query = "SELECT d.id, d.titulo, d.descripcion, d.autor, d.tipo, d.url_archivo, d.portada, 
                      d.duracion, d.fecha_publicacion, d.relevancia, d.visibilidad, d.idioma, 
                      d.licencia, d.estado
@@ -37,12 +37,30 @@ try {
         $categorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
         $resource['categorias'] = $categorias ?: [];
 
+        // Obtener etiquetas desde documento_etiqueta y etiquetas
+        $query = "SELECT e.nombre 
+                  FROM documento_etiqueta de
+                  JOIN etiquetas e ON de.etiqueta_id = e.id
+                  WHERE de.documento_id = :documento_id";
+        $stmt = $db->prepare($query);
+        $stmt->execute([':documento_id' => $documento_id]);
+        $etiquetas = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $resource['etiquetas'] = $etiquetas ?: [];
+
         // Formatear la duración si el recurso es un video
         if ($resource['tipo'] === 'video' && $resource['duracion']) {
-            $seconds = (int)$resource['duracion'];
-            $hours = floor($seconds / 3600);
-            $minutes = floor(($seconds % 3600) / 60);
-            $seconds = $seconds % 60;
+            // En PostgreSQL, duracion es de tipo interval, lo convertimos a segundos
+            $interval = $resource['duracion']; // Ejemplo: "16:12:00"
+            $time = explode(':', $interval);
+            $hours = (int)$time[0];
+            $minutes = (int)$time[1];
+            $seconds = (int)$time[2];
+            $totalSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+            
+            // Formatear de nuevo a HH:MM:SS
+            $hours = floor($totalSeconds / 3600);
+            $minutes = floor(($totalSeconds % 3600) / 60);
+            $seconds = $totalSeconds % 60;
             $resource['duracion'] = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
         } else {
             $resource['duracion'] = null; // Asegurarse de que no se muestre si no es un video
@@ -52,6 +70,6 @@ try {
     echo json_encode($resources);
 } catch (PDOException $e) {
     error_log("Error en get_user_resources.php: " . $e->getMessage());
-    echo json_encode([]);
+    echo json_encode(['error' => $e->getMessage()]);
 }
 ?>

@@ -806,6 +806,12 @@ ol {
   margin-bottom: 0.75rem;
 }
 
+.resource-card__tags {
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+  margin-bottom: 0.75rem;
+}
+
 .resource-card__title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -884,7 +890,7 @@ ol {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23654321' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23654321' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
 .empty-state__icon {
@@ -1227,6 +1233,7 @@ ol {
   margin: 0 auto;
 }
 
+/* Ajuste para event-card para incluir el nuevo div de etiquetas */
 .event-card {
   display: flex;
   background-color: var(--color-white);
@@ -1235,6 +1242,7 @@ ol {
   box-shadow: var(--shadow-md);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
+  flex-direction: column; /* Cambiado a columna para que las etiquetas queden debajo */
 }
 
 .event-card::before {
@@ -1259,6 +1267,7 @@ ol {
   opacity: 0.03;
 }
 
+/* Estilo para la fecha */
 .event-card__date {
   background: linear-gradient(135deg, var(--color-coffee-light) 0%, var(--color-coffee) 100%);
   color: var(--color-white);
@@ -1305,6 +1314,32 @@ ol {
   letter-spacing: 1px;
 }
 
+/* Nuevo estilo para el contenedor de etiquetas debajo de la fecha */
+.event-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background-color: var(--color-latte); /* Fondo claro para destacar las etiquetas */
+  border-bottom: 1px solid var(--color-gray-200);
+  justify-content: center;
+}
+
+.event-card__tags .tag {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border-radius: var(--border-radius-full);
+  transition: all 0.3s ease;
+}
+
+.event-card__tags .tag:hover {
+  background-color: var(--color-coffee-light);
+  color: var(--color-white);
+}
+
+/* Estilo para el contenido de la tarjeta */
 .event-card__content {
   padding: 1.5rem;
   flex-grow: 1;
@@ -1343,6 +1378,27 @@ ol {
   display: flex;
   gap: 1rem;
   justify-content: center;
+}
+
+/* Ajuste responsivo para pantallas pequeñas */
+@media (min-width: 640px) {
+  .event-card {
+    flex-direction: row; /* En pantallas más grandes, vuelve a ser fila */
+  }
+
+  .event-card__date {
+    min-width: 100px;
+  }
+
+  .event-card__tags {
+    min-width: 100px;
+    flex-direction: column; /* Las etiquetas se apilan verticalmente al lado de la fecha */
+    border-bottom: none;
+    border-right: 1px solid var(--color-gray-200);
+    background-color: var(--color-latte);
+    padding: 1rem;
+    align-items: center;
+  }
 }
 
 /* Mensajes */
@@ -2476,4 +2532,207 @@ input:checked + .slider:before {
     padding: 6px 10px;
     font-size: 12px;
   }
+}
+
+/* Estilos para etiquetas y botón "Añadir" */
+
+/* Estilos para las etiquetas dentro de las tarjetas de recursos */
+.resource-card__meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+}
+
+/* Ajuste específico para las etiquetas (tags) en resource-card__meta */
+.resource-card__meta .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.resource-card__meta .tag {
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border-radius: var(--border-radius-full);
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.resource-card__meta .tag:hover {
+  background-color: var(--color-latte);
+  color: var(--color-coffee);
+}
+
+/* Estilos para el botón "Añadir" de etiquetas en el modal */
+#add-tag-button {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--color-coffee-light) 0%, var(--color-coffee) 100%);
+  color: var(--color-white);
+  border-radius: var(--border-radius-md);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+#add-tag-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(101, 67, 33, 0.15);
+  background: linear-gradient(135deg, var(--color-coffee) 0%, var(--color-coffee-dark) 100%);
+}
+
+/* Ajuste para el contenedor de etiquetas personalizadas en el modal */
+#custom-tags {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Asegurar que las etiquetas personalizadas en el modal tengan un estilo consistente */
+#custom-tags .tag {
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border-radius: var(--border-radius-full);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#custom-tags .tag:hover {
+  background-color: var(--color-latte);
+  color: var(--color-coffee);
+}
+
+/* Ajuste para el input de etiquetas en el modal */
+#tag-input {
+  padding: 0.5rem;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-800);
+  font-size: 0.95rem;
+}
+
+#tag-input:focus {
+  border-color: var(--color-coffee-light);
+  box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.15);
+  background-color: var(--color-white);
+}
+
+/* Ajuste para el contenedor de etiquetas en el modal */
+.category-tags,
+#custom-tags {
+  justify-content: flex-start;
+}
+
+/* Ajuste responsivo para las etiquetas en las tarjetas */
+@media (max-width: 640px) {
+  .resource-card__meta .tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+/* Nuevos estilos añadidos */
+
+/* Estilo para el botón flotante */
+.floating-notifications-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--color-coffee-light); /* Ajustado para usar tu paleta de colores */
+  color: var(--color-white);
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(101, 67, 33, 0.3); /* Sombra coherente con tu diseño */
+  cursor: pointer;
+  z-index: 1000;
+  transition: background-color 0.3s;
+}
+
+.floating-notifications-btn:hover {
+  background-color: var(--color-coffee); /* Ajustado para usar un tono más oscuro de la paleta */
+}
+
+.floating-notifications-btn i {
+  font-size: 24px;
+}
+
+/* Estilo para el círculo rojo de notificaciones no leídas */
+.notification-dot {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--color-red); /* Ajustado a la variable de rojo de tu paleta */
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Estilo para los requisitos de contraseña */
+.password-requirements {
+  font-size: 0.9em;
+  color: var(--color-red); /* Usando rojo para consistencia con errores */
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.password-requirements-checklist {
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+
+.password-requirements-checklist div {
+  margin-bottom: 5px;
+}
+
+.password-requirements-checklist .icon {
+  margin-right: 5px;
+}
+
+.password-requirements-checklist .fulfilled {
+  color: var(--color-green); /* Verde para requisitos cumplidos, consistente con tu paleta */
+}
+
+.password-requirements-checklist .not-fulfilled {
+  color: var(--color-red); /* Rojo para requisitos no cumplidos, consistente con tu paleta */
+}
+
+/* Estilo para el botón Añadir en etiquetas (ya ajustado previamente, aquí se mantiene consistente) */
+#add-tag-button {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--color-coffee-light) 0%, var(--color-coffee) 100%);
+  color: var(--color-white);
+  border-radius: var(--border-radius-md);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+#add-tag-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(101, 67, 33, 0.15);
+  background: linear-gradient(135deg, var(--color-coffee) 0%, var(--color-coffee-dark) 100%);
 }
