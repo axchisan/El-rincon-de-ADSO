@@ -369,6 +369,7 @@ p {
   transition: all 0.2s ease;
   padding: 0.25rem;
   border-radius: var(--border-radius-sm);
+  cursor: pointer;
 }
 
 .navbar__toggle:hover {
@@ -378,6 +379,8 @@ p {
 }
 
 .navbar__mobile {
+  display: block;
+  /* Cambiado para que sea visible por defecto sin hidden */
   padding: 1rem 0;
   border-top: 1px solid var(--color-gray-200);
   background-color: var(--color-white);
@@ -385,6 +388,7 @@ p {
 
 .navbar__mobile.hidden {
   display: none;
+  /* Ocultar solo cuando tiene la clase hidden */
 }
 
 .navbar__mobile-item {
@@ -552,6 +556,11 @@ p {
     padding: 0.75rem 0;
   }
 
+  .navbar__mobile.hidden {
+    display: none;
+    /* Asegurar que el toggle funcione */
+  }
+
   .navbar__mobile-item {
     margin-bottom: 0.5rem;
   }
@@ -600,6 +609,7 @@ p {
 
   .navbar__mobile {
     display: none !important;
+    /* Ocultar en pantallas grandes */
   }
 
   .navbar__profile-wrapper {
