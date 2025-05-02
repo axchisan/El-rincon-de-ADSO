@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Inicio de sesión</title>
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="./css/estudiantes.css">
   <link href="../lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
 
   <!-- Carrusel de fondo -->
@@ -28,6 +30,13 @@
   <div class="login-container">
     <img src="img/logo.png" alt="Logo institucional" class="logo-login">
     <h4>Iniciar Sesión</h4>
+    <?php
+    session_start();
+    if (isset($_SESSION['error'])) {
+      echo '<div style="color: red; text-align: center; margin-bottom: 10px;">' . htmlspecialchars($_SESSION['error']) . '</div>';
+      unset($_SESSION['error']);
+    }
+    ?>
     <form action="../../backend/loginValidation/validar_login.php" method="POST" autocomplete="off">
       <label for="usuario">Usuario o Correo:</label>
       <input type="text" name="usuario" id="usuario" required><br><br>
@@ -35,8 +44,8 @@
       <label for="clave">Contraseña:</label>
       <input type="password" name="clave" id="clave" required><br><br>
       <p style="text-align: center;">
-      ¿No te has registrado?
-      <a href="../register/registro.php" style="color: #007bff; text-decoration: none;">Registrate aquí</a>
+        ¿No te has registrado?
+        <a href="../register/registro.php" style="color: #007bff; text-decoration: none;">Registrate aquí</a>
       </p>
       <input type="submit" value="Entrar">
     </form>
@@ -48,4 +57,5 @@
 
   <script src="../lib/Bootstrap/js/bootstrap.bundle.min.js" defer></script>
 </body>
+
 </html>
