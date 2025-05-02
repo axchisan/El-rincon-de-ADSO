@@ -247,24 +247,19 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
         </div>
     </section>
 
-
-
-
     <!-- Sección de Comunidad -->
     <section id="comunidad" class="section section--community">
         <div class="container">
             <div class="community__header">
                 <h2 class="community__title">Comunidad</h2>
                 <p class="community__description">Descubre lo que nuestra comunidad está comentando sobre sus lecturas favoritas</p>
-                <!-- Add buttons here -->
                 <div class="community__buttons">
                     <a href="../eventos/eventos.php" class="btn btn--secondary">Eventos</a>
                     <a href="../foro/foro.php" class="btn btn--secondary">Foros</a>
                 </div>
             </div>
 
-            <!-- Rest of your code remains unchanged -->
-            <!-- Form. agregar un comentario solo si hay sesión activa.. -->
+            <!-- Form. agregar un comentario solo si hay sesión activa -->
             <?php if ($usuario_id): ?>
                 <div class="community__add-comment">
                     <h3 class="community__add-comment-title">Comparte tu opinión</h3>
@@ -295,124 +290,15 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
 
             <!-- Lista de comentarios -->
             <div class="community__grid" id="community-grid">
-                <?php
-                try {
-                    $db = conexionDB::getConexion();
-                    $query = "
-            SELECT cc.id, cc.libro, cc.comentario, cc.valoracion, cc.likes, cc.fecha_creacion, 
-                   u.nombre_usuario, u.imagen,
-                   (SELECT COUNT(*) FROM likes_comentarios_comunidad lcc WHERE lcc.comentario_id = cc.id AND lcc.usuario_id = :usuario_id) as user_liked
-            FROM comentarios_comunidad cc
-            JOIN usuarios u ON cc.usuario_id = u.id
-            ORDER BY cc.fecha_creacion DESC
-            LIMIT 4
-        ";
-                    $stmt = $db->prepare($query);
-                    $stmt->execute([':usuario_id' => $usuario_id ?: 0]);
-                    $comentarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    if (empty($comentarios)) {
-                        echo '<p>No hay comentarios en la comunidad todavía. ¡Sé el primero en compartir tu opinión!</p>';
-                    } else {
-                        foreach ($comentarios as $comentario) {
-                            $avatar = $comentario['imagen'] ? "../../backend/perfil/" . htmlspecialchars($comentario['imagen']) : "https://i.pravatar.cc/150?img=" . $comentario['usuario_id'];
-                            $fecha = (new DateTime($comentario['fecha_creacion']))->diff(new DateTime())->format('%a días atrás');
-                            if ($fecha === '0 días atrás') {
-                                $fecha = 'Hoy';
-                            }
-
-                            echo '<div class="comment-card" data-comment-id="' . $comentario['id'] . '">';
-                            echo '<div class="comment-card__header">';
-                            echo '<div class="comment-card__user">';
-                            echo '<img src="' . $avatar . '" alt="' . htmlspecialchars($comentario['nombre_usuario']) . '" class="comment-card__avatar" loading="lazy">';
-                            echo '<div class="comment-card__user-info">';
-                            echo '<h4 class="comment-card__username">' . htmlspecialchars($comentario['nombre_usuario']) . '</h4>';
-                            echo '<span class="comment-card__date">' . $fecha . '</span>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '<div class="comment-card__rating">';
-                            for ($i = 1; $i <= 5; $i++) {
-                                if ($i <= $comentario['valoracion']) {
-                                    echo '<i class="fas fa-star"></i>';
-                                } else {
-                                    echo '<i class="far fa-star"></i>';
-                                }
-                            }
-                            echo '</div>';
-                            echo '</div>';
-                            echo '<div class="comment-card__content">';
-                            echo '<h5 class="comment-card__book">Sobre: ' . htmlspecialchars($comentario['libro']) . '</h5>';
-                            echo '<p class="comment-card__text">"' . htmlspecialchars($comentario['comentario']) . '"</p>';
-                            echo '</div>';
-                            echo '<div class="comment-card__footer">';
-                            // Botón de "like xd"
-                            $liked_class = $comentario['user_liked'] > 0 ? 'comment-card__like--active' : '';
-                            $icon_class = $comentario['user_liked'] > 0 ? 'fas liked' : 'far';
-                            if ($usuario_id) {
-                                echo '<button class="comment-card__like ' . $liked_class . '" data-comment-id="' . $comentario['id'] . '">';
-                                echo '<i class="' . $icon_class . ' fa-heart"></i> Me gusta (' . $comentario['likes'] . ')';
-                                echo '</button>';
-                            } else {
-                                echo '<a href="../login/login.php" class="comment-card__like">';
-                                echo '<i class="far fa-heart"></i> Me gusta (' . $comentario['likes'] . ')';
-                                echo '</a>';
-                            }
-                            echo '<button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>';
-                            echo '</div>';
-
-                            // Formulario para responde
-                            if ($usuario_id) {
-                                echo '<div class="reply-form" id="reply-form-' . $comentario['id'] . '">';
-                                echo '<form class="add-reply-form" data-comment-id="' . $comentario['id'] . '">';
-                                echo '<textarea name="respuesta" placeholder="Escribe tu respuesta..." required></textarea>';
-                                echo '<button type="submit">Enviar Respuesta</button>';
-                                echo '</form>';
-                                echo '</div>';
-                            }
-
-                            $query_replies = "
-                    SELECT r.id, r.respuesta, r.fecha_creacion, u.nombre_usuario, u.imagen
-                    FROM respuestas_comentarios_comunidad r
-                    JOIN usuarios u ON r.usuario_id = u.id
-                    WHERE r.comentario_id = :comentario_id
-                    ORDER BY r.fecha_creacion ASC
-                ";
-                            $stmt_replies = $db->prepare($query_replies);
-                            $stmt_replies->execute([':comentario_id' => $comentario['id']]);
-                            $respuestas = $stmt_replies->fetchAll(PDO::FETCH_ASSOC);
-
-                            if (!empty($respuestas)) {
-                                echo '<div class="comment-card__replies">';
-                                foreach ($respuestas as $respuesta) {
-                                    $reply_avatar = $respuesta['imagen'] ? "../../backend/perfil/" . htmlspecialchars($respuesta['imagen']) : "https://i.pravatar.cc/150?img=" . $respuesta['id'];
-                                    $reply_fecha = (new DateTime($respuesta['fecha_creacion']))->diff(new DateTime())->format('%a días atrás');
-                                    if ($reply_fecha === '0 días atrás') {
-                                        $reply_fecha = 'Hoy';
-                                    }
-
-                                    echo '<div class="reply-card">';
-                                    echo '<img src="' . $reply_avatar . '" alt="' . htmlspecialchars($respuesta['nombre_usuario']) . '" class="reply-card__avatar" loading="lazy">';
-                                    echo '<div class="reply-card__content">';
-                                    echo '<h5 class="reply-card__username">' . htmlspecialchars($respuesta['nombre_usuario']) . '</h5>';
-                                    echo '<span class="reply-card__date">' . $reply_fecha . '</span>';
-                                    echo '<p class="reply-card__text">' . htmlspecialchars($respuesta['respuesta']) . '</p>';
-                                    echo '</div>';
-                                    echo '</div>';
-                                }
-                                echo '</div>';
-                            }
-
-                            echo '</div>';
-                        }
-                    }
-                } catch (PDOException $e) {
-                    error_log("Error al obtener comentarios de la comunidad: " . $e->getMessage());
-                    echo '<p>Error al cargar los comentarios. Por favor, intenta de nuevo más tarde.</p>';
-                }
-                ?>
+                <p>Cargando comentarios...</p>
             </div>
 
-            <!-- mostrar solo si NO hay sesión activa -->
+            <!-- Paginación -->
+            <div class="pagination" id="community-pagination">
+                <button id="load-more-comments" class="btn btn--secondary">Cargar más</button>
+            </div>
+
+            <!-- Mostrar solo si NO hay sesión activa -->
             <?php if (!$usuario_id): ?>
                 <div class="community__cta">
                     <h3 class="community__cta-title">¿Quieres compartir tu opinión?</h3>
@@ -444,7 +330,6 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
             </div>
         </div>
     </footer>
-
 
     <!-- Scripts -->
     <script>
@@ -485,7 +370,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 console.error('No se encontraron los elementos profile-img o profile-menu');
             }
 
-            // estrellas interactivas
+            // Estrellas interactivas
             const starRating = document.getElementById('star-rating');
             const valoracionInput = document.getElementById('valoracion');
             if (starRating) {
@@ -533,7 +418,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 });
             }
 
-            //logica formulario de agregar comentario
+            // Lógica formulario de agregar comentario
             const addCommentForm = document.getElementById('add-comment-form');
             if (addCommentForm) {
                 addCommentForm.addEventListener('submit', function(e) {
@@ -554,6 +439,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                         .then(data => {
                             if (data.success) {
                                 alert(data.message);
+                                currentPage = 1; // Reiniciar a la primera página
                                 loadCommunityComments();
                                 addCommentForm.reset();
                                 starRating.querySelectorAll('.star').forEach(star => {
@@ -574,7 +460,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 });
             }
 
-            // botones like
+            // Botones like
             function attachLikeButtonListeners() {
                 document.querySelectorAll('.comment-card__like').forEach(button => {
                     button.addEventListener('click', function(e) {
@@ -615,7 +501,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 });
             }
 
-            // botones de Responder
+            // Botones de Responder
             function attachReplyButtonListeners() {
                 document.querySelectorAll('.comment-card__reply').forEach(button => {
                     button.addEventListener('click', function() {
@@ -628,7 +514,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 });
             }
 
-            // logica envío de respuestas
+            // Lógica envío de respuestas
             function attachReplyFormListeners() {
                 document.querySelectorAll('.add-reply-form').forEach(form => {
                     form.addEventListener('submit', function(e) {
@@ -647,6 +533,7 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                             .then(data => {
                                 if (data.success) {
                                     alert(data.message);
+                                    currentPage = 1; // Reiniciar a la primera página
                                     loadCommunityComments();
                                     this.reset();
                                     this.closest('.reply-form').style.display = 'none';
@@ -662,24 +549,172 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                 });
             }
 
-            // cargar comentarios dinámicamente
-            function loadCommunityComments() {
-                fetch('../../backend/comunidad/get_comments.php')
+            // Botones de Editar y Eliminar
+            function attachEditDeleteListeners() {
+                // Botones de eliminar
+                document.querySelectorAll('.comment-card__delete').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const comentarioId = this.getAttribute('data-comment-id');
+                        if (confirm('¿Estás seguro de que quieres eliminar este comentario?')) {
+                            fetch('../../backend/comunidad/delete_comment.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: `comentario_id=${comentarioId}`
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(data.message);
+                                    currentPage = 1; // Reiniciar a la primera página
+                                    loadCommunityComments();
+                                } else {
+                                    alert(data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error al eliminar comentario:', error);
+                                alert('Error al eliminar el comentario. Por favor, intenta de nuevo.');
+                            });
+                        }
+                    });
+                });
+
+                // Botones de editar
+                document.querySelectorAll('.comment-card__edit').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const comentarioId = this.getAttribute('data-comment-id');
+                        const commentCard = this.closest('.comment-card');
+                        const libro = commentCard.querySelector('.comment-card__book').textContent.replace('Sobre: ', '');
+                        const comentario = commentCard.querySelector('.comment-card__text').textContent.replace(/"/g, '');
+                        const valoracion = Array.from(commentCard.querySelectorAll('.comment-card__rating .fas.fa-star')).length;
+
+                        // Crear formulario de edición
+                        let editForm = commentCard.querySelector('.edit-comment-form');
+                        if (!editForm) {
+                            editForm = document.createElement('div');
+                            editForm.className = 'edit-comment-form';
+                            editForm.innerHTML = `
+                                <form data-comment-id="${comentarioId}">
+                                    <div class="form-group">
+                                        <label for="edit-libro-${comentarioId}">Sobre:</label>
+                                        <input type="text" id="edit-libro-${comentarioId}" name="libro" value="${libro}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit-comentario-${comentarioId}">Comentario:</label>
+                                        <textarea id="edit-comentario-${comentarioId}" name="comentario" required>${comentario}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Calificación:</label>
+                                        <div class="star-rating" id="edit-star-rating-${comentarioId}">
+                                            <input type="hidden" name="valoracion" id="edit-valoracion-${comentarioId}" value="${valoracion}">
+                                            <span class="star" data-value="1"><i class="${valoracion >= 1 ? 'fas' : 'far'} fa-star"></i></span>
+                                            <span class="star" data-value="2"><i class="${valoracion >= 2 ? 'fas' : 'far'} fa-star"></i></span>
+                                            <span class="star" data-value="3"><i class="${valoracion >= 3 ? 'fas' : 'far'} fa-star"></i></span>
+                                            <span class="star" data-value="4"><i class="${valoracion >= 4 ? 'fas' : 'far'} fa-star"></i></span>
+                                            <span class="star" data-value="5"><i class="${valoracion >= 5 ? 'fas' : 'far'} fa-star"></i></span>
+                                        </div>
+                                    </div>
+                                    <button type="submit">Guardar</button>
+                                    <button type="button" class="cancel-edit">Cancelar</button>
+                                </form>
+                            `;
+                            commentCard.querySelector('.comment-card__content').appendChild(editForm);
+
+                            // Lógica para las estrellas
+                            const starRating = editForm.querySelector(`#edit-star-rating-${comentarioId}`);
+                            const valoracionInput = editForm.querySelector(`#edit-valoracion-${comentarioId}`);
+                            const stars = starRating.querySelectorAll('.star');
+                            stars.forEach(star => {
+                                star.addEventListener('click', function() {
+                                    const value = this.getAttribute('data-value');
+                                    valoracionInput.value = value;
+
+                                    stars.forEach(s => {
+                                        s.classList.remove('selected');
+                                        const icon = s.querySelector('i');
+                                        icon.classList.remove('fas');
+                                        icon.classList.add('far');
+                                    });
+
+                                    for (let i = 0; i < value; i++) {
+                                        stars[i].classList.add('selected');
+                                        const icon = stars[i].querySelector('i');
+                                        icon.classList.remove('far');
+                                        icon.classList.add('fas');
+                                    }
+                                });
+                            });
+
+                            // Lógica para el formulario
+                            editForm.querySelector('form').addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                const formData = new FormData(this);
+                                formData.append('comentario_id', comentarioId);
+
+                                fetch('../../backend/comunidad/edit_comment.php', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert(data.message);
+                                        editForm.remove();
+                                        loadCommunityComments(currentPage);
+                                    } else {
+                                        alert(data.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error al editar comentario:', error);
+                                    alert('Error al editar el comentario. Por favor, intenta de nuevo.');
+                                });
+                            });
+
+                            // Botón de cancelar
+                            editForm.querySelector('.cancel-edit').addEventListener('click', () => {
+                                editForm.remove();
+                            });
+                        }
+
+                        editForm.style.display = 'block';
+                    });
+                });
+            }
+
+            // Cargar comentarios dinámicamente con paginación
+            let currentPage = 1;
+            let totalPages = 1;
+
+            function loadCommunityComments(page = 1) {
+                const communityGrid = document.getElementById('community-grid');
+                const loadMoreButton = document.getElementById('load-more-comments');
+                const isLoggedIn = <?php echo json_encode($usuario_id !== null); ?>;
+                const currentUserId = <?php echo json_encode($usuario_id ?: 0); ?>;
+
+                fetch(`../../backend/comunidad/get_comments.php?page=${page}&limit=4`)
                     .then(response => response.json())
                     .then(data => {
-                        const communityGrid = document.getElementById('community-grid');
-                        const isLoggedIn = <?php echo json_encode($usuario_id !== null); ?>;
-                        communityGrid.innerHTML = '';
+                        if (page === 1) {
+                            communityGrid.innerHTML = ''; // Limpiar si es la primera página
+                        }
 
                         if (data.error) {
                             communityGrid.innerHTML = `<p>${data.error}</p>`;
+                            loadMoreButton.style.display = 'none';
                             return;
                         }
 
-                        if (data.length === 0) {
+                        totalPages = data.total_pages;
+                        currentPage = data.current_page;
+
+                        if (data.comments.length === 0) {
                             communityGrid.innerHTML = '<p>No hay comentarios en la comunidad todavía. ¡Sé el primero en compartir tu opinión!</p>';
+                            loadMoreButton.style.display = 'none';
                         } else {
-                            data.forEach(comentario => {
+                            data.comments.forEach(comentario => {
                                 const fecha = new Date(comentario.fecha_creacion);
                                 const diffDays = Math.floor((new Date() - fecha) / (1000 * 60 * 60 * 24));
                                 const fechaTexto = diffDays === 0 ? 'Hoy' : `${diffDays} días atrás`;
@@ -688,50 +723,59 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                                 commentCard.className = 'comment-card';
                                 commentCard.setAttribute('data-comment-id', comentario.id);
                                 let commentHTML = `
-                            <div class="comment-card__header">
-                                <div class="comment-card__user">
-                                    <img src="${comentario.avatar}" alt="${comentario.nombre_usuario}" class="comment-card__avatar" loading="lazy">
-                                    <div class="comment-card__user-info">
-                                        <h4 class="comment-card__username">${comentario.nombre_usuario}</h4>
-                                        <span class="comment-card__date">${fechaTexto}</span>
+                                    <div class="comment-card__header">
+                                        <div class="comment-card__user">
+                                            <img src="${comentario.avatar}" alt="${comentario.nombre_usuario}" class="comment-card__avatar" loading="lazy">
+                                            <div class="comment-card__user-info">
+                                                <h4 class="comment-card__username">${comentario.nombre_usuario}</h4>
+                                                <span class="comment-card__date">${fechaTexto}</span>
+                                            </div>
+                                        </div>
+                                        <div class="comment-card__rating">
+                                            ${Array.from({ length: 5 }, (_, i) => 
+                                                i < comentario.valoracion 
+                                                ? '<i class="fas fa-star"></i>' 
+                                                : '<i class="far fa-star"></i>'
+                                            ).join('')}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="comment-card__rating">
-                                    ${Array.from({ length: 5 }, (_, i) => 
-                                        i < comentario.valoracion 
-                                        ? '<i class="fas fa-star"></i>' 
-                                        : '<i class="far fa-star"></i>'
-                                    ).join('')}
-                                </div>
-                            </div>
-                            <div class="comment-card__content">
-                                <h5 class="comment-card__book">Sobre: ${comentario.libro}</h5>
-                                <p class="comment-card__text">"${comentario.comentario}"</p>
-                            </div>
-                            <div class="comment-card__footer">
-                                ${isLoggedIn ? `
-                                    <button class="comment-card__like ${comentario.user_liked ? 'comment-card__like--active' : ''}" data-comment-id="${comentario.id}">
-                                        <i class="${comentario.user_liked ? 'fas liked' : 'far'} fa-heart"></i> Me gusta (${comentario.likes})
-                                    </button>
-                                ` : `
-                                    <a href="../login/login.php" class="comment-card__like">
-                                        <i class="far fa-heart"></i> Me gusta (${comentario.likes})
-                                    </a>
-                                `}
-                                <button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>
-                            </div>
-                        `;
+                                    <div class="comment-card__content">
+                                        <h5 class="comment-card__book">Sobre: ${comentario.libro}</h5>
+                                        <p class="comment-card__text">"${comentario.comentario}"</p>
+                                    </div>
+                                    <div class="comment-card__footer">
+                                        ${isLoggedIn ? `
+                                            <button class="comment-card__like ${comentario.user_liked ? 'comment-card__like--active' : ''}" data-comment-id="${comentario.id}">
+                                                <i class="${comentario.user_liked ? 'fas liked' : 'far'} fa-heart"></i> Me gusta (${comentario.likes})
+                                            </button>
+                                        ` : `
+                                            <a href="../login/login.php" class="comment-card__like">
+                                                <i class="far fa-heart"></i> Me gusta (${comentario.likes})
+                                            </a>
+                                        `}
+                                        <button class="comment-card__reply"><i class="far fa-comment"></i> Responder</button>
+                                `;
+
+                                // Añadir botones de editar y eliminar solo si el usuario es el dueño
+                                if (isLoggedIn && currentUserId === comentario.usuario_id) {
+                                    commentHTML += `
+                                        <button class="comment-card__edit" data-comment-id="${comentario.id}"><i class="fas fa-edit"></i> Editar</button>
+                                        <button class="comment-card__delete" data-comment-id="${comentario.id}"><i class="fas fa-trash"></i> Eliminar</button>
+                                    `;
+                                }
+
+                                commentHTML += `</div>`;
 
                                 // Formulario para responder
                                 if (isLoggedIn) {
                                     commentHTML += `
-                                <div class="reply-form" id="reply-form-${comentario.id}">
-                                    <form class="add-reply-form" data-comment-id="${comentario.id}">
-                                        <textarea name="respuesta" placeholder="Escribe tu respuesta..." required></textarea>
-                                        <button type="submit">Enviar Respuesta</button>
-                                    </form>
-                                </div>
-                            `;
+                                        <div class="reply-form" id="reply-form-${comentario.id}">
+                                            <form class="add-reply-form" data-comment-id="${comentario.id}">
+                                                <textarea name="respuesta" placeholder="Escribe tu respuesta..." required></textarea>
+                                                <button type="submit">Enviar Respuesta</button>
+                                            </form>
+                                        </div>
+                                    `;
                                 }
 
                                 // Mostrar respuestas
@@ -743,15 +787,15 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                                         const replyFechaTexto = replyDiffDays === 0 ? 'Hoy' : `${replyDiffDays} días atrás`;
 
                                         commentHTML += `
-                                    <div class="reply-card">
-                                        <img src="${respuesta.avatar}" alt="${respuesta.nombre_usuario}" class="reply-card__avatar" loading="lazy">
-                                        <div class="reply-card__content">
-                                            <h5 class="reply-card__username">${respuesta.nombre_usuario}</h5>
-                                            <span class="reply-card__date">${replyFechaTexto}</span>
-                                            <p class="reply-card__text">${respuesta.respuesta}</p>
-                                        </div>
-                                    </div>
-                                `;
+                                            <div class="reply-card">
+                                                <img src="${respuesta.avatar}" alt="${respuesta.nombre_usuario}" class="reply-card__avatar" loading="lazy">
+                                                <div class="reply-card__content">
+                                                    <h5 class="reply-card__username">${respuesta.nombre_usuario}</h5>
+                                                    <span class="reply-card__date">${replyFechaTexto}</span>
+                                                    <p class="reply-card__text">${respuesta.respuesta}</p>
+                                                </div>
+                                            </div>
+                                        `;
                                     });
                                     commentHTML += '</div>';
                                 }
@@ -760,18 +804,32 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                                 communityGrid.appendChild(commentCard);
                             });
 
+                            // Mostrar u ocultar el botón "Cargar más"
+                            loadMoreButton.style.display = currentPage < totalPages ? 'block' : 'none';
+
                             attachLikeButtonListeners();
                             attachReplyButtonListeners();
                             attachReplyFormListeners();
+                            attachEditDeleteListeners();
                         }
                     })
                     .catch(error => {
                         console.error('Error al cargar comentarios:', error);
-                        document.getElementById('community-grid').innerHTML = '<p>Error al cargar los comentarios. Por favor, intenta de nuevo más tarde.</p>';
+                        communityGrid.innerHTML = '<p>Error al cargar los comentarios. Por favor, intenta de nuevo más tarde.</p>';
+                        loadMoreButton.style.display = 'none';
                     });
             }
 
+            // Evento para el botón "Cargar más"
+            document.getElementById('load-more-comments').addEventListener('click', () => {
+                currentPage++;
+                loadCommunityComments(currentPage);
+            });
+
+            // Cargar comentarios al iniciar
             loadCommunityComments();
+
+            // Recursos recientes (sin cambios)
             const resourcesGrid = document.getElementById('recent-resources-grid');
             const isLoggedIn = <?php echo json_encode($usuario_id !== null); ?>;
             const searchInput = document.getElementById('recent-search-input');
@@ -875,130 +933,130 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                                     resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card book-card';
                                     resourceCard.innerHTML = `
-                                <div class="resource-card__image-container">
-                                    <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                </div>
-                                <div class="resource-card__content">
-                                    <div class="resource-card__category">${categorias.join(', ')}</div>
-                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                    <div class="resource-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                    </div>
-                                    <div class="resource-card__tags">
-                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                    </div>
-                                    <div class="resource-card__actions">
-                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                            <i class="fas fa-book-reader"></i> Leer ahora
-                                        </a>
-                                        ${isLoggedIn ? `
-                                            <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                            </a>
-                                            <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                <i class="fas fa-bookmark"></i> Guardar para después
-                                            </a>
-                                        ` : `
-                                            <a href="../login/login.php" class="btn btn--outline">
-                                                <i class="fas fa-heart"></i> Añadir a favoritos
-                                            </a>
-                                            <a href="../login/login.php" class="btn btn--outline">
-                                                <i class="fas fa-bookmark"></i> Guardar para después
-                                            </a>
-                                        `}
-                                    </div>
-                                </div>
-                            `;
+                                        <div class="resource-card__image-container">
+                                            <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                        </div>
+                                        <div class="resource-card__content">
+                                            <div class="resource-card__category">${categorias.join(', ')}</div>
+                                            <h3 class="resource-card__title">${resource.titulo}</h3>
+                                            <p class="resource-card__author">Por ${resource.autor}</p>
+                                            <div class="resource-card__meta">
+                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                                <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                            </div>
+                                            <div class="resource-card__tags">
+                                                ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                            </div>
+                                            <div class="resource-card__actions">
+                                                <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                                    <i class="fas fa-book-reader"></i> Leer ahora
+                                                </a>
+                                                ${isLoggedIn ? `
+                                                    <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                                        <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                                        ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                                    </a>
+                                                    <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                                    </a>
+                                                ` : `
+                                                    <a href="../login/login.php" class="btn btn--outline">
+                                                        <i class="fas fa-heart"></i> Añadir a favoritos
+                                                    </a>
+                                                    <a href="../login/login.php" class="btn btn--outline">
+                                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                                    </a>
+                                                `}
+                                            </div>
+                                        </div>
+                                    `;
                                 } else if (resource.tipo === 'video') {
                                     resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card video-card';
                                     resourceCard.innerHTML = `
-                                <div class="resource-card__image-container">
-                                    <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                    <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
-                                    <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
-                                </div>
-                                <div class="resource-card__content">
-                                    <div class="resource-card__category">${categorias.join(', ')}</div>
-                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                    <div class="resource-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                    </div>
-                                    <div class="resource-card__tags">
-                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                    </div>
-                                    <div class="resource-card__actions">
-                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                            <i class="fas fa-play-circle"></i> Ver video
-                                        </a>
-                                        ${isLoggedIn ? `
-                                            <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                            </a>
-                                            <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                <i class="fas fa-bookmark"></i> Guardar para después
-                                            </a>
-                                        ` : `
-                                            <a href="../login/login.php" class="btn btn--outline">
-                                                <i class="fas fa-heart"></i> Añadir a favoritos
-                                            </a>
-                                            <a href="../login/login.php" class="btn btn--outline">
-                                                <i class="fas fa-bookmark"></i> Guardar para después
-                                            </a>
-                                        `}
-                                    </div>
-                                </div>
-                            `;
+                                        <div class="resource-card__image-container">
+                                            <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                            <div class="resource-card__duration"><i class="fas fa-clock"></i> ${resource.duracion}</div>
+                                            <div class="resource-card__play-button"><i class="fas fa-play"></i></div>
+                                        </div>
+                                        <div class="resource-card__content">
+                                            <div class="resource-card__category">${categorias.join(', ')}</div>
+                                            <h3 class="resource-card__title">${resource.titulo}</h3>
+                                            <p class="resource-card__author">Por ${resource.autor}</p>
+                                            <div class="resource-card__meta">
+                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                                <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                            </div>
+                                            <div class="resource-card__tags">
+                                                ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                            </div>
+                                            <div class="resource-card__actions">
+                                                <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                                    <i class="fas fa-play-circle"></i> Ver video
+                                                </a>
+                                                ${isLoggedIn ? `
+                                                    <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                                        <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                                        ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                                    </a>
+                                                    <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                                    </a>
+                                                ` : `
+                                                    <a href="../login/login.php" class="btn btn--outline">
+                                                        <i class="fas fa-heart"></i> Añadir a favoritos
+                                                    </a>
+                                                    <a href="../login/login.php" class="btn btn--outline">
+                                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                                    </a>
+                                                `}
+                                            </div>
+                                        </div>
+                                    `;
                                 } else {
                                     resourceCard = document.createElement('div');
                                     resourceCard.className = 'resource-card document-card';
                                     resourceCard.innerHTML = `
-                                <div class="resource-card__image-container">
-                                    <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
-                                    <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
-                                </div>
-                                <div class="resource-card__content">
-                                    <div class="resource-card__category">${categorias.join(', ')}</div>
-                                    <h3 class="resource-card__title">${resource.titulo}</h3>
-                                    <p class="resource-card__author">Por ${resource.autor}</p>
-                                    <div class="resource-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
-                                        <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
-                                    </div>
-                                    <div class="resource-card__tags">
-                                        ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
-                                    </div>
-                                    <div class="resource-card__actions">
-                                        <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
-                                            <i class="fas fa-eye"></i> Ver documento
-                                        </a>
-                                        ${isLoggedIn ? `
-                                            <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
-                                                <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
-                                                ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
-                                            </a>
-                                            <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
-                                                <i class="fas fa-bookmark"></i> Guardar para después
-                                            </a>
-                                        ` : `
-                                            <a href="../login/login.php" class="btn btn--outline">
-                                                <i class="fas fa-heart"></i> Añadir a favoritos
-                                            </a>
-                                            <a href="../login/login.php" class="btn btn--outline">
-                                                <i class="fas fa-bookmark"></i> Guardar para después
-                                            </a>
-                                        `}
-                                    </div>
-                                </div>
-                            `;
+                                        <div class="resource-card__image-container">
+                                            <img src="${coverImage}" alt="${resource.titulo}" class="resource-card__image" loading="lazy" onerror="this.src='${defaultImage}'">
+                                            <div class="resource-card__format">${resource.tipo.toUpperCase()}</div>
+                                        </div>
+                                        <div class="resource-card__content">
+                                            <div class="resource-card__category">${categorias.join(', ')}</div>
+                                            <h3 class="resource-card__title">${resource.titulo}</h3>
+                                            <p class="resource-card__author">Por ${resource.autor}</p>
+                                            <div class="resource-card__meta">
+                                                <span><i class="fas fa-calendar-alt"></i> ${new Date(resource.fecha_publicacion).toLocaleDateString()}</span>
+                                                <span><i class="fas fa-eye"></i> ${resource.visibilidad}</span>
+                                            </div>
+                                            <div class="resource-card__tags">
+                                                ${etiquetas.length > 0 ? etiquetas.map(tag => `<span class="tag">${tag}</span>`).join('') : '<span class="tag">Sin etiquetas</span>'}
+                                            </div>
+                                            <div class="resource-card__actions">
+                                                <a href="${viewUrl}" class="btn btn--primary view-resource" data-id="${resource.id}">
+                                                    <i class="fas fa-eye"></i> Ver documento
+                                                </a>
+                                                ${isLoggedIn ? `
+                                                    <a href="#" class="btn btn--outline ${resource.es_favorito ? 'remove-favorite' : 'add-favorite'}" data-id="${resource.id}">
+                                                        <i class="fas fa-heart${resource.es_favorito ? '-broken' : ''}"></i>
+                                                        ${resource.es_favorito ? 'Quitar favorito' : 'Añadir a favoritos'}
+                                                    </a>
+                                                    <a href="#" class="btn btn--outline save-resource" data-id="${resource.id}">
+                                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                                    </a>
+                                                ` : `
+                                                    <a href="../login/login.php" class="btn btn--outline">
+                                                        <i class="fas fa-heart"></i> Añadir a favoritos
+                                                    </a>
+                                                    <a href="../login/login.php" class="btn btn--outline">
+                                                        <i class="fas fa-bookmark"></i> Guardar para después
+                                                    </a>
+                                                `}
+                                            </div>
+                                        </div>
+                                    `;
                                 }
 
                                 resourcesGrid.appendChild(resourceCard);
@@ -1083,30 +1141,19 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
                     });
             }
         });
-    </script>
-    <!-- Contenedor para las alertas centradas -->
-    <div id="mensaje-alerta" style="
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-    text-align: center;
-"></div>
 
-    <script>
         // Estilos rápidos para alerta centrada
         const estiloAlerta = `
-    background: #e3f2fd;
-    color: #0277bd;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    display: inline-block;
-    border-left: 6px solid #0277bd;
-`;
+            background: #e3f2fd;
+            color: #0277bd;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            display: inline-block;
+            border-left: 6px solid #0277bd;
+        `;
 
         // Sobrescribe alert() para mostrar en el centro
         window.alert = function(mensaje) {
@@ -1124,6 +1171,15 @@ Sumérgete en un espacio creado para potenciar tu aprendizaje, donde encontrará
         };
     </script>
 
+    <!-- Contenedor para las alertas centradas -->
+    <div id="mensaje-alerta" style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        text-align: center;
+    "></div>
 </body>
 
 </html>
