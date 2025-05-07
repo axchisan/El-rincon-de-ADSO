@@ -2,3 +2,4 @@ https://el-rincon-de-adso.up.railway.app El Rincón de ADSO es una plataforma we
 
 La plataforma permite a los usuarios cargar, visualizar, comentar y calificar recursos como libros, videos y documentos, además de interactuar en una comunidad virtual mediante foros, chats y notificaciones. Construida con tecnologías modernas como PHP, JavaScript, HTML, CSS y PostgreSQL, El Rincón de ADSO ofrece una experiencia intuitiva y responsiva, accesible desde diversos dispositivos. Este informe presenta una visión integral del proyecto, destacando su propósito, impacto social, metodología de desarrollo, desafíos enfrentados y su potencial como solución tecnológica viable en el ámbito educativo.
 
+https://youtu.be/BeyR668aIuU?si=AeU58q0m5E0CR5YU
