@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  web:
+    image: php:8.2-apache  
+    container_name: el_rincon_adso_app
+    restart: unless-stopped  # Reinicia automáticamente si falla
+    ports:
+      - "85:80"  
+    volumes:
+      - .:/var/www/html 
+      - uploads_volume:/var/www/html/src/uploads  # Volumen persistente solo para uploads
+    environment:
+      - PGHOST=${PGHOST}
+      - PGPORT=${PGPORT}
+      - PGDATABASE=${PGDATABASE}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+    depends_on: [] 
+    networks:
+      - app_network
+
+volumes:
+  uploads_volume:
+
+networks:
+  app_network: 
