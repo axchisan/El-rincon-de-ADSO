@@ -2,21 +2,22 @@ version: '3.8'
 
 services:
   web:
-    image: php:8.2-apache  
+    build: .  # Build desde Dockerfile en la raíz
     container_name: el_rincon_adso_app
-    restart: unless-stopped  # Reinicia automáticamente si falla
+    restart: unless-stopped
     ports:
-      - "89:80"  
+      - "89:80"  # Mantén tu puerto actual (89), o cambia a 80 si está libre
     volumes:
-      - .:/var/www/html 
-      - uploads_volume:/var/www/html/src/uploads  # Volumen persistente solo para uploads
+      - .:/var/www/html
+      - uploads_volume:/var/www/html/src/uploads
     environment:
       - PGHOST=${PGHOST}
       - PGPORT=${PGPORT}
       - PGDATABASE=${PGDATABASE}
       - PGUSER=${PGUSER}
       - PGPASSWORD=${PGPASSWORD}
-    depends_on: [] 
+    command: >
+      sh -c "chown -R www-data:www-data /var/www/html && apache2-foreground"  # Asegura permisos al iniciar
     networks:
       - app_network
 
@@ -24,4 +25,4 @@ volumes:
   uploads_volume:
 
 networks:
-  app_network: 
+  app_network:
