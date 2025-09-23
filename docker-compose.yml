@@ -6,7 +6,7 @@ services:
     container_name: el_rincon_adso_app
     restart: unless-stopped  # Reinicia automáticamente si falla
     ports:
-      - "85:80"  
+      - "89:80"  
     volumes:
       - .:/var/www/html 
       - uploads_volume:/var/www/html/src/uploads  # Volumen persistente solo para uploads
