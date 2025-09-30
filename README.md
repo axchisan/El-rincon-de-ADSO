@@ -107,7 +107,7 @@ Crear un espacio digital colaborativo donde estudiantes, aprendices y entusiasta
 
 1. **Clonar el repositorio**
 \`\`\`bash
-git clone https://github.com/tu-usuario/el-rincon-de-adso.git
+git clone [https://github.com/tu-usuario/el-rincon-de-adso.git](https://github.com/axchisan/El-rincon-de-ADSO.git)
 cd el-rincon-de-adso
 \`\`\`
 
