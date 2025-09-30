@@ -2,7 +2,9 @@
 
 <div align="center">
 
-![El Rincón de ADSO](El_Rincon_de_ADSO/src/frontend/inicio/img/icono.png)
+![El Rincón de ADSO]![icono](https://github.com/user-attachments/assets/bde3a473-09b7-4797-9282-74271dea1c3e)
+
+.png)
 
 **Tu biblioteca digital al alcance de todos**
 
@@ -206,10 +208,12 @@ El_Rincon_de_ADSO/
 ## 🎨 Capturas de Pantalla
 
 ### Página Principal
-![Inicio](El_Rincon_de_ADSO/src/frontend/inicio/img/inicio.png)
+![Inicio]<img width="1857" height="932" alt="image" src="https://github.com/user-attachments/assets/e001ccce-34d7-4050-aec9-abb65f103b86" />
+
 
 ### Repositorio
-![Repositorio](El_Rincon_de_ADSO/src/frontend/inicio/img/repositorio.jpg)
+![Repositorio]<img width="1857" height="932" alt="image" src="https://github.com/user-attachments/assets/dfbedfe3-6018-46bb-bfaa-4ebe29cb642b" />
+
 
 ---
 
@@ -247,7 +251,7 @@ El_Rincon_de_ADSO/
 
 ## 🐛 Reporte de Bugs
 
-Si encuentras un bug, por favor abre un [issue](https://github.com/tu-usuario/el-rincon-de-adso/issues) con:
+Si encuentras un bug, por favor comentalo en esta pagina.
 - Descripción detallada del problema
 - Pasos para reproducirlo
 - Comportamiento esperado vs. actual
@@ -266,12 +270,15 @@ Este proyecto fue desarrollado como parte del programa ADSO del SENA.
 
 Desarrollado con ❤️ por el equipo de aprendices ADSO del SENA:
 
-- **Duvan** - Estructuración del proyecto y bitácora
-- **Lenis García Moreno** - Desarrollo y documentación
-- **Daniela** - Desarrollo frontend
-- **Gerardo** - Desarrollo backend
-- **Jhony** - Desarrollo y testing
-- Y otros 4 colaboradores más
+- **Duvan Arciniegas** - Lider y desarrollo general del proyecto
+- **Lenis García** - Documentacion e indagacion de recursos
+- **Daniela Gomez** - Desarrollo frontend
+- **Gerardo Ardila** - Desarrollo backend
+- **Jhony Saavedra** - Desarrollo y testing
+- **Daniela Pardo** - Desarrollo backend
+- **Nelson Arias** - Desarrollo frontend
+- **Disler Celeny** - Desarrollo frontend
+- **Julian Jaramillo** -Gestion de recursos
 
 ---
 
@@ -280,7 +287,7 @@ Desarrollado con ❤️ por el equipo de aprendices ADSO del SENA:
 ¿Tienes preguntas o sugerencias? 
 
 - **Email**: contacto@elrincondeadso.com
-- **GitHub Issues**: [Reportar problema](https://github.com/tu-usuario/el-rincon-de-adso/issues)
+- **GitHub Issues**: [Reportar problema]([https://github.com/tu-usuario/el-rincon-de-adso/issues](https://github.com/axchisan/El-rincon-de-ADSO/issues))
 
 ---
 
