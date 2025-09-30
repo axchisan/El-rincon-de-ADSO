@@ -208,11 +208,11 @@ El_Rincon_de_ADSO/
 ## 🎨 Capturas de Pantalla
 
 ### Página Principal
-![Inicio]<img width="1857" height="932" alt="image" src="https://github.com/user-attachments/assets/e001ccce-34d7-4050-aec9-abb65f103b86" />
+![Inicio] <img width="1857" height="932" alt="image" src="https://github.com/user-attachments/assets/e001ccce-34d7-4050-aec9-abb65f103b86" />
 
 
 ### Repositorio
-![Repositorio]<img width="1857" height="932" alt="image" src="https://github.com/user-attachments/assets/dfbedfe3-6018-46bb-bfaa-4ebe29cb642b" />
+![Repositorio] <img width="1857" height="932" alt="image" src="https://github.com/user-attachments/assets/dfbedfe3-6018-46bb-bfaa-4ebe29cb642b" />
 
 
 ---
@@ -286,7 +286,7 @@ Desarrollado con ❤️ por el equipo de aprendices ADSO del SENA:
 
 ¿Tienes preguntas o sugerencias? 
 
-- **Email**: contacto@elrincondeadso.com
+- **Email**: axchisan923@gmail.com
 - **GitHub Issues**: [Reportar problema]([https://github.com/tu-usuario/el-rincon-de-adso/issues](https://github.com/axchisan/El-rincon-de-ADSO/issues))
 
 ---
